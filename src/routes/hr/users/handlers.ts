@@ -6,8 +6,8 @@ import * as HttpStatus from 'stoker/http-status-codes';
 import * as HttpStatusPhrases from 'stoker/http-status-phrases';
 
 import db from '@/db';
-import { noObjectFoundSchema } from '@/lib/constants';
 import { ComparePass, CreateToken, HashPass } from '@/middlewares/auth';
+import { returnEmptyObject, returnNotFound } from '@/utils/return';
 
 import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute, SigninRoute } from '../users/routes';
 
@@ -38,47 +38,40 @@ export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
 export const signin: AppRouteHandler<SigninRoute> = async (c: any) => {
   const updates = c.req.valid('json');
 
-  console.warn('updates', updates);
-
-  if (Object.keys(updates).length === 0) {
-    return c.json(
-      noObjectFoundSchema,
-      HttpStatus.UNPROCESSABLE_ENTITY,
-    );
-  }
+  returnEmptyObject(updates, c);
 
   const { email, pass } = await c.req.json();
-  const value = await db.query.users.findFirst({
+  const result = await db.query.users.findFirst({
     where(fields, operators) {
       return operators.eq(fields.email, email);
     },
   });
 
-  if (!value) {
+  if (!result) {
     return c.json(
       { message: HttpStatusPhrases.NOT_FOUND },
       HttpStatus.NOT_FOUND,
     );
   }
 
-  if (!value.status) {
+  if (!result.status) {
     return c.json(
       { message: 'Account is disabled' },
       HttpStatus.UNAUTHORIZED,
     );
   }
 
-  const match = ComparePass(pass, value.pass);
+  const match = ComparePass(pass, result.pass);
   if (!match) {
     return c.json({ message: 'Email/Password does not match' }, HttpStatus.UNAUTHORIZED);
   }
 
   const now = Math.floor(Date.now() / 1000);
   const payload: JWTPayload = {
-    uuid: value.uuid,
-    username: value.name,
-    email: value.email,
-    can_access: value.can_access,
+    uuid: result.uuid,
+    username: result.name,
+    email: result.email,
+    can_access: result.can_access,
     exp: now + 60 * 60 * 24,
   };
 
@@ -89,46 +82,31 @@ export const signin: AppRouteHandler<SigninRoute> = async (c: any) => {
 
 export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
-  const value = await db.query.users.findFirst({
+  const result = await db.query.users.findFirst({
     where(fields, operators) {
       return operators.eq(fields.uuid, uuid);
     },
   });
 
-  if (!value) {
-    return c.json(
-      { message: HttpStatusPhrases.NOT_FOUND },
-      HttpStatus.NOT_FOUND,
-    );
-  }
+  returnNotFound(!result, c);
 
-  return c.json(value, HttpStatus.OK);
+  return c.json(result, HttpStatus.OK);
 };
 
 export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
   const updates = c.req.valid('json');
 
-  if (Object.keys(updates).length === 0) {
-    return c.json(
-      noObjectFoundSchema,
-      HttpStatus.UNPROCESSABLE_ENTITY,
-    );
-  }
+  returnEmptyObject(updates, c);
 
-  const [task] = await db.update(users)
+  const [result] = await db.update(users)
     .set(updates)
     .where(eq(users.uuid, uuid))
     .returning();
 
-  if (!task) {
-    return c.json(
-      { message: HttpStatusPhrases.NOT_FOUND },
-      HttpStatus.NOT_FOUND,
-    );
-  }
+  returnNotFound(!result, c);
 
-  return c.json(task, HttpStatus.OK);
+  return c.json(result, HttpStatus.OK);
 };
 
 export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
@@ -136,14 +114,7 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
   const result = await db.delete(users)
     .where(eq(users.uuid, uuid));
 
-  if (result.rowCount === 0) {
-    return c.json(
-      {
-        message: HttpStatusPhrases.NOT_FOUND,
-      },
-      HttpStatus.NOT_FOUND,
-    );
-  }
+  returnNotFound(result.rowCount === 0, c);
 
   return c.body(null, HttpStatus.NO_CONTENT);
 };

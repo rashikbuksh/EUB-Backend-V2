@@ -3,7 +3,7 @@ import { char, decimal, timestamp } from 'drizzle-orm/pg-core';
 
 export function defaultUUID(column = 'uuid') {
   return char(column, {
-    length: 15,
+    length: 21,
   });
 }
 

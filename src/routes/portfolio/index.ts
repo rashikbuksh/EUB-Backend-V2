@@ -1,3 +1,3 @@
-import bank from './authorities';
+import authorities from './authorities';
 
-export default [bank];
+export default [authorities];

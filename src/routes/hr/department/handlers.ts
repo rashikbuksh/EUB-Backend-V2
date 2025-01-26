@@ -2,10 +2,9 @@ import type { AppRouteHandler } from '@/lib/types';
 
 import { eq } from 'drizzle-orm';
 import * as HttpStatus from 'stoker/http-status-codes';
-import * as HttpStatusPhrases from 'stoker/http-status-phrases';
 
 import db from '@/db';
-import { ZOD_ERROR_CODES, ZOD_ERROR_MESSAGES } from '@/lib/constants';
+import { returnEmptyObject, returnNotFound } from '@/utils/return';
 
 import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
 
@@ -30,12 +29,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     },
   });
 
-  if (!value) {
-    return c.json(
-      { message: HttpStatusPhrases.NOT_FOUND },
-      HttpStatus.NOT_FOUND,
-    );
-  }
+  returnNotFound(!value, c);
 
   return c.json(value, HttpStatus.OK);
 };
@@ -44,40 +38,16 @@ export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
   const updates = c.req.valid('json');
 
-  if (Object.keys(updates).length === 0) {
-    return c.json(
-      {
-        success: false,
-        error: {
-          issues: [
-            {
-              code: ZOD_ERROR_CODES.INVALID_UPDATES,
-              path: [],
-              message: ZOD_ERROR_MESSAGES.NO_UPDATES,
-            },
-          ],
-          name: 'ZodError',
-        },
-      },
-      HttpStatus.UNPROCESSABLE_ENTITY,
-    );
-  }
+  returnEmptyObject(updates, c);
 
-  const [task] = await db.update(department)
+  const [result] = await db.update(department)
     .set(updates)
     .where(eq(department.uuid, uuid))
     .returning();
 
-  if (!task) {
-    return c.json(
-      {
-        message: HttpStatusPhrases.NOT_FOUND,
-      },
-      HttpStatus.NOT_FOUND,
-    );
-  }
+  returnNotFound(!result, c);
 
-  return c.json(task, HttpStatus.OK);
+  return c.json(result, HttpStatus.OK);
 };
 
 export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
@@ -85,14 +55,7 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
   const result = await db.delete(department)
     .where(eq(department.uuid, uuid));
 
-  if (result.rowCount === 0) {
-    return c.json(
-      {
-        message: HttpStatusPhrases.NOT_FOUND,
-      },
-      HttpStatus.NOT_FOUND,
-    );
-  }
+  returnNotFound(result.rowCount === 0, c);
 
-  return c.body(null, HttpStatus.NO_CONTENT);
+  return c.body(result, HttpStatus.NO_CONTENT);
 };

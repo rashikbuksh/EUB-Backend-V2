@@ -2,6 +2,7 @@ import { relations } from 'drizzle-orm';
 import { boolean, pgSchema, text } from 'drizzle-orm/pg-core';
 
 import { DateTime, defaultUUID, uuid_primary } from '@/lib/variables';
+import { DEFAULT_OPERATION } from '@/utils/db';
 
 const hr = pgSchema('hr');
 
@@ -27,14 +28,8 @@ export const designation = hr.table('designation', {
 export const users = hr.table('users', {
   uuid: uuid_primary,
   name: text('name').notNull(),
-  department_uuid: defaultUUID('department_uuid').notNull().references(() => department.uuid, {
-    onDelete: 'set null',
-    onUpdate: 'cascade',
-  }),
-  designation_uuid: defaultUUID('designation_uuid').notNull().references(() => designation.uuid, {
-    onDelete: 'set null',
-    onUpdate: 'cascade',
-  }),
+  department_uuid: defaultUUID('department_uuid').notNull().references(() => department.uuid, DEFAULT_OPERATION),
+  designation_uuid: defaultUUID('designation_uuid').notNull().references(() => designation.uuid, DEFAULT_OPERATION),
   email: text('email').notNull().unique(),
   phone: text('phone'),
   office: text('office'),

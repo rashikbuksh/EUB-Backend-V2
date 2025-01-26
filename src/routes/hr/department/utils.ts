@@ -8,7 +8,7 @@ export const selectSchema = createSelectSchema(department);
 export const insertSchema = createInsertSchema(
   department,
   {
-    uuid: schema => schema.uuid.length(15),
+    uuid: schema => schema.uuid.length(21),
     name: schema => schema.name.min(1),
   },
 ).required({

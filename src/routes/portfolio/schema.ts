@@ -2,7 +2,7 @@ import { relations, sql } from 'drizzle-orm';
 import { integer, pgSchema, text } from 'drizzle-orm/pg-core';
 
 import { DateTime, defaultUUID, uuid_primary } from '@/lib/variables';
-import { DEFAULT_OPERATION } from '@/utils/schema';
+import { DEFAULT_OPERATION } from '@/utils/db';
 
 import { users } from '../hr/schema';
 
@@ -36,10 +36,7 @@ export const authorities = portfolio.table('authorities', {
   short_biography: text('short_biography').notNull(),
   created_at: DateTime('created_at').notNull(),
   updated_at: DateTime('updated_at'),
-  created_by: defaultUUID('created_by').references(() => users.uuid, {
-    onDelete: 'set null',
-    onUpdate: 'cascade',
-  }),
+  created_by: defaultUUID('created_by').references(() => users.uuid, DEFAULT_OPERATION),
   remarks: text('remarks'),
 });
 
@@ -71,10 +68,7 @@ export const info = portfolio.table('info', {
   file: text('file').notNull(),
   created_at: DateTime('created_at').notNull(),
   updated_at: DateTime('updated_at'),
-  created_by: defaultUUID('created_by').references(() => users.uuid, {
-    onDelete: 'set null',
-    onUpdate: 'cascade',
-  }),
+  created_by: defaultUUID('created_by').references(() => users.uuid, DEFAULT_OPERATION),
   remarks: text('remarks'),
 });
 
