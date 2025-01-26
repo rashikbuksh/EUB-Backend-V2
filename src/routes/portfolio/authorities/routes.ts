@@ -1,4 +1,4 @@
-import * as HttpStatus from 'stoker/http-status-codes';
+import * as HSCode from 'stoker/http-status-codes';
 import { jsonContent, jsonContentRequired } from 'stoker/openapi/helpers';
 import { createErrorSchema } from 'stoker/openapi/schemas';
 
@@ -15,7 +15,7 @@ export const list = createRoute({
   method: 'get',
   tags,
   responses: {
-    [HttpStatus.OK]: jsonContent(
+    [HSCode.OK]: jsonContent(
       z.array(selectSchema),
       'The list of authorities',
     ),
@@ -33,11 +33,11 @@ export const create = createRoute({
   },
   tags,
   responses: {
-    [HttpStatus.OK]: jsonContent(
+    [HSCode.OK]: jsonContent(
       selectSchema,
       'The created authorities',
     ),
-    [HttpStatus.UNPROCESSABLE_ENTITY]: jsonContent(
+    [HSCode.UNPROCESSABLE_ENTITY]: jsonContent(
       createErrorSchema(insertSchema),
       'The validation error(s)',
     ),
@@ -52,15 +52,15 @@ export const getOne = createRoute({
   },
   tags,
   responses: {
-    [HttpStatus.OK]: jsonContent(
+    [HSCode.OK]: jsonContent(
       selectSchema,
       'The requested authorities',
     ),
-    [HttpStatus.NOT_FOUND]: jsonContent(
+    [HSCode.NOT_FOUND]: jsonContent(
       notFoundSchema,
       'Authorities not found',
     ),
-    [HttpStatus.UNPROCESSABLE_ENTITY]: jsonContent(
+    [HSCode.UNPROCESSABLE_ENTITY]: jsonContent(
       createErrorSchema(param.uuid),
       'Invalid id error',
     ),
@@ -79,15 +79,15 @@ export const patch = createRoute({
   },
   tags,
   responses: {
-    [HttpStatus.OK]: jsonContent(
+    [HSCode.OK]: jsonContent(
       selectSchema,
       'The updated authorities',
     ),
-    [HttpStatus.NOT_FOUND]: jsonContent(
+    [HSCode.NOT_FOUND]: jsonContent(
       notFoundSchema,
       'Authorities not found',
     ),
-    [HttpStatus.UNPROCESSABLE_ENTITY]: jsonContent(
+    [HSCode.UNPROCESSABLE_ENTITY]: jsonContent(
       createErrorSchema(patchSchema)
         .or(createErrorSchema(param.uuid)),
       'The validation error(s)',
@@ -103,14 +103,14 @@ export const remove = createRoute({
   },
   tags,
   responses: {
-    [HttpStatus.NO_CONTENT]: {
+    [HSCode.NO_CONTENT]: {
       description: 'Authorities deleted',
     },
-    [HttpStatus.NOT_FOUND]: jsonContent(
+    [HSCode.NOT_FOUND]: jsonContent(
       notFoundSchema,
       'Authorities not found',
     ),
-    [HttpStatus.UNPROCESSABLE_ENTITY]: jsonContent(
+    [HSCode.UNPROCESSABLE_ENTITY]: jsonContent(
       createErrorSchema(param.uuid),
       'Invalid id error',
     ),

@@ -1,4 +1,4 @@
-import * as HttpStatusPhrases from 'stoker/http-status-phrases';
+import * as HSPhrases from 'stoker/http-status-phrases';
 import { createMessageObjectSchema } from 'stoker/openapi/schemas';
 
 export const ZOD_ERROR_MESSAGES = {
@@ -11,8 +11,8 @@ export const ZOD_ERROR_CODES = {
   INVALID_UPDATES: 'invalid_updates',
 };
 
-export const notFoundSchema = createMessageObjectSchema(HttpStatusPhrases.NOT_FOUND);
-export const unauthorizedSchema = createMessageObjectSchema(HttpStatusPhrases.UNAUTHORIZED);
+export const notFoundSchema = createMessageObjectSchema(HSPhrases.NOT_FOUND);
+export const unauthorizedSchema = createMessageObjectSchema(HSPhrases.UNAUTHORIZED);
 
 export const noObjectFoundSchema = {
   success: false,

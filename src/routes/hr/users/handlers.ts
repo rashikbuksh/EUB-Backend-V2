@@ -2,119 +2,124 @@ import type { AppRouteHandler } from '@/lib/types';
 import type { JWTPayload } from 'hono/utils/jwt/types';
 
 import { eq } from 'drizzle-orm';
-import * as HttpStatus from 'stoker/http-status-codes';
-import * as HttpStatusPhrases from 'stoker/http-status-phrases';
+import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
 import { ComparePass, CreateToken, HashPass } from '@/middlewares/auth';
-import { returnEmptyObject, returnNotFound } from '@/utils/return';
+import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 
-import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute, SigninRoute } from '../users/routes';
+import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute, SigninRoute } from './routes';
 
 import { users } from '../schema';
-
-export const list: AppRouteHandler<ListRoute> = async (c: any) => {
-  console.warn('List users');
-
-  const result = await db.query.users.findMany({
-    with: {
-      designation: true,
-      department: true,
-    },
-  });
-  return c.json(result);
-};
-
-export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
-  const value = c.req.valid('json');
-  const { pass } = await c.req.json();
-
-  value.pass = await HashPass(pass);
-
-  const [inserted] = await db.insert(users).values(value).returning();
-  return c.json(inserted, HttpStatus.OK);
-};
 
 export const signin: AppRouteHandler<SigninRoute> = async (c: any) => {
   const updates = c.req.valid('json');
 
-  returnEmptyObject(updates, c);
+  if (Object.keys(updates).length === 0)
+    return ObjectNotFound(c);
 
   const { email, pass } = await c.req.json();
-  const result = await db.query.users.findFirst({
+  const data = await db.query.users.findFirst({
     where(fields, operators) {
       return operators.eq(fields.email, email);
     },
   });
 
-  if (!result) {
-    return c.json(
-      { message: HttpStatusPhrases.NOT_FOUND },
-      HttpStatus.NOT_FOUND,
-    );
-  }
+  if (!data)
+    return DataNotFound(c);
 
-  if (!result.status) {
+  if (!data.status) {
     return c.json(
       { message: 'Account is disabled' },
-      HttpStatus.UNAUTHORIZED,
+      HSCode.UNAUTHORIZED,
     );
   }
 
-  const match = ComparePass(pass, result.pass);
+  const match = ComparePass(pass, data.pass);
   if (!match) {
-    return c.json({ message: 'Email/Password does not match' }, HttpStatus.UNAUTHORIZED);
+    return c.json({ message: 'Email/Password does not match' }, HSCode.UNAUTHORIZED);
   }
 
   const now = Math.floor(Date.now() / 1000);
   const payload: JWTPayload = {
-    uuid: result.uuid,
-    username: result.name,
-    email: result.email,
-    can_access: result.can_access,
+    uuid: data.uuid,
+    username: data.name,
+    email: data.email,
+    can_access: data.can_access,
     exp: now + 60 * 60 * 24,
   };
 
   const token = await CreateToken(payload);
 
-  return c.json({ payload, token }, HttpStatus.OK);
+  return c.json({ payload, token }, HSCode.OK);
 };
 
-export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
-  const { uuid } = c.req.valid('param');
-  const result = await db.query.users.findFirst({
-    where(fields, operators) {
-      return operators.eq(fields.uuid, uuid);
-    },
+export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
+  const value = c.req.valid('json');
+
+  const { pass } = await c.req.json();
+
+  value.pass = await HashPass(pass);
+
+  const [data] = await db.insert(users).values(value).returning({
+    name: users.name,
   });
 
-  returnNotFound(!result, c);
-
-  return c.json(result, HttpStatus.OK);
+  return c.json(createToast('create', data.name), HSCode.OK);
 };
 
 export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
   const updates = c.req.valid('json');
 
-  returnEmptyObject(updates, c);
+  if (Object.keys(updates).length === 0)
+    return ObjectNotFound(c);
 
-  const [result] = await db.update(users)
+  const [data] = await db.update(users)
     .set(updates)
     .where(eq(users.uuid, uuid))
-    .returning();
+    .returning({
+      name: users.name,
+    });
 
-  returnNotFound(!result, c);
+  if (!data)
+    return DataNotFound(c);
 
-  return c.json(result, HttpStatus.OK);
+  return c.json(createToast('update', data.name), HSCode.OK);
 };
 
 export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
-  const result = await db.delete(users)
-    .where(eq(users.uuid, uuid));
 
-  returnNotFound(result.rowCount === 0, c);
+  const [data] = await db.delete(users)
+    .where(eq(users.uuid, uuid))
+    .returning({
+      name: users.name,
+    });
 
-  return c.body(null, HttpStatus.NO_CONTENT);
+  if (!data)
+    return DataNotFound(c);
+
+  return c.json(createToast('delete', data.name), HSCode.OK);
+};
+
+export const list: AppRouteHandler<ListRoute> = async (c: any) => {
+  const data = await db.query.users.findMany();
+
+  return c.json(data, HSCode.OK);
+};
+
+export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
+  const { uuid } = c.req.valid('param');
+
+  const data = await db.query.users.findFirst({
+    where(fields, operators) {
+      return operators.eq(fields.uuid, uuid);
+    },
+  });
+
+  if (!data)
+    return DataNotFound(c);
+
+  return c.json(data, HSCode.OK);
 };

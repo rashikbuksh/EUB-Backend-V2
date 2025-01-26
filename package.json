@@ -1,10 +1,10 @@
 {
   "name": "eub-backend-v2",
   "type": "module",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "license": "MIT",
   "scripts": {
-    "dev": "tsx watch src/index.ts",
+    "dev": "tsx watch --watch-preserve-output --clear-screen=false src/index.ts",
     "start": "node ./dist/src/index.js",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
@@ -21,13 +21,13 @@
   "dependencies": {
     "@hono/node-server": "^1.13.7",
     "@hono/zod-openapi": "^0.18.3",
-    "@scalar/hono-api-reference": "^0.5.166",
+    "@scalar/hono-api-reference": "^0.5.168",
     "bcrypt-ts": "^5.0.3",
     "dotenv": "^16.4.7",
     "dotenv-expand": "^12.0.1",
     "drizzle-orm": "^0.38.4",
     "drizzle-zod": "^0.5.1",
-    "hono": "^4.6.18",
+    "hono": "^4.6.19",
     "hono-pino": "^0.7.0",
     "pg": "^8.13.1",
     "pino": "^9.6.0",
@@ -36,16 +36,16 @@
     "zod": "^3.24.1"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^3.14.0",
-    "@types/node": "^22.10.7",
+    "@antfu/eslint-config": "^3.16.0",
+    "@types/node": "^22.10.10",
     "@types/pg": "^8.11.11",
     "cross-env": "^7.0.3",
     "drizzle-kit": "^0.30.2",
-    "eslint": "^9.18.0",
+    "eslint": "^9.19.0",
     "eslint-plugin-format": "^1.0.1",
     "tsc-alias": "^1.8.10",
     "tsx": "^4.19.2",
     "typescript": "^5.7.3",
-    "vitest": "^3.0.2"
+    "vitest": "^3.0.4"
   }
 }

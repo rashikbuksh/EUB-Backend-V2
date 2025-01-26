@@ -19,9 +19,9 @@ app.use(`${basePath}/*`, cors({
   credentials: true,
 }));
 
-// app.use(`${basePath}/*`, bearerAuth({
-//   verifyToken: VerifyToken,
-// }));
+app.use(`${basePath}/*`, bearerAuth({
+  verifyToken: VerifyToken,
+}));
 
 routes.forEach((route) => {
   app.route(basePath, route);

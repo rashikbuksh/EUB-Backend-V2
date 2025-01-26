@@ -1,4 +1,4 @@
-import * as HttpStatus from 'stoker/http-status-codes';
+import * as HSCode from 'stoker/http-status-codes';
 import { jsonContent } from 'stoker/openapi/helpers';
 import { createMessageObjectSchema } from 'stoker/openapi/schemas';
 
@@ -15,7 +15,7 @@ const router = createRouter()
       method: 'get',
       path: '/',
       responses: {
-        [HttpStatus.OK]: jsonContent(
+        [HSCode.OK]: jsonContent(
           createMessageObjectSchema('FZL API'),
           'FZL API Index',
         ),
@@ -24,7 +24,7 @@ const router = createRouter()
     (c) => {
       return c.json({
         message: 'FZL API',
-      }, HttpStatus.OK);
+      }, HSCode.OK);
     },
   );
 
