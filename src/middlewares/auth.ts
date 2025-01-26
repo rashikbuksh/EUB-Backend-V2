@@ -21,8 +21,12 @@ export async function CreateToken(payload: JWTPayload) {
 export async function VerifyToken(token: string, c: Context) {
   const { url, method } = c.env.outgoing.req;
 
-  if (url === '/v1/signin' && method === 'POST')
+  console.log(`URL: ${url}, Method: ${method}`); // Add this line for debugging
+
+  if (url === '/v1/signin' && method === 'POST') {
+    console.log('Bypass URL condition met'); // Add this line for debugging
     return true;
+  }
 
   const decodedPayload = await verify(token, env.PRIVATE_KEY);
 

@@ -10,18 +10,14 @@ import * as HttpStatusPhrases from 'stoker/http-status-phrases';
 import { department, designation, users } from '../schema';
 
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
-  const result = await db.select({
-    uuid: users.uuid,
-    name: users.name,
-    email: users.email,
-    status: users.status,
-    can_access: users.can_access,
-    designation: designation.designation,
-    department: department.department,
-  })
-    .from(users)
-    .leftJoin(designation, eq(users.designation_uuid, designation.uuid))
-    .leftJoin(department, eq(users.department_uuid, department.uuid));
+  console.warn('List users');
+
+  const result = await db.query.users.findMany({
+    with: {
+      designation: true,
+      department: true,
+    },
+  });
   return c.json(result);
 };
 
