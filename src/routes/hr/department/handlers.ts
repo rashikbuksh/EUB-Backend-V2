@@ -1,13 +1,13 @@
 import type { AppRouteHandler } from '@/lib/types';
-import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
-import db from '@/db';
-
-import { ZOD_ERROR_CODES, ZOD_ERROR_MESSAGES } from '@/lib/constants';
 
 import { eq } from 'drizzle-orm';
-import * as HttpStatusCodes from 'stoker/http-status-codes';
-
+import * as HttpStatus from 'stoker/http-status-codes';
 import * as HttpStatusPhrases from 'stoker/http-status-phrases';
+
+import db from '@/db';
+import { ZOD_ERROR_CODES, ZOD_ERROR_MESSAGES } from '@/lib/constants';
+
+import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
 
 import { department } from '../schema';
 
@@ -19,7 +19,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
 export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
   const value = c.req.valid('json');
   const [inserted] = await db.insert(department).values(value).returning();
-  return c.json(inserted, HttpStatusCodes.OK);
+  return c.json(inserted, HttpStatus.OK);
 };
 
 export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
@@ -33,11 +33,11 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
   if (!value) {
     return c.json(
       { message: HttpStatusPhrases.NOT_FOUND },
-      HttpStatusCodes.NOT_FOUND,
+      HttpStatus.NOT_FOUND,
     );
   }
 
-  return c.json(value, HttpStatusCodes.OK);
+  return c.json(value, HttpStatus.OK);
 };
 
 export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
@@ -59,7 +59,7 @@ export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
           name: 'ZodError',
         },
       },
-      HttpStatusCodes.UNPROCESSABLE_ENTITY,
+      HttpStatus.UNPROCESSABLE_ENTITY,
     );
   }
 
@@ -73,11 +73,11 @@ export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
       {
         message: HttpStatusPhrases.NOT_FOUND,
       },
-      HttpStatusCodes.NOT_FOUND,
+      HttpStatus.NOT_FOUND,
     );
   }
 
-  return c.json(task, HttpStatusCodes.OK);
+  return c.json(task, HttpStatus.OK);
 };
 
 export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
@@ -90,9 +90,9 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
       {
         message: HttpStatusPhrases.NOT_FOUND,
       },
-      HttpStatusCodes.NOT_FOUND,
+      HttpStatus.NOT_FOUND,
     );
   }
 
-  return c.body(null, HttpStatusCodes.NO_CONTENT);
+  return c.body(null, HttpStatus.NO_CONTENT);
 };

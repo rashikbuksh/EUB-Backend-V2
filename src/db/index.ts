@@ -1,8 +1,8 @@
-import env from "@/env";
-import schema from "@/routes/index.schema";
+import { drizzle } from 'drizzle-orm/node-postgres';
+import pg from 'pg';
 
-import { drizzle } from "drizzle-orm/node-postgres";
-import pg from "pg";
+import env from '@/env';
+import schema from '@/routes/index.schema';
 
 const { Pool } = pg;
 

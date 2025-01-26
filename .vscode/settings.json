@@ -50,6 +50,7 @@
     "antfu",
     "datetime",
     "Hono",
+    "nextval",
     "openapi",
     "pino",
     "typecheck"

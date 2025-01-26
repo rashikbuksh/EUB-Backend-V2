@@ -1,44 +1,43 @@
-import type { AppOpenAPI } from "./types";
+import env from '@/env';
+import { apiReference } from '@scalar/hono-api-reference';
 
-import env from "@/env";
+import type { AppOpenAPI } from './types';
 
-import { apiReference } from "@scalar/hono-api-reference";
-
-import packageJSON from "../../package.json" with { type: "json" };
+import packageJSON from '../../package.json' with { type: 'json' };
 
 export default function configureOpenAPI(app: AppOpenAPI) {
-  app.doc("/doc", {
-    openapi: "3.0.0",
+  app.doc('/doc', {
+    openapi: '3.0.0',
 
     // basePath: env.SERVER_URL,
 
     info: {
       title: packageJSON.name,
-      description: "FZL API Documentation",
-      contact: { name: "RBR", email: "rafsan@fortunezip.com" },
+      description: 'FZL API Documentation',
+      contact: { name: 'RBR', email: 'rafsan@fortunezip.com' },
       version: packageJSON.version,
     },
     servers: [
-      { url: env.SERVER_URL, description: "Dev" },
-      { url: env.SERVER_URL, description: "Prod" },
+      { url: env.SERVER_URL, description: 'Dev' },
+      { url: env.SERVER_URL, description: 'Prod' },
     ],
 
   });
 
   app.get(
-    "/reference",
+    '/reference',
     apiReference({
       pageTitle: packageJSON.name,
-      theme: "kepler",
-      layout: "modern",
+      theme: 'kepler',
+      layout: 'modern',
       // layout: "classic",
       defaultHttpClient: {
-        targetKey: "javascript",
-        clientKey: "fetch",
+        targetKey: 'javascript',
+        clientKey: 'fetch',
       },
       // isEditable: true,
       spec: {
-        url: "/doc",
+        url: '/doc',
       },
       // hideModels: true,
       // showSidebar: false,
@@ -48,7 +47,7 @@ export default function configureOpenAPI(app: AppOpenAPI) {
       // withDefaultFonts: true,
       authentication: {
         // customSecurity: true,
-        preferredSecurityScheme: "bearerAuth",
+        preferredSecurityScheme: 'bearerAuth',
         securitySchemes: {
           // bearerAuth: {
           //   type: "http",
@@ -59,26 +58,26 @@ export default function configureOpenAPI(app: AppOpenAPI) {
           //   in: "header",
           // },
           httpBearer: {
-            label: "HTTP Bearer",
+            label: 'HTTP Bearer',
             payload: {
-              type: "http",
-              scheme: "bearer",
-              nameKey: "httpBearer",
+              type: 'http',
+              scheme: 'bearer',
+              nameKey: 'httpBearer',
             },
           },
         },
         http: {
           basic: {
-            username: "anik",
-            password: "anik",
+            username: 'anik',
+            password: 'anik',
           },
           bearer: {
-            token: "sdjfkfj",
+            token: 'sdjfkfj',
           },
         },
 
       },
-      operationsSorter: "method",
+      operationsSorter: 'method',
 
     }),
   );

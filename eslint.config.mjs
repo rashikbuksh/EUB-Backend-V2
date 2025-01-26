@@ -16,9 +16,21 @@ export default antfu({
     'antfu/no-top-level-await': ['off'],
     'node/prefer-global/process': ['off'],
     'node/no-process-env': ['error'],
-    // "perfectionist/sort-imports": ["error", {
-    //   internalPattern: ["@/**"],
-    // }],
+    'perfectionist/sort-imports': [
+      'error',
+      {
+        internalPattern: ['@/*'],
+        groups: [
+          ['type', 'internal-type'],
+          ['builtin', 'external'],
+          'internal',
+          ['parent-type', 'sibling-type', 'index-type'],
+          ['parent', 'sibling', 'index'],
+          'object',
+          'unknown',
+        ],
+      },
+    ],
     'unicorn/filename-case': ['error', {
       case: 'snakeCase',
       ignore: ['README.md'],

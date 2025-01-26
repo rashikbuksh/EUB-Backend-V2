@@ -1,13 +1,17 @@
 import type { AppRouteHandler } from '@/lib/types';
 import type { JWTPayload } from 'hono/utils/jwt/types';
-import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute, SigninRoute } from '../users/routes';
+
+import { eq } from 'drizzle-orm';
+import * as HttpStatus from 'stoker/http-status-codes';
+import * as HttpStatusPhrases from 'stoker/http-status-phrases';
+
 import db from '@/db';
 import { noObjectFoundSchema } from '@/lib/constants';
 import { ComparePass, CreateToken, HashPass } from '@/middlewares/auth';
-import { eq } from 'drizzle-orm';
-import * as HttpStatusCodes from 'stoker/http-status-codes';
-import * as HttpStatusPhrases from 'stoker/http-status-phrases';
-import { department, designation, users } from '../schema';
+
+import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute, SigninRoute } from '../users/routes';
+
+import { users } from '../schema';
 
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   console.warn('List users');
@@ -28,7 +32,7 @@ export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
   value.pass = await HashPass(pass);
 
   const [inserted] = await db.insert(users).values(value).returning();
-  return c.json(inserted, HttpStatusCodes.OK);
+  return c.json(inserted, HttpStatus.OK);
 };
 
 export const signin: AppRouteHandler<SigninRoute> = async (c: any) => {
@@ -39,7 +43,7 @@ export const signin: AppRouteHandler<SigninRoute> = async (c: any) => {
   if (Object.keys(updates).length === 0) {
     return c.json(
       noObjectFoundSchema,
-      HttpStatusCodes.UNPROCESSABLE_ENTITY,
+      HttpStatus.UNPROCESSABLE_ENTITY,
     );
   }
 
@@ -53,20 +57,20 @@ export const signin: AppRouteHandler<SigninRoute> = async (c: any) => {
   if (!value) {
     return c.json(
       { message: HttpStatusPhrases.NOT_FOUND },
-      HttpStatusCodes.NOT_FOUND,
+      HttpStatus.NOT_FOUND,
     );
   }
 
   if (!value.status) {
     return c.json(
       { message: 'Account is disabled' },
-      HttpStatusCodes.UNAUTHORIZED,
+      HttpStatus.UNAUTHORIZED,
     );
   }
 
   const match = ComparePass(pass, value.pass);
   if (!match) {
-    return c.json({ message: 'Email/Password does not match' }, HttpStatusCodes.UNAUTHORIZED);
+    return c.json({ message: 'Email/Password does not match' }, HttpStatus.UNAUTHORIZED);
   }
 
   const now = Math.floor(Date.now() / 1000);
@@ -80,7 +84,7 @@ export const signin: AppRouteHandler<SigninRoute> = async (c: any) => {
 
   const token = await CreateToken(payload);
 
-  return c.json({ payload, token }, HttpStatusCodes.OK);
+  return c.json({ payload, token }, HttpStatus.OK);
 };
 
 export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
@@ -94,11 +98,11 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
   if (!value) {
     return c.json(
       { message: HttpStatusPhrases.NOT_FOUND },
-      HttpStatusCodes.NOT_FOUND,
+      HttpStatus.NOT_FOUND,
     );
   }
 
-  return c.json(value, HttpStatusCodes.OK);
+  return c.json(value, HttpStatus.OK);
 };
 
 export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
@@ -108,7 +112,7 @@ export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
   if (Object.keys(updates).length === 0) {
     return c.json(
       noObjectFoundSchema,
-      HttpStatusCodes.UNPROCESSABLE_ENTITY,
+      HttpStatus.UNPROCESSABLE_ENTITY,
     );
   }
 
@@ -120,11 +124,11 @@ export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
   if (!task) {
     return c.json(
       { message: HttpStatusPhrases.NOT_FOUND },
-      HttpStatusCodes.NOT_FOUND,
+      HttpStatus.NOT_FOUND,
     );
   }
 
-  return c.json(task, HttpStatusCodes.OK);
+  return c.json(task, HttpStatus.OK);
 };
 
 export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
@@ -137,9 +141,9 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
       {
         message: HttpStatusPhrases.NOT_FOUND,
       },
-      HttpStatusCodes.NOT_FOUND,
+      HttpStatus.NOT_FOUND,
     );
   }
 
-  return c.body(null, HttpStatusCodes.NO_CONTENT);
+  return c.body(null, HttpStatus.NO_CONTENT);
 };

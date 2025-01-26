@@ -1,12 +1,12 @@
-import { createRouter } from '@/lib/create_app';
-import { createRoute } from '@hono/zod-openapi';
-import * as HttpStatusCodes from 'stoker/http-status-codes';
+import * as HttpStatus from 'stoker/http-status-codes';
 import { jsonContent } from 'stoker/openapi/helpers';
-
 import { createMessageObjectSchema } from 'stoker/openapi/schemas';
 
-import commercial from './commercial';
+import { createRouter } from '@/lib/create_app';
+import { createRoute } from '@hono/zod-openapi';
+
 import hr from './hr';
+import commercial from './portfolio';
 
 const router = createRouter()
   .openapi(
@@ -15,7 +15,7 @@ const router = createRouter()
       method: 'get',
       path: '/',
       responses: {
-        [HttpStatusCodes.OK]: jsonContent(
+        [HttpStatus.OK]: jsonContent(
           createMessageObjectSchema('FZL API'),
           'FZL API Index',
         ),
@@ -24,7 +24,7 @@ const router = createRouter()
     (c) => {
       return c.json({
         message: 'FZL API',
-      }, HttpStatusCodes.OK);
+      }, HttpStatus.OK);
     },
   );
 

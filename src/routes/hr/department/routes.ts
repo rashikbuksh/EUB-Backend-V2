@@ -1,118 +1,118 @@
-import { notFoundSchema } from "@/lib/constants";
-import * as param from "@/lib/param";
-import { createRoute, z } from "@hono/zod-openapi";
-import * as HttpStatusCodes from "stoker/http-status-codes";
+import * as HttpStatus from 'stoker/http-status-codes';
+import { jsonContent, jsonContentRequired } from 'stoker/openapi/helpers';
+import { createErrorSchema } from 'stoker/openapi/schemas';
 
-import { jsonContent, jsonContentRequired } from "stoker/openapi/helpers";
-import { createErrorSchema } from "stoker/openapi/schemas";
+import { notFoundSchema } from '@/lib/constants';
+import * as param from '@/lib/param';
+import { createRoute, z } from '@hono/zod-openapi';
 
-import { insertSchema, patchSchema, selectSchema } from "./utils";
+import { insertSchema, patchSchema, selectSchema } from './utils';
 
-const tags = ["hr.department"];
+const tags = ['hr.department'];
 
 export const list = createRoute({
-  path: "/hr/department",
-  method: "get",
+  path: '/hr/department',
+  method: 'get',
   tags,
   responses: {
-    [HttpStatusCodes.OK]: jsonContent(
+    [HttpStatus.OK]: jsonContent(
       z.array(selectSchema),
-      "The list of department",
+      'The list of department',
     ),
   },
 });
 
 export const create = createRoute({
-  path: "/hr/department",
-  method: "post",
+  path: '/hr/department',
+  method: 'post',
   request: {
     body: jsonContentRequired(
       insertSchema,
-      "The department to create",
+      'The department to create',
     ),
   },
   tags,
   responses: {
-    [HttpStatusCodes.OK]: jsonContent(
+    [HttpStatus.OK]: jsonContent(
       selectSchema,
-      "The created department",
+      'The created department',
     ),
-    [HttpStatusCodes.UNPROCESSABLE_ENTITY]: jsonContent(
+    [HttpStatus.UNPROCESSABLE_ENTITY]: jsonContent(
       createErrorSchema(insertSchema),
-      "The validation error(s)",
+      'The validation error(s)',
     ),
   },
 });
 
 export const getOne = createRoute({
-  path: "/hr/department/{uuid}",
-  method: "get",
+  path: '/hr/department/{uuid}',
+  method: 'get',
   request: {
     params: param.uuid,
   },
   tags,
   responses: {
-    [HttpStatusCodes.OK]: jsonContent(
+    [HttpStatus.OK]: jsonContent(
       selectSchema,
-      "The requested department",
+      'The requested department',
     ),
-    [HttpStatusCodes.NOT_FOUND]: jsonContent(
+    [HttpStatus.NOT_FOUND]: jsonContent(
       notFoundSchema,
-      "Department not found",
+      'Department not found',
     ),
-    [HttpStatusCodes.UNPROCESSABLE_ENTITY]: jsonContent(
+    [HttpStatus.UNPROCESSABLE_ENTITY]: jsonContent(
       createErrorSchema(param.uuid),
-      "Invalid id error",
+      'Invalid id error',
     ),
   },
 });
 
 export const patch = createRoute({
-  path: "/hr/department/{uuid}",
-  method: "patch",
+  path: '/hr/department/{uuid}',
+  method: 'patch',
   request: {
     params: param.uuid,
     body: jsonContentRequired(
       patchSchema,
-      "The department updates",
+      'The department updates',
     ),
   },
   tags,
   responses: {
-    [HttpStatusCodes.OK]: jsonContent(
+    [HttpStatus.OK]: jsonContent(
       selectSchema,
-      "The updated department",
+      'The updated department',
     ),
-    [HttpStatusCodes.NOT_FOUND]: jsonContent(
+    [HttpStatus.NOT_FOUND]: jsonContent(
       notFoundSchema,
-      "Department not found",
+      'Department not found',
     ),
-    [HttpStatusCodes.UNPROCESSABLE_ENTITY]: jsonContent(
+    [HttpStatus.UNPROCESSABLE_ENTITY]: jsonContent(
       createErrorSchema(patchSchema)
         .or(createErrorSchema(param.uuid)),
-      "The validation error(s)",
+      'The validation error(s)',
     ),
   },
 });
 
 export const remove = createRoute({
-  path: "/hr/department/{uuid}",
-  method: "delete",
+  path: '/hr/department/{uuid}',
+  method: 'delete',
   request: {
     params: param.uuid,
   },
   tags,
   responses: {
-    [HttpStatusCodes.NO_CONTENT]: {
-      description: "Department deleted",
+    [HttpStatus.NO_CONTENT]: {
+      description: 'Department deleted',
     },
-    [HttpStatusCodes.NOT_FOUND]: jsonContent(
+    [HttpStatus.NOT_FOUND]: jsonContent(
       notFoundSchema,
-      "Department not found",
+      'Department not found',
     ),
-    [HttpStatusCodes.UNPROCESSABLE_ENTITY]: jsonContent(
+    [HttpStatus.UNPROCESSABLE_ENTITY]: jsonContent(
       createErrorSchema(param.uuid),
-      "Invalid id error",
+      'Invalid id error',
     ),
   },
 });

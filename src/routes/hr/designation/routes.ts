@@ -1,118 +1,118 @@
-import { notFoundSchema } from "@/lib/constants";
-import * as param from "@/lib/param";
-import { createRoute, z } from "@hono/zod-openapi";
-import * as HttpStatusCodes from "stoker/http-status-codes";
+import * as HttpStatus from 'stoker/http-status-codes';
+import { jsonContent, jsonContentRequired } from 'stoker/openapi/helpers';
+import { createErrorSchema } from 'stoker/openapi/schemas';
 
-import { jsonContent, jsonContentRequired } from "stoker/openapi/helpers";
-import { createErrorSchema } from "stoker/openapi/schemas";
+import { notFoundSchema } from '@/lib/constants';
+import * as param from '@/lib/param';
+import { createRoute, z } from '@hono/zod-openapi';
 
-import { insertSchema, patchSchema, selectSchema } from "./utils";
+import { insertSchema, patchSchema, selectSchema } from './utils';
 
-const tags = ["hr.designation"];
+const tags = ['hr.designation'];
 
 export const list = createRoute({
-  path: "/hr/designation",
-  method: "get",
+  path: '/hr/designation',
+  method: 'get',
   tags,
   responses: {
-    [HttpStatusCodes.OK]: jsonContent(
+    [HttpStatus.OK]: jsonContent(
       z.array(selectSchema),
-      "The list of designation",
+      'The list of designation',
     ),
   },
 });
 
 export const create = createRoute({
-  path: "/hr/designation",
-  method: "post",
+  path: '/hr/designation',
+  method: 'post',
   request: {
     body: jsonContentRequired(
       insertSchema,
-      "The designation to create",
+      'The designation to create',
     ),
   },
   tags,
   responses: {
-    [HttpStatusCodes.OK]: jsonContent(
+    [HttpStatus.OK]: jsonContent(
       selectSchema,
-      "The created designation",
+      'The created designation',
     ),
-    [HttpStatusCodes.UNPROCESSABLE_ENTITY]: jsonContent(
+    [HttpStatus.UNPROCESSABLE_ENTITY]: jsonContent(
       createErrorSchema(insertSchema),
-      "The validation error(s)",
+      'The validation error(s)',
     ),
   },
 });
 
 export const getOne = createRoute({
-  path: "/hr/designation/{uuid}",
-  method: "get",
+  path: '/hr/designation/{uuid}',
+  method: 'get',
   request: {
     params: param.uuid,
   },
   tags,
   responses: {
-    [HttpStatusCodes.OK]: jsonContent(
+    [HttpStatus.OK]: jsonContent(
       selectSchema,
-      "The requested designation",
+      'The requested designation',
     ),
-    [HttpStatusCodes.NOT_FOUND]: jsonContent(
+    [HttpStatus.NOT_FOUND]: jsonContent(
       notFoundSchema,
-      "Designation not found",
+      'Designation not found',
     ),
-    [HttpStatusCodes.UNPROCESSABLE_ENTITY]: jsonContent(
+    [HttpStatus.UNPROCESSABLE_ENTITY]: jsonContent(
       createErrorSchema(param.uuid),
-      "Invalid id error",
+      'Invalid id error',
     ),
   },
 });
 
 export const patch = createRoute({
-  path: "/hr/designation/{uuid}",
-  method: "patch",
+  path: '/hr/designation/{uuid}',
+  method: 'patch',
   request: {
     params: param.uuid,
     body: jsonContentRequired(
       patchSchema,
-      "The designation updates",
+      'The designation updates',
     ),
   },
   tags,
   responses: {
-    [HttpStatusCodes.OK]: jsonContent(
+    [HttpStatus.OK]: jsonContent(
       selectSchema,
-      "The updated designation",
+      'The updated designation',
     ),
-    [HttpStatusCodes.NOT_FOUND]: jsonContent(
+    [HttpStatus.NOT_FOUND]: jsonContent(
       notFoundSchema,
-      "Designation not found",
+      'Designation not found',
     ),
-    [HttpStatusCodes.UNPROCESSABLE_ENTITY]: jsonContent(
+    [HttpStatus.UNPROCESSABLE_ENTITY]: jsonContent(
       createErrorSchema(patchSchema)
         .or(createErrorSchema(param.uuid)),
-      "The validation error(s)",
+      'The validation error(s)',
     ),
   },
 });
 
 export const remove = createRoute({
-  path: "/hr/designation/{uuid}",
-  method: "delete",
+  path: '/hr/designation/{uuid}',
+  method: 'delete',
   request: {
     params: param.uuid,
   },
   tags,
   responses: {
-    [HttpStatusCodes.NO_CONTENT]: {
-      description: "Designation deleted",
+    [HttpStatus.NO_CONTENT]: {
+      description: 'Designation deleted',
     },
-    [HttpStatusCodes.NOT_FOUND]: jsonContent(
+    [HttpStatus.NOT_FOUND]: jsonContent(
       notFoundSchema,
-      "Designation not found",
+      'Designation not found',
     ),
-    [HttpStatusCodes.UNPROCESSABLE_ENTITY]: jsonContent(
+    [HttpStatus.UNPROCESSABLE_ENTITY]: jsonContent(
       createErrorSchema(param.uuid),
-      "Invalid id error",
+      'Invalid id error',
     ),
   },
 });

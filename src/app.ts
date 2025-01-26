@@ -1,9 +1,10 @@
+import { bearerAuth } from 'hono/bearer-auth';
+import { cors } from 'hono/cors';
+
 import configureOpenAPI from '@/lib/configure_open_api';
 import createApp from '@/lib/create_app';
 import { VerifyToken } from '@/middlewares/auth';
 import routes from '@/routes/index.route';
-import { bearerAuth } from 'hono/bearer-auth';
-import { cors } from 'hono/cors';
 
 const app = createApp();
 

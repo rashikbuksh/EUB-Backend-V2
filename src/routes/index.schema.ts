@@ -1,8 +1,8 @@
-import * as commercial from "./commercial/schema";
-import * as hr from "./hr/schema";
+import * as hr from './hr/schema';
+import * as portfolio from './portfolio/schema';
 
 const schema = {
-  ...commercial,
+  ...portfolio,
   ...hr,
 };
 
