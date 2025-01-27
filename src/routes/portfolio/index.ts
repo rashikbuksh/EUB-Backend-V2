@@ -1,3 +1,4 @@
 import authorities from './authorities';
+import info from './info';
 
-export default [authorities];
+export default [authorities, info];

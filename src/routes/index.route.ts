@@ -6,7 +6,7 @@ import { createRouter } from '@/lib/create_app';
 import { createRoute } from '@hono/zod-openapi';
 
 import hr from './hr';
-import commercial from './portfolio';
+import portfolio from './portfolio';
 
 const router = createRouter()
   .openapi(
@@ -31,7 +31,7 @@ const router = createRouter()
 const routes = [
   router,
   ...hr,
-  ...commercial,
+  ...portfolio,
 ] as const;
 
 export default routes;

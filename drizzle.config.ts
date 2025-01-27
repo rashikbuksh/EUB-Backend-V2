@@ -22,7 +22,7 @@ if (isGenerateOrIntrospect) {
   config = {
     ...defaultConfig,
     schemaFilter: [
-      'commercial',
+      'portfolio',
       'hr',
 
     ],
