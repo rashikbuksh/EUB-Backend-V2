@@ -1,12 +1,6 @@
-# Hono Open API Starter
+# Hono - Drizzle - PostgreSQL - Open API - JWT Authentication
 
 A starter template for building fully documented type-safe JSON APIs with Hono and Open API.
-
-> A new version of drizzle was released since the video showing this starter was made. See the [drizzle-v0.35 branch](https://github.com/w3cj/hono-open-api-starter/tree/drizzle-v0.35) and [this commit](https://github.com/w3cj/hono-open-api-starter/commit/92525ff84fb2a247c8245cc889b2320d7b3b6e2c) for the changes required to use drizzle v0.35
-
-> For a cloudflare specific template, see the [cloudflare branch](https://github.com/w3cj/hono-open-api-starter/tree/cloudflare) on this repo and the [cloudflare-drizzle-v0.35 branch](https://github.com/w3cj/hono-open-api-starter/tree/cloudflare-drizzle-v0.35)
-
-> For other deployment examples see the [hono-node-deployment-examples](https://github.com/w3cj/hono-node-deployment-examples) repo
 
 - [Hono Open API Starter](#hono-open-api-starter)
   - [Included](#included)
@@ -23,7 +17,7 @@ A starter template for building fully documented type-safe JSON APIs with Hono a
 - Convenience methods / helpers to reduce boilerplate with [stoker](https://www.npmjs.com/package/stoker)
 - Type-safe schemas and environment variables with [zod](https://zod.dev/)
 - Single source of truth database schemas with [drizzle](https://orm.drizzle.team/docs/overview) and [drizzle-zod](https://orm.drizzle.team/docs/zod)
-- Testing with [vitest](https://vitest.dev/)
+- JWT Authentication with [hono-jwt](https://hono.dev/docs/helpers/jwt)
 - Sensible editor, formatting and linting settings with [@antfu/eslint-config](https://github.com/antfu/eslint-config)
 
 ## Setup
@@ -31,7 +25,7 @@ A starter template for building fully documented type-safe JSON APIs with Hono a
 Clone this template without git history
 
 ```sh
-npx degit w3cj/hono-open-api-starter my-api
+npx degit ShahadatAnik/hono-drizzle-postgresql-starter my-api
 cd my-api
 ```
 
@@ -47,59 +41,82 @@ Install dependencies
 npm install
 ```
 
-Create sqlite db / push schema
+Create a postgres database and run drizzle generate and migrations
 
 ```sh
-npm run db-push
+npm run db-generate
+npm run db-migrate
 ```
 
 Run
 
 ```sh
-npm dev
+npm run dev
 ```
 
 Lint
 
 ```sh
-npm lint
+npm run lint
 ```
 
 Test
 
 ```sh
-npm test
+npm run test
 ```
 
 ## Code Tour
 
-Base hono app exported from [app.ts](./src/app.ts). Local development uses [@hono/node-server](https://hono.dev/docs/getting-started/nodejs) defined in [index.ts](./src/index.ts) - update this file or create a new entry point to use your preferred runtime.
+Base hono app exported from [app.ts](./src/app.ts).
+Local development uses [@hono/node-server](https://hono.dev/docs/getting-started/nodejs) defined in [index.ts](./src/index.ts)
 
-Type safe env defined in [env.ts](./src/env.ts) - add any other required environment variables here. The application will not start if any required environment variables are missing
+> update this file or create a new entry point to use your preferred runtime.
 
-See [src/routes/tasks](./src/routes/tasks/) for an example Open API group. Copy this folder / use as an example for your route groups.
+Type safe env defined in [env.ts](./src/env.ts) - add any other required environment variables here.
 
-- Router created in [tasks.index.ts](./src/routes/tasks/tasks.index.ts)
-- Route definitions defined in [tasks.routes.ts](./src/routes/tasks/tasks.routes.ts)
-- Hono request handlers defined in [tasks.handlers.ts](./src/routes/tasks/tasks.handlers.ts)
-- Group unit tests defined in [tasks.test.ts](./src/routes/tasks/tasks.test.ts)
+> The application will not start if any required environment variables are missing
 
+I have used very **untraditional** file structure, but it works well for me.
+
+- The `db` folder is only for drizzle migrations and pulling from the database.
+- I have used _postgres schema_ feature for better separation of concerns.
+- For respected schema, I have created folder under `src/routes` with the same name as the schema.
+- For every table in that schema, I have created folder with the same name as the table of that schema.
+
+See [src/routes/hr](./src/routes/hr/) for an example Open API group.
+
+> Copy this folder / use as an example for your route groups.
+
+Routing Folder [routes](./src/routes)
+
+- Schema [hr](./src/routes/hr)
+  > In this following schema has 3 tables called `users`, `department` and `designation`.
+  > Under each table has these folders, for example in [users](./src/routes/hr/users):
+  - Hono request handlers defined in [handlers.ts](./src/routes/hr/users/handlers.ts)
+  - Router created in [index.ts](./src/routes/hr/users/index.ts)
+  - Route definitions defined in [routes.ts](./src/routes/hr/users/routes.ts)
+  - Zod validators defined in [utils.ts](./src/routes/hr/users/utils.ts)
+
+All routes are merged in [index.route.ts](./src/routes/index.route.ts)<br>
+All schema are merged in [index.schema.ts](./src/routes/index.schema.ts)<br>
 All app routes are grouped together and exported into single type as `AppType` in [app.ts](./src/app.ts) for use in [RPC / hono/client](https://hono.dev/docs/guides/rpc).
 
-## Endpoints
+## Endpoints of `hr.users`
 
-| Path               | Description              |
-| ------------------ | ------------------------ |
-| GET /doc           | Open API Specification   |
-| GET /reference     | Scalar API Documentation |
-| GET /tasks         | List all tasks           |
-| POST /tasks        | Create a task            |
-| GET /tasks/{id}    | Get one task by id       |
-| PATCH /tasks/{id}  | Patch one task by id     |
-| DELETE /tasks/{id} | Delete one task by id    |
+| Operation | Path             | Description              |
+| --------- | ---------------- | ------------------------ |
+| GET       | /doc             | Open API Specification   |
+| GET       | /reference       | Scalar API Documentation |
+| POST      | /hr/users        | Create a user            |
+| PATCH     | /hr/users/{uuid} | Patch one user by uuid   |
+| DELETE    | /hr/users/{uuid} | Delete one user by uuid  |
+| GET       | /hr/users        | List all users           |
+| GET       | /hr/users/{uuid} | Get one user by uuid     |
 
 ## References
 
+- [Inspiration from - w3cj](https://github.com/w3cj/hono-open-api-starter/)
 - [What is Open API?](https://swagger.io/docs/specification/v3_0/about/)
 - [Hono](https://hono.dev/)
   - [Zod OpenAPI Example](https://hono.dev/examples/zod-openapi)
