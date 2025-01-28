@@ -2,7 +2,7 @@ import { relations, sql } from 'drizzle-orm';
 import { integer, pgSchema, text } from 'drizzle-orm/pg-core';
 
 import { DateTime, defaultUUID, uuid_primary } from '@/lib/variables';
-import { DEFAULT_OPERATION } from '@/utils/db';
+import { DEFAULT_OPERATION, DEFAULT_SEQUENCE } from '@/utils/db';
 
 import { users } from '../hr/schema';
 
@@ -73,6 +73,98 @@ export const info = portfolio.table('info', {
   ),
   remarks: text('remarks'),
 });
+
+//* Bot
+export const bot_category = portfolio.enum('bot_category', [
+  'syndicate',
+  'academic_council',
+]);
+
+export const bot_status = portfolio.enum('bot_status', [
+  'chairman',
+  'member',
+  'member_secretary',
+]);
+
+export const bot_id = portfolio.sequence(
+  'bot_id',
+  {
+    startWith: 1,
+    increment: 1,
+  },
+);
+
+export const bot = portfolio.table('bot', {
+  id: integer('id').default(sql`nextval('portfolio.bot_id')`),
+  uuid: uuid_primary,
+  category: bot_category('category').notNull(),
+  user_uuid: defaultUUID('user_uuid').notNull().references(() => users.uuid, DEFAULT_OPERATION),
+  status: bot_status('status').notNull(),
+  file: text('file').notNull(),
+  description: text('description').notNull(),
+
+  created_at: DateTime('created_at').notNull(),
+  updated_at: DateTime('updated_at'),
+  created_by: defaultUUID('created_by').references(() => users.uuid, DEFAULT_OPERATION),
+  remarks: text('remarks'),
+});
+
+export const portfolio_bot_rel = relations(bot, ({ one }) => ({
+  user: one(users, {
+    fields: [bot.user_uuid],
+    references: [users.uuid],
+  }),
+  created_by: one(users, {
+    fields: [bot.created_by],
+    references: [users.uuid],
+  }),
+}));
+
+// ? News & Entry
+//* News
+export const news_id = portfolio.sequence('news_id', DEFAULT_SEQUENCE);
+
+export const news = portfolio.table('news', {
+  id: integer('id').default(sql`nextval('portfolio.news_id')`),
+  uuid: uuid_primary,
+  title: text('title').notNull(),
+  subtitle: text('subtitle').notNull(),
+  description: text('description').notNull(),
+  content: text('content').notNull(),
+  cover_image: text('cover_image').notNull(),
+  published_date: text('cover_image').notNull(),
+
+  created_at: DateTime('created_at').notNull().$defaultFn(() => 'now()'),
+  updated_at: DateTime('updated_at').$onUpdate(() => 'now()'),
+  created_by: defaultUUID('created_by').references(() => users.uuid, DEFAULT_OPERATION),
+  remarks: text('remarks'),
+});
+
+export const portfolio_news_rel = relations(news, ({ one, many }) => ({
+  // eslint-disable-next-line ts/no-use-before-define
+  documents: many(news_entry),
+  created_by: one(users, {
+    fields: [news.created_by],
+    references: [users.uuid],
+  }),
+}));
+
+//* News Entry
+export const news_entry = portfolio.table('news_entry', {
+  uuid: uuid_primary,
+  news_uuid: defaultUUID('news_uuid').notNull().references(() => news.uuid, DEFAULT_OPERATION),
+  documents: text('documents').notNull(),
+
+  created_at: DateTime('created_at').notNull().$defaultFn(() => 'now()'),
+  updated_at: DateTime('updated_at').$onUpdate(() => 'now()'),
+});
+
+export const portfolio_news_entry_rel = relations(news_entry, ({ one }) => ({
+  news: one(news, {
+    fields: [news_entry.news_uuid],
+    references: [news.uuid],
+  }),
+}));
 
 //* office
 
