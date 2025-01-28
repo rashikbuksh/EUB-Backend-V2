@@ -1,0 +1,124 @@
+import * as HSCode from 'stoker/http-status-codes';
+import { jsonContent, jsonContentRequired } from 'stoker/openapi/helpers';
+import { createErrorSchema } from 'stoker/openapi/schemas';
+
+import { notFoundSchema } from '@/lib/constants';
+import * as param from '@/lib/param';
+import { createRoute, z } from '@hono/zod-openapi';
+
+import { insertSchema, patchSchema, selectSchema } from './utils';
+
+const tags = ['portfolio.job_circular'];
+
+export const list = createRoute({
+  path: '/portfolio/job-circular',
+  method: 'get',
+  tags,
+  responses: {
+    [HSCode.OK]: jsonContent(
+      z.array(selectSchema),
+      'The list of job-circular',
+    ),
+  },
+});
+
+export const create = createRoute({
+  path: '/portfolio/job-circular',
+  method: 'post',
+  request: {
+    body: jsonContentRequired(
+      insertSchema,
+      'The job-circular to create',
+    ),
+  },
+  tags,
+  responses: {
+    [HSCode.OK]: jsonContent(
+      selectSchema,
+      'The created job-circular',
+    ),
+    [HSCode.UNPROCESSABLE_ENTITY]: jsonContent(
+      createErrorSchema(insertSchema),
+      'The validation error(s)',
+    ),
+  },
+});
+
+export const getOne = createRoute({
+  path: '/portfolio/job-circular/{uuid}',
+  method: 'get',
+  request: {
+    params: param.uuid,
+  },
+  tags,
+  responses: {
+    [HSCode.OK]: jsonContent(
+      selectSchema,
+      'The requested job-circular',
+    ),
+    [HSCode.NOT_FOUND]: jsonContent(
+      notFoundSchema,
+      'job-circular not found',
+    ),
+    [HSCode.UNPROCESSABLE_ENTITY]: jsonContent(
+      createErrorSchema(param.uuid),
+      'Invalid id error',
+    ),
+  },
+});
+
+export const patch = createRoute({
+  path: '/portfolio/job-circular/{uuid}',
+  method: 'patch',
+  request: {
+    params: param.uuid,
+    body: jsonContentRequired(
+      patchSchema,
+      'The job-circular updates',
+    ),
+  },
+  tags,
+  responses: {
+    [HSCode.OK]: jsonContent(
+      selectSchema,
+      'The updated job-circular',
+    ),
+    [HSCode.NOT_FOUND]: jsonContent(
+      notFoundSchema,
+      'job-circular not found',
+    ),
+    [HSCode.UNPROCESSABLE_ENTITY]: jsonContent(
+      createErrorSchema(patchSchema)
+        .or(createErrorSchema(param.uuid)),
+      'The validation error(s)',
+    ),
+  },
+});
+
+export const remove = createRoute({
+  path: '/portfolio/job-circular/{uuid}',
+  method: 'delete',
+  request: {
+    params: param.uuid,
+  },
+  tags,
+  responses: {
+    [HSCode.NO_CONTENT]: {
+      description: 'job-circular deleted',
+    },
+    [HSCode.NOT_FOUND]: jsonContent(
+      notFoundSchema,
+      'job-circular not found',
+    ),
+    [HSCode.UNPROCESSABLE_ENTITY]: jsonContent(
+      createErrorSchema(param.uuid),
+      'Invalid id error',
+    ),
+  },
+});
+
+export type ListRoute = typeof list;
+export type CreateRoute = typeof create;
+export type GetOneRoute = typeof getOne;
+export type PatchRoute = typeof patch;
+export type RemoveRoute = typeof remove;
