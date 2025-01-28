@@ -35,7 +35,6 @@ export default antfu({
       case: 'snakeCase',
       ignore: ['README.md'],
     }],
-    'no-use-before-define': 'off',
-    '@typescript-eslint/no-use-before-define': 'error',
+    'no-use-before-define': ['off', { variables: false }],
   },
 });
