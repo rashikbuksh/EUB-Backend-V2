@@ -16,7 +16,7 @@ configureOpenAPI(app);
 export const basePath = '/v1';
 
 app.use(`${basePath}/*`, cors({
-  origin: ['http://localhost:3005', 'http://localhost:3000'],
+  origin: ['http://localhost:3005', 'http://localhost:3000', 'http://103.147.163.46:4020'],
   maxAge: 600,
   credentials: true,
 }));
