@@ -10,3 +10,8 @@ export interface AppBindings {
 export type AppOpenAPI = OpenAPIHono<AppBindings>;
 
 export type AppRouteHandler<R extends RouteConfig> = RouteHandler<R, AppBindings>;
+
+export interface ColumnProps {
+  default: string;
+  datetime: 'created_at' | 'updated_at';
+}

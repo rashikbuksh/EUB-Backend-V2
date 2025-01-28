@@ -3,6 +3,8 @@ import type { JWTPayload } from 'hono/utils/jwt/types';
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 import { z } from 'zod';
 
+import { dateTimePattern } from '@/utils';
+
 import { users } from '../schema';
 
 //* crud
@@ -31,21 +33,31 @@ export const insertSchema = createInsertSchema(
     name: schema => schema.name.min(1).max(255),
     department_uuid: schema => schema.department_uuid.length(21),
     designation_uuid: schema => schema.designation_uuid.length(21),
+    office: schema => schema.office.min(1).max(255),
+    phone: schema => schema.phone.min(1),
     email: schema => schema.email.min(1),
     pass: schema => schema.pass.min(4).max(50),
+    created_at: schema => schema.created_at.regex(dateTimePattern, {
+      message: 'created_at must be in the format "YYYY-MM-DD HH:MM:SS"',
+    }),
+    updated_at: schema => schema.updated_at.regex(dateTimePattern, {
+      message: 'updated_at must be in the format "YYYY-MM-DD HH:MM:SS"',
+    }),
   },
 ).required({
   uuid: true,
   name: true,
   designation_uuid: true,
   department_uuid: true,
+  office: true,
+  phone: true,
   email: true,
   pass: true,
   created_at: true,
 }).omit({
+  image: true,
   status: true,
   can_access: true,
-  phone: true,
   updated_at: true,
   remarks: true,
 });

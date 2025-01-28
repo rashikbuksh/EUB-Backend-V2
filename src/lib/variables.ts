@@ -1,6 +1,8 @@
 import { sql } from 'drizzle-orm';
 import { char, decimal, timestamp } from 'drizzle-orm/pg-core';
 
+import type { ColumnProps } from './types';
+
 export function defaultUUID(column = 'uuid') {
   return char(column, {
     length: 21,
@@ -8,11 +10,6 @@ export function defaultUUID(column = 'uuid') {
 }
 
 export const uuid_primary = defaultUUID().primaryKey();
-
-interface ColumnProps {
-  default: string;
-  datetime: 'created_at' | 'updated_at';
-}
 
 export function DateTime(column: ColumnProps['datetime']) {
   return timestamp(column, {
@@ -28,6 +25,6 @@ export function PG_DECIMAL(column: ColumnProps['default']) {
   }).notNull();
 }
 
-export function decimalToNumber(column: ColumnProps['default']) {
+export function PG_DECIMAL_TO_FLOAT(column: ColumnProps['default']) {
   return sql`coalesce(${column},0)::float8`;
 }

@@ -6,6 +6,8 @@ import createApp from '@/lib/create_app';
 import { VerifyToken } from '@/middlewares/auth';
 import routes from '@/routes/index.route';
 
+import env from './env';
+
 const app = createApp();
 
 configureOpenAPI(app);
@@ -19,9 +21,11 @@ app.use(`${basePath}/*`, cors({
   credentials: true,
 }));
 
-app.use(`${basePath}/*`, bearerAuth({
-  verifyToken: VerifyToken,
-}));
+if (env.NODE_ENV !== 'development') {
+  app.use(`${basePath}/*`, bearerAuth({
+    verifyToken: VerifyToken,
+  }));
+}
 
 routes.forEach((route) => {
   app.route(basePath, route);

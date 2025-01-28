@@ -13,7 +13,7 @@ export default function configureOpenAPI(app: AppOpenAPI) {
 
     info: {
       title: packageJSON.name,
-      description: 'FZL API Documentation',
+      description: 'EUB API Documentation',
       contact: { name: 'RBR', email: 'rafsan@fortunezip.com' },
       version: packageJSON.version,
     },
