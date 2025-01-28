@@ -72,6 +72,41 @@ export const info = portfolio.table('info', {
   remarks: text('remarks'),
 });
 
+//* Bot
+export const bot_category = portfolio.enum('bot_category', [
+  'syndicate',
+  'academic_council',
+]);
+
+export const bot_status = portfolio.enum('bot_status', [
+  'chairman',
+  'member',
+  'member_secretary',
+]);
+
+export const bot_id = portfolio.sequence(
+  'bot_id',
+  {
+    startWith: 1,
+    increment: 1,
+  },
+);
+
+export const bot = portfolio.table('bot', {
+  id: integer('id').default(sql`nextval('portfolio.bot_id')`),
+  uuid: uuid_primary,
+  category: bot_category('category').notNull(),
+  user_uuid: defaultUUID('user_uuid').notNull().references(() => users.uuid, DEFAULT_OPERATION),
+  status: bot_status('status').notNull(),
+  file: text('file').notNull(),
+  description: text('description').notNull(),
+
+  created_at: DateTime('created_at').notNull(),
+  updated_at: DateTime('updated_at'),
+  created_by: defaultUUID('created_by').references(() => users.uuid, DEFAULT_OPERATION),
+  remarks: text('remarks'),
+});
+
 //* relations
 export const portfolio_authorities_rel = relations(authorities, ({ one }) => ({
   user: one(users, {
