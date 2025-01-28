@@ -66,8 +66,8 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
 
   const data = await db.query.tuition_fee.findFirst({
     where(fields, operators) {
-        return operators.eq(fields.uuid, uuid);
-        },
+      return operators.eq(fields.uuid, uuid);
+    },
   });
 
   if (!data)

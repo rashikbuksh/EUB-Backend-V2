@@ -2,7 +2,7 @@ import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 
 import { dateTimePattern } from '@/utils';
 
-import { department, department_category_enum } from '../schema';
+import { department, department_category } from '../schema';
 
 //* crud
 export const selectSchema = createSelectSchema(department);
@@ -14,7 +14,7 @@ export const insertSchema = createInsertSchema(
     name: schema => schema.name.min(1),
     faculty_uuid: schema => schema.faculty_uuid.length(21),
     created_by: schema => schema.created_by.length(21),
-    category: schema => schema.category.refine(value => department_category_enum(value), {
+    category: schema => schema.category.refine(value => department_category(value), {
       message: 'Invalid category',
     }),
     created_at: schema => schema.created_at.regex(dateTimePattern, {

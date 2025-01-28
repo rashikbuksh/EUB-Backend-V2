@@ -11,111 +11,111 @@ import { insertSchema, patchSchema, selectSchema } from './utils';
 const tags = ['portfolio.tuition_fee'];
 
 export const list = createRoute({
-    path: '/portfolio/tuition-fee',
-    method: 'get',
-    tags,
-    responses: {
-        [HSCode.OK]: jsonContent(
-            z.array(selectSchema),
-            'The list of tuition fee',
-        ),
-    },
+  path: '/portfolio/tuition-fee',
+  method: 'get',
+  tags,
+  responses: {
+    [HSCode.OK]: jsonContent(
+      z.array(selectSchema),
+      'The list of tuition fee',
+    ),
+  },
 });
 
 export const create = createRoute({
-    path: '/portfolio/tuition-fee',
-    method: 'post',
-    request: {
-        body: jsonContentRequired(
-            insertSchema,
-            'The tuition fee to create',
-        ),
-    },
-    tags,
-    responses: {
-        [HSCode.OK]: jsonContent(
-            selectSchema,
-            'The created tuition fee',
-        ),
-        [HSCode.UNPROCESSABLE_ENTITY]: jsonContent(
-            createErrorSchema(insertSchema),
-            'The validation error(s)',
-        ),
-    },
+  path: '/portfolio/tuition-fee',
+  method: 'post',
+  request: {
+    body: jsonContentRequired(
+      insertSchema,
+      'The tuition fee to create',
+    ),
+  },
+  tags,
+  responses: {
+    [HSCode.OK]: jsonContent(
+      selectSchema,
+      'The created tuition fee',
+    ),
+    [HSCode.UNPROCESSABLE_ENTITY]: jsonContent(
+      createErrorSchema(insertSchema),
+      'The validation error(s)',
+    ),
+  },
 });
 
 export const getOne = createRoute({
-    path: '/portfolio/tuition-fee/{uuid}',
-    method: 'get',
-    request: {
-        params: param.uuid,
-    },
-    tags,
-    responses: {
-        [HSCode.OK]: jsonContent(
-            selectSchema,
-            'The requested tuition fee',
-        ),
-        [HSCode.NOT_FOUND]: jsonContent(
-            notFoundSchema,
-            'The tuition fee was not found',
-        ),
-        [HSCode.UNPROCESSABLE_ENTITY]: jsonContent(
-              createErrorSchema(param.uuid),
-              'Invalid id error',
-            ),
-    },
+  path: '/portfolio/tuition-fee/{uuid}',
+  method: 'get',
+  request: {
+    params: param.uuid,
+  },
+  tags,
+  responses: {
+    [HSCode.OK]: jsonContent(
+      selectSchema,
+      'The requested tuition fee',
+    ),
+    [HSCode.NOT_FOUND]: jsonContent(
+      notFoundSchema,
+      'The tuition fee was not found',
+    ),
+    [HSCode.UNPROCESSABLE_ENTITY]: jsonContent(
+      createErrorSchema(param.uuid),
+      'Invalid id error',
+    ),
+  },
 });
 
 export const patch = createRoute({
-    path: '/portfolio/tuition-fee/{uuid}',
-    method: 'patch',
-    request: {
-        params: param.uuid,
-        body: jsonContentRequired(
-            patchSchema,
-            'The tuition fee to update',
-        ),
-    },
-    tags,
-    responses: {
-        [HSCode.OK]: jsonContent(
-            selectSchema,
-            'The updated tuition fee',
-        ),
-        [HSCode.NOT_FOUND]: jsonContent(
-            notFoundSchema,
-            'The tuition fee was not found',
-        ),
-       [HSCode.UNPROCESSABLE_ENTITY]: jsonContent(
-             createErrorSchema(patchSchema)
-               .or(createErrorSchema(param.uuid)),
-             'The validation error(s)',
-           ),
-    },
+  path: '/portfolio/tuition-fee/{uuid}',
+  method: 'patch',
+  request: {
+    params: param.uuid,
+    body: jsonContentRequired(
+      patchSchema,
+      'The tuition fee to update',
+    ),
+  },
+  tags,
+  responses: {
+    [HSCode.OK]: jsonContent(
+      selectSchema,
+      'The updated tuition fee',
+    ),
+    [HSCode.NOT_FOUND]: jsonContent(
+      notFoundSchema,
+      'The tuition fee was not found',
+    ),
+    [HSCode.UNPROCESSABLE_ENTITY]: jsonContent(
+      createErrorSchema(patchSchema)
+        .or(createErrorSchema(param.uuid)),
+      'The validation error(s)',
+    ),
+  },
 });
 
 export const remove = createRoute({
-    path: '/portfolio/tuition-fee/{uuid}',
-    method: 'delete',
-    request: {
-        params: param.uuid,
-    },
-    tags,
-    responses: {
-        [HSCode.OK]: jsonContent(
-            selectSchema,
-            'The deleted tuition fee',
-        ),
-        [HSCode.NOT_FOUND]: jsonContent(
-            notFoundSchema,
-            'The tuition fee was not found',
-        ),
-        [HSCode.UNPROCESSABLE_ENTITY]: jsonContent(
-            createErrorSchema(param.uuid),
-            'Invalid id error',
-        ),
-    },
+  path: '/portfolio/tuition-fee/{uuid}',
+  method: 'delete',
+  request: {
+    params: param.uuid,
+  },
+  tags,
+  responses: {
+    [HSCode.OK]: jsonContent(
+      selectSchema,
+      'The deleted tuition fee',
+    ),
+    [HSCode.NOT_FOUND]: jsonContent(
+      notFoundSchema,
+      'The tuition fee was not found',
+    ),
+    [HSCode.UNPROCESSABLE_ENTITY]: jsonContent(
+      createErrorSchema(param.uuid),
+      'Invalid id error',
+    ),
+  },
 });
 
 export type CreateRoute = typeof create;

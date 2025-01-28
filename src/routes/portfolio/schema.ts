@@ -1,8 +1,8 @@
 import { relations, sql } from 'drizzle-orm';
 import { integer, pgSchema, text } from 'drizzle-orm/pg-core';
+
 import { DateTime, defaultUUID, PG_DECIMAL, uuid_primary } from '@/lib/variables';
 import { DEFAULT_OPERATION, DEFAULT_SEQUENCE } from '@/utils/db';
-
 
 import { users } from '../hr/schema';
 
@@ -264,6 +264,10 @@ export const online_admission = portfolio.table('online_admission', {
   bsc_institute: text('bsc_institute').notNull(),
   created_at: DateTime('created_at').notNull(),
   updated_at: DateTime('updated_at'),
+  created_by: defaultUUID('created_by').references(() => users.uuid, DEFAULT_OPERATION),
+  remarks: text('remarks'),
+});
+
 export const portfolio_bot_rel = relations(bot, ({ one }) => ({
   user: one(users, {
     fields: [bot.user_uuid],
@@ -294,6 +298,22 @@ export const news = portfolio.table('news', {
   created_by: defaultUUID('created_by').references(() => users.uuid, DEFAULT_OPERATION),
   remarks: text('remarks'),
 });
+
+//* News Entry
+export const news_entry = portfolio.table('news_entry', {
+  uuid: uuid_primary,
+  news_uuid: defaultUUID('news_uuid').notNull().references(() => news.uuid, DEFAULT_OPERATION),
+  documents: text('documents').notNull(),
+  created_at: DateTime('created_at').notNull().$defaultFn(() => 'now()'),
+  updated_at: DateTime('updated_at').$onUpdate(() => 'now()'),
+});
+
+export const portfolio_news_entry_rel = relations(news_entry, ({ one }) => ({
+  news: one(news, {
+    fields: [news_entry.news_uuid],
+    references: [news.uuid],
+  }),
+}));
 
 //* faculty
 
@@ -418,7 +438,7 @@ export const club = portfolio.table('club', {
   uuid: uuid_primary,
   name: text('name').notNull(),
   department_uuid: defaultUUID('department_uuid').notNull().references(() => department.uuid, DEFAULT_OPERATION),
-  // president_uuid: defaultUUID('president_uuid').notNull(),
+  president_uuid: defaultUUID('president_uuid').notNull(),
   message: text('message').notNull(),
   created_at: DateTime('created_at').notNull(),
   updated_at: DateTime('updated_at'),
@@ -427,28 +447,11 @@ export const club = portfolio.table('club', {
 });
 
 export const portfolio_news_rel = relations(news, ({ one, many }) => ({
-  // eslint-disable-next-line ts/no-use-before-define
+
   documents: many(news_entry),
   created_by: one(users, {
     fields: [news.created_by],
     references: [users.uuid],
-  }),
-}));
-
-//* News Entry
-export const news_entry = portfolio.table('news_entry', {
-  uuid: uuid_primary,
-  news_uuid: defaultUUID('news_uuid').notNull().references(() => news.uuid, DEFAULT_OPERATION),
-  documents: text('documents').notNull(),
-
-  created_at: DateTime('created_at').notNull().$defaultFn(() => 'now()'),
-  updated_at: DateTime('updated_at').$onUpdate(() => 'now()'),
-});
-
-export const portfolio_news_entry_rel = relations(news_entry, ({ one }) => ({
-  news: one(news, {
-    fields: [news_entry.news_uuid],
-    references: [news.uuid],
   }),
 }));
 
