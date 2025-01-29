@@ -1,6 +1,6 @@
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 
-import { dateTimePattern } from '@/utils';
+import { datePattern, dateTimePattern } from '@/utils';
 
 import { online_admission } from '../schema';
 
@@ -17,7 +17,7 @@ export const insertSchema = createInsertSchema(
     father_name: schema => schema.father_name.min(5),
     mother_name: schema => schema.mother_name.min(5),
     local_guardian: schema => schema.local_guardian.min(5),
-    date_of_birth: schema => schema.date_of_birth.regex(dateTimePattern, {
+    date_of_birth: schema => schema.date_of_birth.regex(datePattern, {
       message: 'date_of_birth must be in the format "YYYY-MM-DD"',
     }),
     phone_number: schema => schema.phone_number.min(11),
@@ -63,12 +63,12 @@ export const insertSchema = createInsertSchema(
   hsc_board: true,
   hsc_passing_year: true,
   hsc_institute: true,
+  created_at: true,
+}).omit({
   bsc_name: true,
   bsc_cgpa: true,
   bsc_passing_year: true,
   bsc_institute: true,
-  created_at: true,
-}).omit({
   updated_at: true,
   remarks: true,
 });
