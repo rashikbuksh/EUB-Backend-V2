@@ -1,5 +1,6 @@
 import { bearerAuth } from 'hono/bearer-auth';
 import { cors } from 'hono/cors';
+import { serveStatic } from 'hono/serve-static';
 
 import configureOpenAPI from '@/lib/configure_open_api';
 import createApp from '@/lib/create_app';
@@ -14,6 +15,10 @@ configureOpenAPI(app);
 
 // ! don't put a trailing slash
 export const basePath = '/v1';
+
+app.use('*', serveStatic({
+  root: './static',
+}));
 
 app.use(`${basePath}/*`, cors({
   origin: ['http://localhost:3005', 'http://localhost:3000', 'http://103.147.163.46:4020'],
