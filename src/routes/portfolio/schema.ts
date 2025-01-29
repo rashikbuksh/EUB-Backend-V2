@@ -44,14 +44,11 @@ export const authorities = portfolio.table('authorities', {
 
 //* Info
 export const info_page_name = portfolio.enum('info_page_name', [
-  'chancellor',
-  'chairman',
-  'vc',
-  'pro_vc',
-  'dean',
-  'treasurer',
-  'director_coordination',
-  'registrar',
+  'notices',
+  'academic_calendar',
+  'examination_guidelines',
+  'information_about_provisional_certificate',
+  'clubs_and_society',
 ]);
 
 export const info_id = portfolio.sequence('info_id', {
