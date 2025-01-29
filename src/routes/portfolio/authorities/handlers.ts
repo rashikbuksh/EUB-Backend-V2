@@ -65,7 +65,8 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     created_at: authorities.created_at,
     updated_at: authorities.updated_at,
     personal_info: sql`jsonb_build_object('name', ${hrSchema.users.name}, 'title', ${hrSchema.designation.name}, 'profile_image', '', 'department', ${hrSchema.department.name})`,
-    education: sql`jsonb_build_object('degree', null, 'institution', null, 'year', null)`,
+    // education empty array
+    education: sql`jsonb_build_array()`,
     contact: sql`jsonb_build_object('email', ${hrSchema.users.email}, 'phone', ${hrSchema.users.phone})`,
   }).from(authorities).leftJoin(hrSchema.users, eq(authorities.user_uuid, hrSchema.users.uuid)).leftJoin(hrSchema.designation, eq(hrSchema.users.designation_uuid, hrSchema.designation.uuid)).leftJoin(hrSchema.department, eq(hrSchema.users.department_uuid, hrSchema.department.uuid));
 
