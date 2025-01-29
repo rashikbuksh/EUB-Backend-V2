@@ -1,6 +1,6 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
@@ -64,11 +64,9 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     short_biography: authorities.short_biography,
     created_at: authorities.created_at,
     updated_at: authorities.updated_at,
-    user_name: hrSchema.users.name,
-    user_designation: hrSchema.designation.name,
-    user_department: hrSchema.department.name,
-    user_email: hrSchema.users.email,
-    user_phone: hrSchema.users.phone,
+    personal_info: sql`jsonb_build_object('name', ${hrSchema.users.name}, 'title', ${hrSchema.designation.name}, 'profile_image', '', 'department', ${hrSchema.department.name})`,
+    education: sql`jsonb_build_object('degree', null, 'institution', null, 'year', null)`,
+    contact: sql`jsonb_build_object('email', ${hrSchema.users.email}, 'phone', ${hrSchema.users.phone})`,
   }).from(authorities).leftJoin(hrSchema.users, eq(authorities.user_uuid, hrSchema.users.uuid)).leftJoin(hrSchema.designation, eq(hrSchema.users.designation_uuid, hrSchema.designation.uuid)).leftJoin(hrSchema.department, eq(hrSchema.users.department_uuid, hrSchema.department.uuid));
 
   const data: any[] = await resultPromise;
