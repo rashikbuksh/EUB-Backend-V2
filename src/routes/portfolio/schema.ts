@@ -285,7 +285,7 @@ export const news = portfolio.table('news', {
   uuid: uuid_primary,
   title: text('title').notNull(),
   subtitle: text('subtitle').notNull(),
-  description: text('description').notNull(),
+  description: text('description').default(sql`null`),
   content: text('content').notNull(),
   cover_image: text('cover_image').notNull(),
   published_date: text('published_date').notNull(),
