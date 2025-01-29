@@ -16,9 +16,7 @@ configureOpenAPI(app);
 // ! don't put a trailing slash
 export const basePath = '/v1';
 
-app.use('*', serveStatic({
-  root: './static',
-}));
+// app.use('/static/*', serveStatic({ root: './static' }));
 
 app.use(`${basePath}/*`, cors({
   origin: ['http://localhost:3005', 'http://localhost:3000', 'http://103.147.163.46:4020'],
