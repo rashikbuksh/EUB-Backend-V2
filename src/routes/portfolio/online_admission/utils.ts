@@ -23,7 +23,6 @@ export const insertSchema = createInsertSchema(
     phone_number: schema => schema.phone_number.min(11),
     ssc_passing_year: schema => schema.ssc_passing_year.min(4),
     hsc_passing_year: schema => schema.hsc_passing_year.min(4),
-    bsc_passing_year: schema => schema.bsc_passing_year.min(4),
     created_at: schema => schema.created_at.regex(dateTimePattern, {
       message: 'created_at must be in the format "YYYY-MM-DD HH:MM:SS"',
     }),
