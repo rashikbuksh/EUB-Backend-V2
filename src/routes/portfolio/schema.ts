@@ -256,7 +256,7 @@ export const online_admission = portfolio.table('online_admission', {
   hsc_passing_year: integer('hsc_passing_year').notNull(),
   hsc_institute: text('hsc_institute').notNull(),
   bsc_name: text('bsc_name'),
-  bsc_cgpa: PG_DECIMAL('bsc_cgpa'),
+  bsc_cgpa: PG_DECIMAL('bsc_cgpa').default('0'),
   bsc_passing_year: integer('bsc_passing_year'),
   bsc_institute: text('bsc_institute'),
   created_at: DateTime('created_at').notNull(),
