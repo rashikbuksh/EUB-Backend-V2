@@ -288,7 +288,7 @@ export const news = portfolio.table('news', {
   description: text('description').notNull(),
   content: text('content').notNull(),
   cover_image: text('cover_image').notNull(),
-  published_date: text('cover_image').notNull(),
+  published_date: text('published_date').notNull(),
 
   created_at: DateTime('created_at').notNull().$defaultFn(() => 'now()'),
   updated_at: DateTime('updated_at').$onUpdate(() => 'now()'),
