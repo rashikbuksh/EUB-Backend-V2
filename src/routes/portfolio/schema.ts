@@ -408,7 +408,6 @@ export const routine_type = portfolio.enum('routine_type', [
 export const routine = portfolio.table('routine', {
   id: integer('id').default(sql`nextval('portfolio.routine_id')`),
   uuid: uuid_primary,
-  program_uuid: defaultUUID('program_uuid').notNull().references(() => program.uuid, DEFAULT_OPERATION),
   department_uuid: defaultUUID('department_uuid').notNull().references(() => department.uuid, DEFAULT_OPERATION),
   programs: routine_programs('programs').notNull(),
   type: routine_type('type').notNull(),
@@ -601,10 +600,6 @@ export const portfolio_routine_rel = relations(routine, ({ one }) => ({
   department: one(department, {
     fields: [routine.department_uuid],
     references: [department.uuid],
-  }),
-  program: one(program, {
-    fields: [routine.program_uuid],
-    references: [program.uuid],
   }),
   created_by: one(users, {
     fields: [routine.created_by],
