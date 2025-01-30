@@ -20,6 +20,11 @@ export const list = createRoute({
       'The list of tuition fee',
     ),
   },
+  request: {
+    query: z.object({
+      category: z.string().optional(),
+    }),
+  },
 });
 
 export const create = createRoute({

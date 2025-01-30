@@ -8,7 +8,7 @@ import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 
 import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
 
-import { tuition_fee } from '../schema';
+import { program, tuition_fee } from '../schema';
 
 export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
   const value = c.req.valid('json');
@@ -56,7 +56,29 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 };
 
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
-  const data = await db.query.tuition_fee.findMany();
+  // const data = await db.query.tuition_fee.findMany();
+  const { category } = c.req.valid('query');
+
+  const resultPromise = db.select({
+    uuid: tuition_fee.uuid,
+    title: tuition_fee.title,
+    program_uuid: tuition_fee.program_uuid,
+    program_name: program.name,
+    category: program.category,
+    admission_fee: tuition_fee.admission_fee,
+    tuition_fee_per_credit: tuition_fee.tuition_fee_per_credit,
+    student_activity_fee: tuition_fee.student_activity_fee,
+    library_fee_per_semester: tuition_fee.library_fee_per_semester,
+    computer_lab_fee_per_semester: tuition_fee.computer_lab_fee_per_semester,
+    science_lab_fee_per_semester: tuition_fee.science_lab_fee_per_semester,
+    studio_lab_fee: tuition_fee.studio_lab_fee,
+    created_at: tuition_fee.created_at,
+    updated_at: tuition_fee.updated_at,
+    created_by: tuition_fee.created_by,
+    remarks: tuition_fee.remarks,
+  }).from(tuition_fee).leftJoin(program, eq(tuition_fee.program_uuid, program.uuid)).where(eq(program.category, category));
+
+  const data = await resultPromise;
 
   return c.json(data || [], HSCode.OK);
 };
