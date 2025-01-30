@@ -1,11 +1,11 @@
 import { bearerAuth } from 'hono/bearer-auth';
 import { cors } from 'hono/cors';
-import { serveStatic } from 'hono/serve-static';
 
 import configureOpenAPI from '@/lib/configure_open_api';
 import createApp from '@/lib/create_app';
 import { VerifyToken } from '@/middlewares/auth';
 import routes from '@/routes/index.route';
+import { serveStatic } from '@hono/node-server/serve-static';
 
 import env from './env';
 

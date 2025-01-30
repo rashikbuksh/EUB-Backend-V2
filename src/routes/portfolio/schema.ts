@@ -20,10 +20,7 @@ export const authorities_category = portfolio.enum('authorities_category', [
   'registrar',
 ]);
 
-export const authorities_id = portfolio.sequence('authorities_id', {
-  startWith: 1,
-  increment: 1,
-});
+export const authorities_id = portfolio.sequence('authorities_id', DEFAULT_SEQUENCE);
 
 export const authorities = portfolio.table('authorities', {
   id: integer('id').default(sql`nextval('portfolio.authorities_id')`),
@@ -51,10 +48,7 @@ export const info_page_name = portfolio.enum('info_page_name', [
   'clubs_and_society',
 ]);
 
-export const info_id = portfolio.sequence('info_id', {
-  startWith: 1,
-  increment: 1,
-});
+export const info_id = portfolio.sequence('info_id', DEFAULT_SEQUENCE);
 
 export const info = portfolio.table('info', {
   id: integer('id').default(sql`nextval('portfolio.info_id')`),
@@ -83,13 +77,7 @@ export const bot_status = portfolio.enum('bot_status', [
   'member_secretary',
 ]);
 
-export const bot_id = portfolio.sequence(
-  'bot_id',
-  {
-    startWith: 1,
-    increment: 1,
-  },
-);
+export const bot_id = portfolio.sequence('bot_id', DEFAULT_SEQUENCE);
 
 export const bot = portfolio.table('bot', {
   id: integer('id').default(sql`nextval('portfolio.bot_id')`),
@@ -114,13 +102,7 @@ export const program_category = portfolio.enum('program_category', [
   'certificate',
 ]);
 
-export const program_id = portfolio.sequence(
-  'program_id',
-  {
-    startWith: 1,
-    increment: 1,
-  },
-);
+export const program_id = portfolio.sequence('program_id', DEFAULT_SEQUENCE);
 
 export const program = portfolio.table('program', {
   id: integer('id').default(sql`nextval('portfolio.program_id')`),
@@ -137,10 +119,7 @@ export const program = portfolio.table('program', {
 
 export const certificate_course_fee_id = portfolio.sequence(
   'certificate_course_fee_id',
-  {
-    startWith: 1,
-    increment: 1,
-  },
+  DEFAULT_SEQUENCE,
 );
 
 export const certificate_course_fee = portfolio.table('certificate_course_fee', {
@@ -158,10 +137,7 @@ export const certificate_course_fee = portfolio.table('certificate_course_fee', 
 
 export const tuition_fee_id = portfolio.sequence(
   'tuition_fee_id',
-  {
-    startWith: 1,
-    increment: 1,
-  },
+  DEFAULT_SEQUENCE,
 );
 
 export const tuition_fee = portfolio.table('tuition_fee', {
@@ -186,10 +162,7 @@ export const tuition_fee = portfolio.table('tuition_fee', {
 
 export const online_admission_id = portfolio.sequence(
   'online_admission_id',
-  {
-    startWith: 1,
-    increment: 1,
-  },
+  DEFAULT_SEQUENCE,
 );
 
 export const online_admission_semester = portfolio.enum('online_admission_semester', [
@@ -316,10 +289,7 @@ export const portfolio_news_entry_rel = relations(news_entry, ({ one }) => ({
 
 export const faculty_id = portfolio.sequence(
   'faculty_id',
-  {
-    startWith: 1,
-    increment: 1,
-  },
+  DEFAULT_SEQUENCE,
 );
 
 export const faculty = portfolio.table('faculty', {
@@ -336,10 +306,7 @@ export const faculty = portfolio.table('faculty', {
 
 export const job_circular_id = portfolio.sequence(
   'job_circular_id',
-  {
-    startWith: 1,
-    increment: 1,
-  },
+  DEFAULT_SEQUENCE,
 );
 
 export const job_circular = portfolio.table('job_circular', {
@@ -361,10 +328,7 @@ export const job_circular = portfolio.table('job_circular', {
 
 export const department_id = portfolio.sequence(
   'department_id',
-  {
-    startWith: 1,
-    increment: 1,
-  },
+  DEFAULT_SEQUENCE,
 );
 
 export const department_category = portfolio.enum('department_category', [
@@ -389,10 +353,7 @@ export const department = portfolio.table('department', {
 
 export const routine_id = portfolio.sequence(
   'routine_id',
-  {
-    startWith: 1,
-    increment: 1,
-  },
+  DEFAULT_SEQUENCE,
 );
 
 export const routine_programs = portfolio.enum('routine_programs', [
@@ -401,8 +362,8 @@ export const routine_programs = portfolio.enum('routine_programs', [
 ]);
 
 export const routine_type = portfolio.enum('routine_type', [
-  'class routine',
-  'exam schedule',
+  'class_routine',
+  'exam_schedule',
 ]);
 
 export const routine = portfolio.table('routine', {
@@ -423,10 +384,7 @@ export const routine = portfolio.table('routine', {
 
 export const club_id = portfolio.sequence(
   'club_id',
-  {
-    startWith: 1,
-    increment: 1,
-  },
+  DEFAULT_SEQUENCE,
 );
 
 export const club = portfolio.table('club', {
@@ -453,10 +411,7 @@ export const portfolio_news_rel = relations(news, ({ one, many }) => ({
 
 //* office
 
-export const office_id = portfolio.sequence('office_id', {
-  startWith: 1,
-  increment: 1,
-});
+export const office_id = portfolio.sequence('office_id', DEFAULT_SEQUENCE);
 
 export const office_category = portfolio.enum('office_category', [
   'registrar',
@@ -480,18 +435,12 @@ export const office = portfolio.table('office', {
   category: office_category('category').notNull(),
   created_at: DateTime('created_at').notNull(),
   updated_at: DateTime('updated_at'),
-  created_by: defaultUUID('created_by').references(
-    () => users.uuid,
-    DEFAULT_OPERATION,
-  ),
+  created_by: defaultUUID('created_by').references(() => users.uuid, DEFAULT_OPERATION),
   remarks: text('remarks'),
 });
 //* office entry
 
-export const office_entry_id = portfolio.sequence('office_entry_id', {
-  startWith: 1,
-  increment: 1,
-});
+export const office_entry_id = portfolio.sequence('office_entry_id', DEFAULT_SEQUENCE);
 
 export const office_entry = portfolio.table('office_entry', {
   id: integer('id').default(sql`nextval('portfolio.office_entry_id')`),

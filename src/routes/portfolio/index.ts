@@ -12,6 +12,24 @@ import office from './office';
 import office_entry from './office_entry';
 import online_admission from './online_admission';
 import program from './program';
+import routine from './routine';
 import tuition_fee from './tuition_fee';
 
-export default [authorities, info, bot, news, news_entry, office, office_entry, program, tuition_fee, certificate_course_fee, online_admission, club, department, faculty, job_circular];
+export default [
+  authorities,
+  info,
+  bot,
+  news,
+  news_entry,
+  office,
+  office_entry,
+  program,
+  tuition_fee,
+  certificate_course_fee,
+  online_admission,
+  club,
+  department,
+  faculty,
+  job_circular,
+  routine,
+];
