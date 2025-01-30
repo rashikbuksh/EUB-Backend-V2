@@ -316,7 +316,7 @@ export const job_circular = portfolio.table('job_circular', {
   faculty_uuid: defaultUUID('faculty_uuid').notNull().references(() => faculty.uuid, DEFAULT_OPERATION),
   category: text('category').notNull(),
   location: text('location').default(sql`null`),
-  file: text('file').notNull(),
+  file: text('file').default(sql`null`),
   deadline: DateTime('deadline'),
   created_at: DateTime('created_at').notNull(),
   updated_at: DateTime('updated_at'),
