@@ -70,9 +70,73 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     created_at: bot.created_at,
     updated_at: bot.updated_at,
     remarks: bot.remarks,
+
   }).from(bot).leftJoin(hrSchema.users, eq(bot.user_uuid, hrSchema.users.uuid)).leftJoin(hrSchema.designation, eq(hrSchema.users.designation_uuid, hrSchema.designation.uuid));
+
   const data: any[] = await resultPromise;
-  return c.json(data || [], HSCode.OK);
+
+  // const formattedData = data.map((item) => {
+  //   const formattedItem: any = {
+  //     uuid: item.uuid,
+  //     user_uuid: item.user_uuid,
+  //     user_name: item.user_name,
+  //     user_designation: item.user_designation,
+  //     category: item.category,
+  //     status: item.status,
+  //     file: item.file,
+  //     description: item.description,
+  //     created_at: item.created_at,
+  //     updated_at: item.updated_at,
+  //     remarks: item.remarks,
+  //   };
+
+  //   if (item.status === 'chairman') {
+  //     formattedItem.chairperson = {
+  //       id: item.user_uuid,
+  //       name: item.user_name,
+  //       designation: item.user_designation,
+  //     };
+  //   }
+  //   else if (item.status === 'member') {
+  //     formattedItem.member = formattedItem.member || [];
+  //     formattedItem.member.push({
+  //       id: item.user_uuid,
+  //       name: item.user_name,
+  //       designation: item.user_designation,
+  //     });
+  //   }
+
+  //   return formattedItem;
+  // });
+  interface Person {
+    id: string;
+    name: string;
+    designation: string;
+  }
+
+  const formattedData: { chairperson: Person | null; member: Person[] } = {
+    chairperson: null,
+    member: [],
+  };
+
+  data.forEach((item) => {
+    if (item.status === 'chairman') {
+      formattedData.chairperson = {
+        id: item.user_uuid,
+        name: item.user_name,
+        designation: item.user_designation,
+      };
+    }
+    else if (item.status === 'member') {
+      formattedData.member.push({
+        id: item.user_uuid,
+        name: item.user_name,
+        designation: item.user_designation,
+      });
+    }
+  });
+
+  return c.json(formattedData, HSCode.OK);
 };
 
 export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
