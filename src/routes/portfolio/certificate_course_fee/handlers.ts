@@ -8,7 +8,7 @@ import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 
 import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
 
-import { certificate_course_fee } from '../schema';
+import { certificate_course_fee, program } from '../schema';
 
 export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
   const value = c.req.valid('json');
@@ -56,7 +56,20 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 };
 
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
-  const data = await db.query.certificate_course_fee.findMany();
+  // const data = await db.query.certificate_course_fee.findMany();
+
+  const resultPromise = db.select({
+    uuid: certificate_course_fee.uuid,
+    program_uuid: certificate_course_fee.programs_uuid,
+    program_name: program.name,
+    fee_per_course: certificate_course_fee.fee_per_course,
+    created_at: certificate_course_fee.created_at,
+    updated_at: certificate_course_fee.updated_at,
+    created_by: certificate_course_fee.created_by,
+    remarks: certificate_course_fee.remarks,
+  }).from(certificate_course_fee).leftJoin(program, eq(certificate_course_fee.programs_uuid, program.uuid));
+
+  const data = await resultPromise;
 
   return c.json(data || [], HSCode.OK);
 };
