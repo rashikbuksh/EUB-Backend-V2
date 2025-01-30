@@ -14,7 +14,7 @@ export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
   const value = c.req.valid('json');
 
   const [data] = await db.insert(job_circular).values(value).returning({
-    name: job_circular.id,
+    name: job_circular.title,
   });
 
   return c.json(createToast('create', data.name ?? ''), HSCode.OK);
@@ -31,7 +31,7 @@ export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
     .set(updates)
     .where(eq(job_circular.uuid, uuid))
     .returning({
-      name: job_circular.id,
+      name: job_circular.title,
     });
 
   if (!data)
@@ -46,7 +46,7 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
   const [data] = await db.delete(job_circular)
     .where(eq(job_circular.uuid, uuid))
     .returning({
-      name: job_circular.id,
+      name: job_circular.title,
     });
 
   if (!data)
