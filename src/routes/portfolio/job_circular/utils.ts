@@ -35,8 +35,6 @@ export const insertSchema = createInsertSchema(
   created_by: true,
 }).omit({
   id: true,
-  location: true,
-  file: true,
   deadline: true,
   updated_at: true,
   remarks: true,
