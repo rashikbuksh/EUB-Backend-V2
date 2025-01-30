@@ -119,17 +119,17 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     member: [],
   };
 
-  data.forEach((item) => {
+  data.forEach((item, index) => {
     if (item.status === 'chairman') {
       formattedData.chairperson = {
-        id: item.user_uuid,
+        id: '1',
         name: item.user_name,
         designation: item.user_designation,
       };
     }
     else if (item.status === 'member') {
       formattedData.member.push({
-        id: item.user_uuid,
+        id: (index + 2).toString(),
         name: item.user_name,
         designation: item.user_designation,
       });
