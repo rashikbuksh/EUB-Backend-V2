@@ -23,7 +23,7 @@ export async function CreateToken(payload: JWTPayload) {
 export async function VerifyToken(token: string, c: Context) {
   const { url, method } = c.env.outgoing.req;
 
-  if (url === '/v1/signin' && method === 'POST') {
+  if (url === '/v1/signin' && url === '/v1/portfolio' && method === 'POST') {
     return true;
   }
 
