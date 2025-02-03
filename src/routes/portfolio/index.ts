@@ -3,6 +3,7 @@ import bot from './bot';
 import certificate_course_fee from './certificate_course_fee';
 import club from './club';
 import department from './department';
+import department_teachers from './department_teachers';
 import faculty from './faculty';
 import info from './info';
 import job_circular from './job_circular';
@@ -32,4 +33,5 @@ export default [
   faculty,
   job_circular,
   routine,
+  department_teachers,
 ];

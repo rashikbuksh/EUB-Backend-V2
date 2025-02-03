@@ -1,5 +1,5 @@
 import { relations, sql } from 'drizzle-orm';
-import { integer, pgSchema, text } from 'drizzle-orm/pg-core';
+import { boolean, integer, pgSchema, text } from 'drizzle-orm/pg-core';
 
 import { DateTime, defaultUUID, PG_DECIMAL, uuid_primary } from '@/lib/variables';
 import { DEFAULT_OPERATION, DEFAULT_SEQUENCE } from '@/utils/db';
@@ -348,6 +348,40 @@ export const department = portfolio.table('department', {
   created_by: defaultUUID('created_by').references(() => users.uuid, DEFAULT_OPERATION),
   remarks: text('remarks'),
 });
+
+// * department teachers
+
+export const department_teachers_id = portfolio.sequence(
+  'department_teachers_id',
+  DEFAULT_SEQUENCE,
+);
+
+export const department_teachers = portfolio.table('department_teachers', {
+  id: integer('id').default(sql`nextval('portfolio.department_teachers_id')`),
+  uuid: uuid_primary,
+  department_uuid: defaultUUID('department_uuid').notNull().references(() => department.uuid, DEFAULT_OPERATION),
+  teacher_uuid: defaultUUID('teacher_uuid').notNull().references(() => users.uuid, DEFAULT_OPERATION),
+  department_head: boolean('department_head').default(false),
+  created_at: DateTime('created_at').notNull(),
+  updated_at: DateTime('updated_at'),
+  created_by: defaultUUID('created_by').references(() => users.uuid, DEFAULT_OPERATION),
+  remarks: text('remarks'),
+});
+
+export const portfolio_department_teachers_rel = relations(department_teachers, ({ one }) => ({
+  department: one(department, {
+    fields: [department_teachers.department_uuid],
+    references: [department.uuid],
+  }),
+  teacher: one(users, {
+    fields: [department_teachers.teacher_uuid],
+    references: [users.uuid],
+  }),
+  created_by: one(users, {
+    fields: [department_teachers.created_by],
+    references: [users.uuid],
+  }),
+}));
 
 //* routine
 
