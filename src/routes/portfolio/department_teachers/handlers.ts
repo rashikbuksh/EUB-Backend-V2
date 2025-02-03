@@ -68,6 +68,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     department_head: department_teachers.department_head,
     teacher_email: hrSchema.users.email,
     teacher_phone: hrSchema.users.phone,
+    teacher_image: hrSchema.users.image,
   })
     .from(department_teachers)
     .leftJoin(department, eq(department_teachers.department_uuid, department.uuid))
