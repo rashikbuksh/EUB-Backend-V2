@@ -4,7 +4,7 @@ import { eq } from 'drizzle-orm';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
-import { users } from '@/routes/hr/schema';
+import * as hrSchema from '@/routes/hr/schema';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 
 import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
@@ -63,12 +63,16 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     department_uuid: department_teachers.department_uuid,
     department_name: department.name,
     teacher_uuid: department_teachers.teacher_uuid,
-    teacher_name: users.name,
+    teacher_name: hrSchema.users.name,
+    teacher_department: hrSchema.department.name,
+    teacher_designation: hrSchema.designation.name,
     department_head: department_teachers.department_head,
   })
     .from(department_teachers)
     .leftJoin(department, eq(department_teachers.department_uuid, department.uuid))
-    .leftJoin(users, eq(department_teachers.teacher_uuid, users.uuid));
+    .leftJoin(hrSchema.users, eq(department_teachers.teacher_uuid, hrSchema.users.uuid))
+    .leftJoin(hrSchema.department, eq(hrSchema.users.department_uuid, hrSchema.department.uuid))
+    .leftJoin(hrSchema.designation, eq(hrSchema.users.designation_uuid, hrSchema.designation.uuid));
 
   const data = await resultPromise;
 
