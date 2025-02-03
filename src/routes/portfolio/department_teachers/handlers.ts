@@ -65,7 +65,10 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     teacher_uuid: department_teachers.teacher_uuid,
     teacher_name: users.name,
     department_head: department_teachers.department_head,
-  }).from(department_teachers);
+  })
+    .from(department_teachers)
+    .leftJoin(department, eq(department_teachers.department_uuid, department.uuid))
+    .leftJoin(users, eq(department_teachers.teacher_uuid, users.uuid));
 
   const data = await resultPromise;
 
