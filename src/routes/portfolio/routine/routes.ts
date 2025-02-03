@@ -20,6 +20,13 @@ export const list = createRoute({
       'The list of routine',
     ),
   },
+  request: {
+    query: z.object({
+      portfolio_department: z.string().optional(),
+      program: z.string().optional(),
+      type: z.string().optional(),
+    }),
+  },
 });
 
 export const create = createRoute({

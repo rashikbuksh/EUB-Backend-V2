@@ -4,6 +4,7 @@ import { eq } from 'drizzle-orm';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
+import * as hrSchema from '@/routes/hr/schema';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 
 import type { CreateRoute, GetOneDepartmentRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
@@ -56,7 +57,36 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 };
 
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
-  const data = await db.query.routine.findMany();
+  const { portfolio_department, program, type } = c.req.valid('query');
+
+  const resultPromise = db.select({
+    id: routine.id,
+    department_uuid: routine.department_uuid,
+    department_name: department.name,
+    programs: routine.programs,
+    type: routine.type,
+    file: routine.file,
+    description: routine.description,
+    created_at: routine.created_at,
+    updated_at: routine.updated_at,
+    created_by: routine.created_by,
+    created_by_name: hrSchema.users.name,
+    remarks: routine.remarks,
+  })
+    .from(routine)
+    .leftJoin(department, eq(routine.department_uuid, department.uuid))
+    .leftJoin(hrSchema.users, eq(routine.created_by, hrSchema.users.uuid));
+
+  if (portfolio_department)
+    resultPromise.where(eq(department.name, portfolio_department));
+
+  if (program)
+    resultPromise.where(eq(routine.programs, program));
+
+  if (type)
+    resultPromise.where(eq(routine.type, type));
+
+  const data = await resultPromise;
 
   return c.json(data || [], HSCode.OK);
 };
