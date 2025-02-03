@@ -58,7 +58,7 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   const resultPromise = db.select({
-    name: department_teachers.id,
+    id: department_teachers.id,
     uuid: department_teachers.uuid,
     department_uuid: department_teachers.department_uuid,
     department_name: department.name,
