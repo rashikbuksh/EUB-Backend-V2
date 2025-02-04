@@ -16,10 +16,15 @@ configureOpenAPI(app);
 // ! don't put a trailing slash
 export const basePath = '/v1';
 
-// app.use('/static/*', serveStatic({ root: './static' }));
+// Serve static files from the 'uploads' directory
+app.use('/uploads/*', serveStatic({ root: './' }))
 
 app.use(`${basePath}/*`, cors({
-  origin: ['http://localhost:3005', 'http://localhost:3000', 'http://103.147.163.46:4020'],
+  origin: [
+    'http://localhost:3005',
+    'http://localhost:3000',
+    'http://103.147.163.46:4020',
+  ],
   maxAge: 600,
   credentials: true,
 }));
@@ -33,7 +38,5 @@ if (env.NODE_ENV !== 'development') {
 routes.forEach((route) => {
   app.route(basePath, route);
 });
-
-export type AppType = typeof routes[number];
 
 export default app;

@@ -18,10 +18,6 @@ export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
 
   const filePath = await uploadFile(file, 'routine');
 
-  console.log(formData);
-
-  formData.file = filePath;
-
   const value = {
     uuid: formData.uuid,
     department_uuid: formData.department_uuid,
