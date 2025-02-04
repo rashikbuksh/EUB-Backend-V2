@@ -483,6 +483,10 @@ export const office_entry = portfolio.table('office_entry', {
     () => office.uuid,
     DEFAULT_OPERATION,
   ),
+  user_uuid: defaultUUID('user_uuid').references(
+    () => users.uuid,
+    DEFAULT_OPERATION,
+  ),
   created_at: DateTime('created_at').notNull(),
   updated_at: DateTime('updated_at'),
   created_by: defaultUUID('created_by').references(
@@ -506,6 +510,21 @@ export const portfolio_authorities_rel = relations(authorities, ({ one }) => ({
 export const portfolio_office_rel = relations(office, ({ one }) => ({
   created_by: one(users, {
     fields: [office.created_by],
+    references: [users.uuid],
+  }),
+}));
+
+export const portfolio_office_entry_rel = relations(office_entry, ({ one }) => ({
+  office: one(office, {
+    fields: [office_entry.office_uuid],
+    references: [office.uuid],
+  }),
+  user: one(users, {
+    fields: [office_entry.user_uuid],
+    references: [users.uuid],
+  }),
+  created_by: one(users, {
+    fields: [office_entry.created_by],
     references: [users.uuid],
   }),
 }));

@@ -1,9 +1,11 @@
 import type { AppRouteHandler } from '@/lib/types';
 
 import { eq } from 'drizzle-orm';
+import { alias } from 'drizzle-orm/pg-core';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
+import * as hrSchema from '@/routes/hr/schema';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 
 import type {
@@ -14,13 +16,15 @@ import type {
   RemoveRoute,
 } from './routes';
 
-import { office_entry } from '../schema';
+import { office, office_entry } from '../schema';
+
+const user_information = alias(hrSchema.users, 'user_information');
 
 export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
   const value = c.req.valid('json');
 
   const [data] = await db.insert(office_entry).values(value).returning({
-    name: office_entry.created_by,
+    name: office_entry.id,
   });
 
   return c.json(createToast('create', data.name ?? ''), HSCode.OK);
@@ -38,7 +42,7 @@ export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
     .set(updates)
     .where(eq(office_entry.uuid, uuid))
     .returning({
-      name: office_entry.created_by,
+      name: office_entry.id,
     });
 
   if (!data)
@@ -54,7 +58,7 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
     .delete(office_entry)
     .where(eq(office_entry.uuid, uuid))
     .returning({
-      name: office_entry.created_by,
+      name: office_entry.id,
     });
 
   if (!data)
@@ -64,7 +68,30 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 };
 
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
-  const data = await db.query.office_entry.findMany();
+  const { category } = c.req.valid('query');
+
+  const resultPromise = db.select({
+    id: office_entry.id,
+    uuid: office_entry.uuid,
+    office_uuid: office_entry.office_uuid,
+    office_category: office.category,
+    user_uuid: office_entry.user_uuid,
+    user_name: user_information.name,
+    created_at: office_entry.created_at,
+    created_by: office_entry.created_by,
+    created_by_name: hrSchema.users.name,
+    updated_at: office_entry.updated_at,
+    remarks: office_entry.remarks,
+  })
+    .from(office_entry)
+    .leftJoin(office, eq(office_entry.office_uuid, office.uuid))
+    .leftJoin(user_information, eq(office_entry.user_uuid, user_information.uuid))
+    .leftJoin(hrSchema.users, eq(office_entry.created_by, hrSchema.users.uuid));
+
+  if (category)
+    resultPromise.where(eq(office.category, category));
+
+  const data = await resultPromise;
 
   return c.json(data || [], HSCode.OK);
 };

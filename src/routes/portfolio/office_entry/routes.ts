@@ -17,6 +17,11 @@ export const list = createRoute({
   responses: {
     [HSCode.OK]: jsonContent(z.array(selectSchema), 'The list of office-entry'),
   },
+  request: {
+    query: z.object({
+      category: z.string().optional(),
+    }),
+  },
 });
 
 export const create = createRoute({
