@@ -1,6 +1,6 @@
 import * as HSCode from 'stoker/http-status-codes';
 import { jsonContent, jsonContentRequired } from 'stoker/openapi/helpers';
-import { createErrorSchema, SlugParamsSchema } from 'stoker/openapi/schemas';
+import { createErrorSchema } from 'stoker/openapi/schemas';
 
 import { notFoundSchema } from '@/lib/constants';
 import * as param from '@/lib/param';
@@ -33,10 +33,23 @@ export const create = createRoute({
   path: '/portfolio/routine',
   method: 'post',
   request: {
-    body: jsonContentRequired(
-      insertSchema,
-      'The routine to create',
-    ),
+    body: {
+      content: {
+        'multipart/form-data': {
+          schema: {
+            ...insertSchema,
+            // required: ['department_uuid'],
+            // properties: {
+            //   file: {
+            //     type: 'string',
+            //     format: 'binary',
+            //     description: 'The file to upload',
+            //   },
+            // },
+          },
+        },
+      },
+    },
   },
   tags,
   responses: {

@@ -4,11 +4,12 @@ import { eq } from 'drizzle-orm';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
+import * as hrSchema from '@/routes/hr/schema';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 
 import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
 
-import { department } from '../schema';
+import { department, faculty } from '../schema';
 
 export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
   const value = c.req.valid('json');
@@ -56,7 +57,23 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 };
 
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
-  const data = await db.query.department.findMany();
+  const resultPromise = db.select(
+    {
+      uuid: department.uuid,
+      name: department.name,
+      faculty_uuid: department.faculty_uuid,
+      faculty_name: faculty.name,
+      created_at: department.created_at,
+      updated_at: department.updated_at,
+      created_by: department.created_by,
+      created_by_name: hrSchema.users.name,
+    },
+  )
+    .from(department)
+    .leftJoin(faculty, eq(department.faculty_uuid, faculty.uuid))
+    .leftJoin(hrSchema.users, eq(department.created_by, hrSchema.users.uuid));
+
+  const data = await resultPromise;
 
   return c.json(data || [], HSCode.OK);
 };
@@ -64,11 +81,24 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
 export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
 
-  const data = await db.query.department.findFirst({
-    where(fields, operators) {
-      return operators.eq(fields.uuid, uuid);
+  const resultPromise = db.select(
+    {
+      uuid: department.uuid,
+      name: department.name,
+      faculty_uuid: department.faculty_uuid,
+      faculty_name: faculty.name,
+      created_at: department.created_at,
+      updated_at: department.updated_at,
+      created_by: department.created_by,
+      created_by_name: hrSchema.users.name,
     },
-  });
+  )
+    .from(department)
+    .leftJoin(faculty, eq(department.faculty_uuid, faculty.uuid))
+    .leftJoin(hrSchema.users, eq(department.created_by, hrSchema.users.uuid))
+    .where(eq(department.uuid, uuid));
+
+  const data = await resultPromise;
 
   if (!data)
     return DataNotFound(c);

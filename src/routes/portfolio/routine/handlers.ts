@@ -6,13 +6,34 @@ import * as HSCode from 'stoker/http-status-codes';
 import db from '@/db';
 import * as hrSchema from '@/routes/hr/schema';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
+import { uploadFile } from '@/utils/upload_file';
 
 import type { CreateRoute, GetOneDepartmentRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
 
 import { department, routine } from '../schema';
 
 export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
-  const value = c.req.valid('json');
+  const formData = await c.req.parseBody();
+  const file = formData.file;
+
+  const filePath = await uploadFile(file, 'routine');
+
+  console.log(formData);
+
+  formData.file = filePath;
+
+  const value = {
+    uuid: formData.uuid,
+    department_uuid: formData.department_uuid,
+    programs: formData.programs,
+    type: formData.type,
+    file: filePath,
+    description: formData.description,
+    created_at: formData.created_at,
+    updated_at: formData.updated_at,
+    created_by: formData.created_by,
+    remarks: formData.remarks,
+  };
 
   const [data] = await db.insert(routine).values(value).returning({
     name: routine.uuid,
