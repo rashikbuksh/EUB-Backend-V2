@@ -20,6 +20,11 @@ export const list = createRoute({
       'The list of news',
     ),
   },
+  request: {
+    query: z.object({
+      department_name: z.string().optional(),
+    }),
+  },
 });
 
 export const create = createRoute({
