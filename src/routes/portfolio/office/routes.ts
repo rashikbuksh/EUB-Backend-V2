@@ -23,7 +23,15 @@ export const create = createRoute({
   path: '/portfolio/office',
   method: 'post',
   request: {
-    body: jsonContentRequired(insertSchema, 'The office to create'),
+    body: {
+      content: {
+        'multipart/form-data': {
+          schema: {
+            ...insertSchema,
+          },
+        },
+      },
+    },
   },
   tags,
   responses: {

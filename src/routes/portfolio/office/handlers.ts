@@ -5,6 +5,7 @@ import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
+import { uploadFile } from '@/utils/upload_file';
 
 import type {
   CreateRoute,
@@ -17,7 +18,22 @@ import type {
 import { office } from '../schema';
 
 export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
-  const value = c.req.valid('json');
+  // const value = c.req.valid('json');
+  const formData = await c.req.parseBody();
+  const image = formData.image;
+
+  const filePath = await uploadFile(image, 'public/office');
+
+  const value = {
+    uuid: formData.uuid,
+    title: formData.title,
+    category: formData.category,
+    image: filePath,
+    created_at: formData.created_at,
+    updated_at: formData.updated_at,
+    created_by: formData.created_by,
+    remarks: formData.remarks,
+  };
 
   const [data] = await db.insert(office).values(value).returning({
     name: office.created_by,
