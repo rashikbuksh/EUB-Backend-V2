@@ -8,7 +8,7 @@ import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 
 import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
 
-import { info } from '../schema';
+import { department, faculty, info } from '../schema';
 
 export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
   const value = c.req.valid('json');
@@ -56,7 +56,31 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 };
 
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
-  const data = await db.query.info.findMany();
+  const { page_name } = c.req.valid('query');
+
+  const resultPromise = db.select({
+    id: info.id,
+    uuid: info.uuid,
+    page_name: info.page_name,
+    department_uuid: info.department_uuid,
+    department_name: department.name,
+    faculty_uuid: faculty.uuid,
+    faculty_name: faculty.name,
+    file: info.file,
+    is_global: info.is_global,
+    created_by: info.created_by,
+    created_at: info.created_at,
+    updated_at: info.updated_at,
+  })
+    .from(info)
+    .leftJoin(department, eq(info.department_uuid, department.uuid))
+    .leftJoin(faculty, eq(department.faculty_uuid, faculty.uuid));
+
+  if (page_name) {
+    resultPromise.where(eq(info.page_name, page_name));
+  }
+
+  const data = await resultPromise;
 
   return c.json(data || [], HSCode.OK);
 };

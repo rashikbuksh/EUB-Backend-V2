@@ -4,6 +4,7 @@ import { eq, sql } from 'drizzle-orm';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
+import { constructSelectAllQuery } from '@/lib/variables';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 import { uploadFile } from '@/utils/upload_file';
 
@@ -102,6 +103,8 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
 
   if (latest === 'true')
     resultPromise.orderBy(sql`DATE(${news.published_date}) DESC`).limit(10);
+
+  // constructSelectAllQuery()
 
   const data = await resultPromise;
 
