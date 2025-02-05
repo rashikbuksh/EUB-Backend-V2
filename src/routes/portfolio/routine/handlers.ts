@@ -16,7 +16,7 @@ export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
   const formData = await c.req.parseBody();
   const file = formData.file;
 
-  const filePath = await uploadFile(file, 'routine');
+  const filePath = await uploadFile(file, 'public/routine');
 
   const value = {
     uuid: formData.uuid,
