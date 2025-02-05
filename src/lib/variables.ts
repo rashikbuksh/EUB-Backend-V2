@@ -33,7 +33,7 @@ export function constructSelectAllQuery(
   baseQuery: any,
   params: any,
   defaultSortField = 'created_at',
-  additionalSearchFields = [],
+  additionalSearchFields: string[] = [],
 ) {
   const { q, page, limit, sort, orderby } = params;
 

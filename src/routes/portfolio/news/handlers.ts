@@ -104,11 +104,32 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   if (latest === 'true')
     resultPromise.orderBy(sql`DATE(${news.published_date}) DESC`).limit(10);
 
-  // constructSelectAllQuery()
+  const resultPromiseForCount = await resultPromise;
 
-  const data = await resultPromise;
+  const baseQuery = constructSelectAllQuery(resultPromise, c.req.valid('query'), 'created_at');
 
-  return c.json(data || [], HSCode.OK);
+  const data = await baseQuery;
+
+  const pagination = {
+    total_record: resultPromiseForCount.length,
+    current_page: Number(c.req.valid('query').page) || 1,
+    total_page: Math.ceil(
+      resultPromiseForCount.length / c.req.valid('query').limit,
+    ),
+    next_page:
+        Number(c.req.valid('query').page) + 1
+        > Math.ceil(resultPromiseForCount.length / c.req.valid('query').limit)
+          ? null
+          : Number(c.req.valid('query').page) + 1,
+    prev_page: c.req.valid('query').page - 1 <= 0 ? null : c.req.valid('query').page - 1,
+  };
+
+  const response = {
+    data,
+    pagination,
+  };
+
+  return c.json(response || [], HSCode.OK);
 };
 
 export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {

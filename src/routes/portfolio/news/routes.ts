@@ -24,6 +24,11 @@ export const list = createRoute({
     query: z.object({
       department_name: z.string().optional(),
       latest: z.string().optional(),
+      limit: z.string().optional(),
+      page: z.string().optional(),
+      q: z.string().optional(),
+      sort: z.string().optional(),
+      orderby: z.string().optional(),
     }),
   },
 });
