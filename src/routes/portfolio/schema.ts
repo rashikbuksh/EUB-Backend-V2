@@ -39,32 +39,6 @@ export const authorities = portfolio.table('authorities', {
   remarks: text('remarks'),
 });
 
-//* Info
-export const info_page_name = portfolio.enum('info_page_name', [
-  'notices',
-  'academic_calendar',
-  'examination_guidelines',
-  'information_about_provisional_certificate',
-  'clubs_and_society',
-]);
-
-export const info_id = portfolio.sequence('info_id', DEFAULT_SEQUENCE);
-
-export const info = portfolio.table('info', {
-  id: integer('id').default(sql`nextval('portfolio.info_id')`),
-  uuid: uuid_primary,
-  description: text('description').notNull(),
-  page_name: info_page_name('page_name').notNull(),
-  file: text('file').notNull(),
-  created_at: DateTime('created_at').notNull(),
-  updated_at: DateTime('updated_at'),
-  created_by: defaultUUID('created_by').references(
-    () => users.uuid,
-    DEFAULT_OPERATION,
-  ),
-  remarks: text('remarks'),
-});
-
 //* Bot
 export const bot_category = portfolio.enum('bot_category', [
   'syndicate',
@@ -238,17 +212,6 @@ export const online_admission = portfolio.table('online_admission', {
   remarks: text('remarks'),
 });
 
-export const portfolio_bot_rel = relations(bot, ({ one }) => ({
-  user: one(users, {
-    fields: [bot.user_uuid],
-    references: [users.uuid],
-  }),
-  created_by: one(users, {
-    fields: [bot.created_by],
-    references: [users.uuid],
-  }),
-}));
-
 //* faculty
 
 export const faculty_id = portfolio.sequence(
@@ -313,6 +276,37 @@ export const department = portfolio.table('department', {
   remarks: text('remarks'),
 });
 
+//* Info
+export const info_page_name = portfolio.enum('info_page_name', [
+  'notices',
+  'academic_calendar',
+  'examination_guidelines',
+  'information_about_provisional_certificate',
+  'clubs_and_society',
+]);
+
+export const info_id = portfolio.sequence('info_id', DEFAULT_SEQUENCE);
+
+export const info = portfolio.table('info', {
+  id: integer('id').default(sql`nextval('portfolio.info_id')`),
+  uuid: uuid_primary,
+  department_uuid: defaultUUID('department_uuid').notNull().references(
+    () => department.uuid,
+    DEFAULT_OPERATION,
+  ),
+  description: text('description').notNull(),
+  page_name: info_page_name('page_name').notNull(),
+  file: text('file').notNull(),
+  is_global: boolean('is_global').default(false),
+  created_at: DateTime('created_at').notNull(),
+  updated_at: DateTime('updated_at'),
+  created_by: defaultUUID('created_by').references(
+    () => users.uuid,
+    DEFAULT_OPERATION,
+  ),
+  remarks: text('remarks'),
+});
+
 // * department teachers
 
 export const department_teachers_id = portfolio.sequence(
@@ -333,21 +327,6 @@ export const department_teachers = portfolio.table('department_teachers', {
   created_by: defaultUUID('created_by').references(() => users.uuid, DEFAULT_OPERATION),
   remarks: text('remarks'),
 });
-
-export const portfolio_department_teachers_rel = relations(department_teachers, ({ one }) => ({
-  department: one(department, {
-    fields: [department_teachers.department_uuid],
-    references: [department.uuid],
-  }),
-  teacher: one(users, {
-    fields: [department_teachers.teacher_uuid],
-    references: [users.uuid],
-  }),
-  created_by: one(users, {
-    fields: [department_teachers.created_by],
-    references: [users.uuid],
-  }),
-}));
 
 //* routine
 
@@ -629,4 +608,40 @@ export const portfolio_club_rel = relations(club, ({ one }) => ({
   }),
 }));
 
+export const portfolio_bot_rel = relations(bot, ({ one }) => ({
+  user: one(users, {
+    fields: [bot.user_uuid],
+    references: [users.uuid],
+  }),
+  created_by: one(users, {
+    fields: [bot.created_by],
+    references: [users.uuid],
+  }),
+}));
+
+export const portfolio_department_teachers_rel = relations(department_teachers, ({ one }) => ({
+  department: one(department, {
+    fields: [department_teachers.department_uuid],
+    references: [department.uuid],
+  }),
+  teacher: one(users, {
+    fields: [department_teachers.teacher_uuid],
+    references: [users.uuid],
+  }),
+  created_by: one(users, {
+    fields: [department_teachers.created_by],
+    references: [users.uuid],
+  }),
+}));
+
+export const portfolio_info_rel = relations(info, ({ one }) => ({
+  department: one(department, {
+    fields: [info.department_uuid],
+    references: [department.uuid],
+  }),
+  created_by: one(users, {
+    fields: [info.created_by],
+    references: [users.uuid],
+  }),
+}));
 export default portfolio;
