@@ -125,5 +125,5 @@ export const getOneByCategory: AppRouteHandler<GetOneByCategoryRoute> = async (c
 
   const data: any[] = await resultPromise;
 
-  return c.json(data[0] || [], HSCode.OK);
+  return c.json(data[0] || null, HSCode.OK);
 };
