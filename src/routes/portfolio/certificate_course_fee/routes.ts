@@ -88,10 +88,10 @@ export const patch = createRoute({
       'The certificate course fee was not found',
     ),
     [HSCode.UNPROCESSABLE_ENTITY]: jsonContent(
-          createErrorSchema(patchSchema)
-            .or(createErrorSchema(param.uuid)),
-          'The validation error(s)',
-        ),
+      createErrorSchema(patchSchema)
+        .or(createErrorSchema(param.uuid)),
+      'The validation error(s)',
+    ),
   },
 });
 

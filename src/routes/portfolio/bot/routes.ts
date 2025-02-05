@@ -14,7 +14,7 @@ export const list = createRoute({
   path: '/portfolio/bot',
   method: 'get',
   tags,
-  request:{
+  request: {
     query: z.object({
       category: z.string().optional(),
     }),

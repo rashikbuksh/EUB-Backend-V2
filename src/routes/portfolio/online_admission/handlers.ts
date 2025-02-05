@@ -10,7 +10,6 @@ import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } fro
 
 import { online_admission } from '../schema';
 
-
 export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
   const value = c.req.valid('json');
 
@@ -41,7 +40,6 @@ export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
   return c.json(createToast('update', data.uuid ?? ''), HSCode.OK);
 };
 
-
 export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
 
@@ -67,7 +65,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
 
   const data = await db.query.online_admission.findFirst({
-     where(fields, operators) {
+    where(fields, operators) {
       return operators.eq(fields.uuid, uuid);
     },
   });
@@ -77,4 +75,3 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
 
   return c.json(data || {}, HSCode.OK);
 };
-
