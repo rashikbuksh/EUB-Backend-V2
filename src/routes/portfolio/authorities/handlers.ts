@@ -57,6 +57,8 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 };
 
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
+  const { category } = c.req.valid('query');
+
   const resultPromise = db.select({
     uuid: authorities.uuid,
     user_uuid: authorities.user_uuid,
@@ -68,7 +70,16 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     image: hrSchema.users.image,
     education: department_teachers.education,
     contact: sql`jsonb_build_object('email', ${hrSchema.users.email}, 'phone', ${hrSchema.users.phone})`,
-  }).from(authorities).leftJoin(hrSchema.users, eq(authorities.user_uuid, hrSchema.users.uuid)).leftJoin(hrSchema.designation, eq(hrSchema.users.designation_uuid, hrSchema.designation.uuid)).leftJoin(hrSchema.department, eq(hrSchema.users.department_uuid, hrSchema.department.uuid)).leftJoin(department_teachers, eq(authorities.user_uuid, department_teachers.teacher_uuid));
+  })
+    .from(authorities)
+    .leftJoin(hrSchema.users, eq(authorities.user_uuid, hrSchema.users.uuid))
+    .leftJoin(hrSchema.designation, eq(hrSchema.users.designation_uuid, hrSchema.designation.uuid))
+    .leftJoin(hrSchema.department, eq(hrSchema.users.department_uuid, hrSchema.department.uuid))
+    .leftJoin(department_teachers, eq(authorities.user_uuid, department_teachers.teacher_uuid));
+
+  if (category) {
+    resultPromise.where(eq(authorities.category, category));
+  }
 
   const data: any[] = await resultPromise;
 
