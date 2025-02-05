@@ -84,7 +84,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     .leftJoin(hrSchema.users, eq(club.president_uuid, hrSchema.users.uuid));
 
   if (portfolio_faculty)
-    resultPromise.where(eq(faculty.uuid, portfolio_faculty));
+    resultPromise.where(eq(faculty.name, portfolio_faculty));
 
   const data = await resultPromise;
 
