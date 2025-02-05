@@ -72,6 +72,23 @@ export const getOne = createRoute({
   },
 });
 
+export const getOneByCategory = createRoute({
+  path: '/portfolio/authorities/category/{category}',
+  method: 'get',
+  request: {
+    params: z.object({
+      category: z.string(),
+    }),
+  },
+  tags,
+  responses: {
+    [HSCode.OK]: jsonContent(
+      z.array(selectSchema),
+      'The list of authorities',
+    ),
+  },
+});
+
 export const patch = createRoute({
   path: '/portfolio/authorities/{uuid}',
   method: 'patch',
@@ -125,5 +142,6 @@ export const remove = createRoute({
 export type ListRoute = typeof list;
 export type CreateRoute = typeof create;
 export type GetOneRoute = typeof getOne;
+export type GetOneByCategoryRoute = typeof getOneByCategory;
 export type PatchRoute = typeof patch;
 export type RemoveRoute = typeof remove;
