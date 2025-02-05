@@ -7,6 +7,7 @@ import * as HSCode from 'stoker/http-status-codes';
 import db from '@/db';
 import { ComparePass, CreateToken, HashPass } from '@/middlewares/auth';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
+import { uploadFile } from '@/utils/upload_file';
 
 import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute, SigninRoute } from './routes';
 
@@ -55,11 +56,36 @@ export const signin: AppRouteHandler<SigninRoute> = async (c: any) => {
 };
 
 export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
-  const value = c.req.valid('json');
+  // const value = c.req.valid('json');
 
-  const { pass } = await c.req.json();
+  // const { pass } = await c.req.json();
 
-  value.pass = await HashPass(pass);
+  // value.pass = await HashPass(pass);
+
+  const formData = await c.req.parseBody();
+
+  const image = formData.image;
+
+  const imagePath = await uploadFile(image, 'public/users');
+
+  const value = {
+    uuid: formData.uuid,
+    name: formData.name,
+    department_uuid: formData.department_uuid,
+    designation_uuid: formData.designation_uuid,
+    office: formData.office,
+    phone: formData.phone,
+    email: formData.email,
+    pass: formData.pass,
+    image: imagePath,
+    created_at: formData.created_at,
+    updated_at: formData.updated_at,
+    status: formData.status,
+    can_access: formData.can_access,
+    remarks: formData.remarks,
+  };
+
+  value.pass = await HashPass(value.pass);
 
   const [data] = await db.insert(users).values(value).returning({
     name: users.name,

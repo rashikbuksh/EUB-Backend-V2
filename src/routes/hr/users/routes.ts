@@ -26,10 +26,15 @@ export const create = createRoute({
   path: '/hr/users',
   method: 'post',
   request: {
-    body: jsonContentRequired(
-      insertSchema,
-      'The user to create',
-    ),
+    body: {
+      content: {
+        'multipart/form-data': {
+          schema: {
+            ...insertSchema,
+          },
+        },
+      },
+    },
   },
   tags,
   responses: {
