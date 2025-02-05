@@ -38,14 +38,6 @@ export const create = createRoute({
         'multipart/form-data': {
           schema: {
             ...insertSchema,
-            // required: ['department_uuid'],
-            // properties: {
-            //   file: {
-            //     type: 'string',
-            //     format: 'binary',
-            //     description: 'The file to upload',
-            //   },
-            // },
           },
         },
       },
