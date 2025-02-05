@@ -120,7 +120,7 @@ export const getOneByCategory: AppRouteHandler<GetOneByCategoryRoute> = async (c
     .leftJoin(hrSchema.users, eq(authorities.user_uuid, hrSchema.users.uuid))
     .leftJoin(hrSchema.designation, eq(hrSchema.users.designation_uuid, hrSchema.designation.uuid))
     .leftJoin(hrSchema.department, eq(hrSchema.users.department_uuid, hrSchema.department.uuid))
-    .leftJoin(department_teachers, eq(authorities.user_uuid, department_teachers.teacher_uuid))
+    .leftJoin(department_teachers, eq(hrSchema.users.uuid, department_teachers.teacher_uuid))
     .where(eq(authorities.category, category));
 
   const data: any[] = await resultPromise;
