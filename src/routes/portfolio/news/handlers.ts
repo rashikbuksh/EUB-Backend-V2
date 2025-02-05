@@ -1,6 +1,6 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { eq, sql } from 'drizzle-orm';
+import { desc, eq, sql } from 'drizzle-orm';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
@@ -79,7 +79,7 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   // const data = await db.query.news.findMany();
-  const { department_name } = c.req.valid('query');
+  const { department_name, latest } = c.req.valid('query');
   const resultPromise = db.select({
     id: news.id,
     uuid: news.uuid,
@@ -99,6 +99,9 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
 
   if (department_name)
     resultPromise.where(eq(department.name, department_name));
+
+  if (latest === 'true')
+    resultPromise.orderBy(sql`DATE(${news.published_date}) DESC`).limit(10);
 
   const data = await resultPromise;
 
