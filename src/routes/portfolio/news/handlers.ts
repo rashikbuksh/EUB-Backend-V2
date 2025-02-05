@@ -5,13 +5,35 @@ import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
+import { uploadFile } from '@/utils/upload_file';
 
 import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
 
 import { department, news } from '../schema';
 
 export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
-  const value = c.req.valid('json');
+  // const value = c.req.valid('json');
+
+  const formData = await c.req.parseBody();
+
+  const cover_image = formData.cover_image;
+
+  const coverImagePath = await uploadFile(cover_image, 'public/news');
+
+  const value = {
+    uuid: formData.uuid,
+    department_uuid: formData.department_uuid,
+    title: formData.title,
+    subtitle: formData.subtitle,
+    description: formData.description,
+    content: formData.content,
+    created_at: formData.created_at,
+    updated_at: formData.updated_at,
+    created_by: formData.created_by,
+    remarks: formData.remarks,
+    cover_image: coverImagePath,
+    published_date: formData.published_date,
+  };
 
   const [data] = await db.insert(news).values(value).returning({
     name: news.created_by,
