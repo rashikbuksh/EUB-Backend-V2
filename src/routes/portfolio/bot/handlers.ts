@@ -57,6 +57,8 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 };
 
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
+  const { category } = c.req.valid('query');
+
   // const data = await db.query.bot.findMany();
   const resultPromise = db.select({
     uuid: bot.uuid,
@@ -70,8 +72,14 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     created_at: bot.created_at,
     updated_at: bot.updated_at,
     remarks: bot.remarks,
+  })
+    .from(bot)
+    .leftJoin(hrSchema.users, eq(bot.user_uuid, hrSchema.users.uuid))
+    .leftJoin(hrSchema.designation, eq(hrSchema.users.designation_uuid, hrSchema.designation.uuid));
 
-  }).from(bot).leftJoin(hrSchema.users, eq(bot.user_uuid, hrSchema.users.uuid)).leftJoin(hrSchema.designation, eq(hrSchema.users.designation_uuid, hrSchema.designation.uuid));
+  if (category) {
+    resultPromise.where(eq(bot.category, category));
+  }
 
   const data: any[] = await resultPromise;
 

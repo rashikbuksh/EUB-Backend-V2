@@ -14,6 +14,11 @@ export const list = createRoute({
   path: '/portfolio/authorities',
   method: 'get',
   tags,
+  request: {
+    query: z.object({
+      category: z.string().optional(),
+    }),
+  },
   responses: {
     [HSCode.OK]: jsonContent(
       z.array(selectSchema),
@@ -63,6 +68,23 @@ export const getOne = createRoute({
     [HSCode.UNPROCESSABLE_ENTITY]: jsonContent(
       createErrorSchema(param.uuid),
       'Invalid id error',
+    ),
+  },
+});
+
+export const getOneByCategory = createRoute({
+  path: '/portfolio/authorities/category/{category}',
+  method: 'get',
+  request: {
+    params: z.object({
+      category: z.string(),
+    }),
+  },
+  tags,
+  responses: {
+    [HSCode.OK]: jsonContent(
+      z.array(selectSchema),
+      'The list of authorities',
     ),
   },
 });
@@ -120,5 +142,6 @@ export const remove = createRoute({
 export type ListRoute = typeof list;
 export type CreateRoute = typeof create;
 export type GetOneRoute = typeof getOne;
+export type GetOneByCategoryRoute = typeof getOneByCategory;
 export type PatchRoute = typeof patch;
 export type RemoveRoute = typeof remove;

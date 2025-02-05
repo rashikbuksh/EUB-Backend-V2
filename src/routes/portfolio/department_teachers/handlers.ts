@@ -96,10 +96,15 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     teacher_uuid: department_teachers.teacher_uuid,
     teacher_name: hrSchema.users.name,
     teacher_designation: hrSchema.designation.name,
-    department_head: department_teachers.department_head,
     teacher_email: hrSchema.users.email,
     teacher_phone: hrSchema.users.phone,
     teacher_image: hrSchema.users.image,
+    department_head: department_teachers.department_head,
+    education: department_teachers.education,
+    publication: department_teachers.publication,
+    created_at: department_teachers.created_at,
+    updated_at: department_teachers.updated_at,
+    remarks: department_teachers.remarks,
   })
     .from(department_teachers)
     .leftJoin(department, eq(department_teachers.department_uuid, department.uuid))
