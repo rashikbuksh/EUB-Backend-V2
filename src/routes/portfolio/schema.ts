@@ -421,7 +421,9 @@ export const office_category = portfolio.enum('office_category', [
 export const office = portfolio.table('office', {
   id: integer('id').default(sql`nextval('portfolio.office_id')`),
   uuid: uuid_primary,
+  title: text('title').notNull(),
   category: office_category('category').notNull(),
+  image: text('image').notNull(),
   created_at: DateTime('created_at').notNull(),
   updated_at: DateTime('updated_at'),
   created_by: defaultUUID('created_by').references(() => users.uuid, DEFAULT_OPERATION),
