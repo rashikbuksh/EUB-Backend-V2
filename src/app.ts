@@ -17,7 +17,7 @@ configureOpenAPI(app);
 export const basePath = '/v1';
 
 // Serve static files from the 'uploads' directory
-app.use('/uploads/*', serveStatic({ root: '../' }));
+app.use('/uploads/*', serveStatic({ root: env.NODE_ENV === 'development' ? '../' : './' }));
 
 app.use(`${basePath}/*`, cors({
   origin: [
