@@ -25,11 +25,13 @@ export const insertSchema = createInsertSchema(
   uuid: true,
   department_uuid: true,
   teacher_uuid: true,
+  education: true,
   created_at: true,
   created_by: true,
 }).omit({
   id: true,
   department_head: true,
+  publication: true,
   updated_at: true,
   remarks: true,
 });
