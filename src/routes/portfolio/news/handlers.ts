@@ -108,11 +108,31 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
 export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
 
-  const data = await db.query.news.findFirst({
-    where(fields, operators) {
-      return operators.eq(fields.uuid, uuid);
-    },
-  });
+  // const data = await db.query.news.findFirst({
+  //   where(fields, operators) {
+  //     return operators.eq(fields.uuid, uuid);
+  //   },
+  // });
+
+  const resultPromise = db.select({
+    id: news.id,
+    uuid: news.uuid,
+    department_uuid: news.department_uuid,
+    department_name: department.name,
+    title: news.title,
+    subtitle: news.subtitle,
+    description: news.description,
+    content: news.content,
+    created_at: news.created_at,
+    cover_image: news.cover_image,
+    published_date: news.published_date,
+    carousel: sql`ARRAY(SELECT json_build_object('value', uuid, 'label', documents) FROM portfolio.news_entry WHERE news_uuid = portfolio.news.uuid)`,
+  })
+    .from(news)
+    .leftJoin(department, eq(news.department_uuid, department.uuid))
+    .where(eq(news.uuid, uuid));
+
+  const data = await resultPromise;
 
   if (!data)
     return DataNotFound(c);
