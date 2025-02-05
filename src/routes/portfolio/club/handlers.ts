@@ -4,11 +4,12 @@ import { eq } from 'drizzle-orm';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
+import * as hrSchema from '@/routes/hr/schema';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 
 import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
 
-import { club } from '../schema';
+import { club, department, faculty } from '../schema';
 
 export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
   const value = c.req.valid('json');
@@ -56,7 +57,36 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 };
 
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
-  const data = await db.query.club.findMany();
+  const { portfolio_faculty } = c.req.valid('query');
+
+  const resultPromise = db.select({
+    uuid: club.uuid,
+    id: club.id,
+    name: club.name,
+    department_uuid: club.department_uuid,
+    department_name: department.name,
+    faculty_uuid: faculty.uuid,
+    faculty_name: faculty.name,
+    president_uuid: club.president_uuid,
+    president_name: hrSchema.users.name,
+    president_email: hrSchema.users.email,
+    president_phone: hrSchema.users.phone,
+    president_image: hrSchema.users.image,
+    message: club.message,
+    created_at: club.created_at,
+    updated_at: club.updated_at,
+    created_by: club.created_by,
+    remarks: club.remarks,
+  })
+    .from(club)
+    .leftJoin(department, eq(club.department_uuid, department.uuid))
+    .leftJoin(faculty, eq(department.faculty_uuid, faculty.uuid))
+    .leftJoin(hrSchema.users, eq(club.president_uuid, hrSchema.users.uuid));
+
+  if (portfolio_faculty)
+    resultPromise.where(eq(faculty.uuid, portfolio_faculty));
+
+  const data = await resultPromise;
 
   return c.json(data || [], HSCode.OK);
 };

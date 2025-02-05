@@ -14,6 +14,11 @@ export const list = createRoute({
   path: '/portfolio/club',
   method: 'get',
   tags,
+  request: {
+    query: z.object({
+      portfolio_faculty: z.string().optional(),
+    }),
+  },
   responses: {
     [HSCode.OK]: jsonContent(
       z.array(selectSchema),
