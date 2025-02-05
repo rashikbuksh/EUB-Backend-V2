@@ -249,42 +249,6 @@ export const portfolio_bot_rel = relations(bot, ({ one }) => ({
   }),
 }));
 
-// ? News & Entry
-//* News
-export const news_id = portfolio.sequence('news_id', DEFAULT_SEQUENCE);
-
-export const news = portfolio.table('news', {
-  id: integer('id').default(sql`nextval('portfolio.news_id')`),
-  uuid: uuid_primary,
-  title: text('title').notNull(),
-  subtitle: text('subtitle').notNull(),
-  description: text('description').default(sql`null`),
-  content: text('content').notNull(),
-  cover_image: text('cover_image').notNull(),
-  published_date: text('published_date').notNull(),
-  department_uuid: defaultUUID('department_uuid').notNull().references(() => department.uuid, DEFAULT_OPERATION),
-  created_at: DateTime('created_at').notNull().$defaultFn(() => 'now()'),
-  updated_at: DateTime('updated_at').$onUpdate(() => 'now()'),
-  created_by: defaultUUID('created_by').references(() => users.uuid, DEFAULT_OPERATION),
-  remarks: text('remarks'),
-});
-
-//* News Entry
-export const news_entry = portfolio.table('news_entry', {
-  uuid: uuid_primary,
-  news_uuid: defaultUUID('news_uuid').notNull().references(() => news.uuid, DEFAULT_OPERATION),
-  documents: text('documents').notNull(),
-  created_at: DateTime('created_at').notNull().$defaultFn(() => 'now()'),
-  updated_at: DateTime('updated_at').$onUpdate(() => 'now()'),
-});
-
-export const portfolio_news_entry_rel = relations(news_entry, ({ one }) => ({
-  news: one(news, {
-    fields: [news_entry.news_uuid],
-    references: [news.uuid],
-  }),
-}));
-
 //* faculty
 
 export const faculty_id = portfolio.sequence(
@@ -434,19 +398,6 @@ export const club = portfolio.table('club', {
   remarks: text('remarks'),
 });
 
-export const portfolio_news_rel = relations(news, ({ one, many }) => ({
-
-  department: one(department, {
-    fields: [news.department_uuid],
-    references: [department.uuid],
-  }),
-  documents: many(news_entry),
-  created_by: one(users, {
-    fields: [news.created_by],
-    references: [users.uuid],
-  }),
-}));
-
 //* office
 
 export const office_id = portfolio.sequence('office_id', DEFAULT_SEQUENCE);
@@ -499,7 +450,57 @@ export const office_entry = portfolio.table('office_entry', {
   ),
   remarks: text('remarks'),
 });
+
+// ? News & Entry
+//* News
+export const news_id = portfolio.sequence('news_id', DEFAULT_SEQUENCE);
+
+export const news = portfolio.table('news', {
+  id: integer('id').default(sql`nextval('portfolio.news_id')`),
+  uuid: uuid_primary,
+  title: text('title').notNull(),
+  subtitle: text('subtitle').notNull(),
+  description: text('description').default(sql`null`),
+  content: text('content').notNull(),
+  cover_image: text('cover_image').notNull(),
+  published_date: text('published_date').notNull(),
+  department_uuid: defaultUUID('department_uuid').notNull().references(() => department.uuid, DEFAULT_OPERATION),
+  created_at: DateTime('created_at').notNull().$defaultFn(() => 'now()'),
+  updated_at: DateTime('updated_at').$onUpdate(() => 'now()'),
+  created_by: defaultUUID('created_by').references(() => users.uuid, DEFAULT_OPERATION),
+  remarks: text('remarks'),
+});
+
+//* News Entry
+export const news_entry = portfolio.table('news_entry', {
+  uuid: uuid_primary,
+  news_uuid: defaultUUID('news_uuid').notNull().references(() => news.uuid, DEFAULT_OPERATION),
+  documents: text('documents').notNull(),
+  created_at: DateTime('created_at').notNull().$defaultFn(() => 'now()'),
+  updated_at: DateTime('updated_at').$onUpdate(() => 'now()'),
+});
+
 //* relations
+export const portfolio_news_rel = relations(news, ({ one, many }) => ({
+
+  department: one(department, {
+    fields: [news.department_uuid],
+    references: [department.uuid],
+  }),
+  documents: many(news_entry),
+  created_by: one(users, {
+    fields: [news.created_by],
+    references: [users.uuid],
+  }),
+}));
+
+export const portfolio_news_entry_rel = relations(news_entry, ({ one }) => ({
+  news: one(news, {
+    fields: [news_entry.news_uuid],
+    references: [news.uuid],
+  }),
+}));
+
 export const portfolio_authorities_rel = relations(authorities, ({ one }) => ({
   user: one(users, {
     fields: [authorities.user_uuid],
