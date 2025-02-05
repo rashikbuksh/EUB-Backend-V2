@@ -23,7 +23,7 @@ export const list = createRoute({
   request: {
     query: z.object({
       department_name: z.string().optional(),
-      latest: z.boolean().optional(),
+      latest: z.string().optional(),
     }),
   },
 });

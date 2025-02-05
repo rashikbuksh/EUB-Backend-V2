@@ -327,6 +327,7 @@ export const department_teachers = portfolio.table('department_teachers', {
   teacher_uuid: defaultUUID('teacher_uuid').notNull().references(() => users.uuid, DEFAULT_OPERATION),
   department_head: boolean('department_head').default(false),
   education: text('education').notNull(),
+  publication: text('publication'),
   created_at: DateTime('created_at').notNull(),
   updated_at: DateTime('updated_at'),
   created_by: defaultUUID('created_by').references(() => users.uuid, DEFAULT_OPERATION),
