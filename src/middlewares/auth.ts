@@ -1,4 +1,4 @@
-import type { Context } from 'hono';
+import type { PublicUrlProps } from '@/lib/types';
 import type { JWTPayload } from 'hono/utils/jwt/types';
 
 import { compareSync, hash } from 'bcrypt-ts';
@@ -20,14 +20,23 @@ export async function CreateToken(payload: JWTPayload) {
   return sign(payload, env.PRIVATE_KEY);
 }
 
-export async function VerifyToken(token: string, c: Context) {
-  const { url, method } = c.env.outgoing.req;
-
-  if ((url === '/v1/signin' && method === 'POST') || (url === '/v1/portfolio' && method === 'GET')) {
-    return true;
-  }
-
+export async function VerifyToken(token: string) {
   const decodedPayload = await verify(token, env.PRIVATE_KEY);
 
   return !!decodedPayload;
 }
+
+export function isPublicRoute(url: string, method: string) {
+  const publicUrls: PublicUrlProps[] = [
+    { url: '/v1/signin', method: 'POST' },
+    { url: '/v1/portfolio', method: 'GET' },
+  ];
+
+  return publicUrls.some(route => url.startsWith(route.url) && route.method === method);
+}
+
+export const ALLOWED_ROUTES = [
+  'http://localhost:3005',
+  'http://localhost:3000',
+  'http://103.147.163.46:4020',
+];

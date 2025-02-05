@@ -15,3 +15,5 @@ export interface ColumnProps {
   default: string;
   datetime: 'created_at' | 'updated_at' | 'deadline' | 'start_date' | 'end_date' | 'date' | 'date_of_birth';
 }
+
+export interface PublicUrlProps { url: string; method: string }

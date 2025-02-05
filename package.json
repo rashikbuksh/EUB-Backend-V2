@@ -11,6 +11,8 @@
     "lint:fix": "eslint . --fix",
     "test": "cross-env NODE_ENV=test vitest",
     "build": "tsc && tsc-alias",
+    "prepare": "husky",
+    "precommit": "lint-staged --allow-empty",
     "db-generate": "drizzle-kit generate",
     "db-migrate": "drizzle-kit migrate",
     "db-drop": "drizzle-kit drop",
@@ -44,9 +46,16 @@
     "drizzle-kit": "^0.30.2",
     "eslint": "^9.19.0",
     "eslint-plugin-format": "^1.0.1",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.4.3",
     "tsc-alias": "^1.8.10",
     "tsx": "^4.19.2",
     "typescript": "^5.7.3",
     "vitest": "^3.0.4"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx,json,css,scss,md}": [
+      "eslint . --fix"
+    ]
   }
 }
