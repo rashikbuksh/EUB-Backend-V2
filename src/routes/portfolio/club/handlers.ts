@@ -72,6 +72,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     president_email: hrSchema.users.email,
     president_phone: hrSchema.users.phone,
     president_image: hrSchema.users.image,
+    president_designation: hrSchema.designation.name,
     message: club.message,
     created_at: club.created_at,
     updated_at: club.updated_at,
@@ -81,7 +82,8 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     .from(club)
     .leftJoin(department, eq(club.department_uuid, department.uuid))
     .leftJoin(faculty, eq(department.faculty_uuid, faculty.uuid))
-    .leftJoin(hrSchema.users, eq(club.president_uuid, hrSchema.users.uuid));
+    .leftJoin(hrSchema.users, eq(club.president_uuid, hrSchema.users.uuid))
+    .leftJoin(hrSchema.designation, eq(hrSchema.users.designation_uuid, hrSchema.designation.uuid));
 
   if (portfolio_faculty)
     resultPromise.where(eq(faculty.name, portfolio_faculty));
@@ -94,11 +96,34 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
 export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
 
-  const data = await db.query.club.findFirst({
-    where(fields, operators) {
-      return operators.eq(fields.uuid, uuid);
-    },
-  });
+  const resultPromise = db.select({
+    uuid: club.uuid,
+    id: club.id,
+    name: club.name,
+    department_uuid: club.department_uuid,
+    department_name: department.name,
+    faculty_uuid: faculty.uuid,
+    faculty_name: faculty.name,
+    president_uuid: club.president_uuid,
+    president_name: hrSchema.users.name,
+    president_email: hrSchema.users.email,
+    president_phone: hrSchema.users.phone,
+    president_image: hrSchema.users.image,
+    president_designation: hrSchema.designation.name,
+    message: club.message,
+    created_at: club.created_at,
+    updated_at: club.updated_at,
+    created_by: club.created_by,
+    remarks: club.remarks,
+  })
+    .from(club)
+    .leftJoin(department, eq(club.department_uuid, department.uuid))
+    .leftJoin(faculty, eq(department.faculty_uuid, faculty.uuid))
+    .leftJoin(hrSchema.users, eq(club.president_uuid, hrSchema.users.uuid))
+    .leftJoin(hrSchema.designation, eq(hrSchema.users.designation_uuid, hrSchema.designation.uuid))
+    .where(eq(club.uuid, uuid));
+
+  const data = await resultPromise;
 
   if (!data)
     return DataNotFound(c);
