@@ -77,7 +77,7 @@ export const patch = createRoute({
   method: 'patch',
   request: {
     params: param.uuid,
-    body: jsonContentRequired(
+    body: jsonContent(
       patchSchema,
       'The department_teachers updates',
     ),
