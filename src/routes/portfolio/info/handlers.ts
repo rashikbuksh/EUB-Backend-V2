@@ -5,13 +5,33 @@ import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
+import { uploadFile } from '@/utils/upload_file';
 
 import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
 
 import { department, faculty, info } from '../schema';
 
 export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
-  const value = c.req.valid('json');
+  // const value = c.req.valid('json');
+
+  const formData = await c.req.parseBody();
+
+  const file = formData.file;
+
+  const filePath = await uploadFile(file, 'public/info');
+
+  const value = {
+    uuid: formData.uuid,
+    description: formData.description,
+    page_name: formData.page_name,
+    department_uuid: formData.department_uuid,
+    file: filePath,
+    is_global: formData.is_global,
+    created_at: formData.created_at,
+    updated_at: formData.updated_at,
+    created_by: formData.created_by,
+    remarks: formData.remarks,
+  };
 
   const [data] = await db.insert(info).values(value).returning({
     name: info.created_by,
@@ -61,6 +81,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   const resultPromise = db.select({
     id: info.id,
     uuid: info.uuid,
+    description: info.description,
     page_name: info.page_name,
     department_uuid: info.department_uuid,
     department_name: department.name,

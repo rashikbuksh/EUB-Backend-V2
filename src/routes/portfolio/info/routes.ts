@@ -31,10 +31,15 @@ export const create = createRoute({
   path: '/portfolio/info',
   method: 'post',
   request: {
-    body: jsonContentRequired(
-      insertSchema,
-      'The info to create',
-    ),
+    body: {
+      content: {
+        'multipart/form-data': {
+          schema: {
+            ...insertSchema,
+          },
+        },
+      },
+    },
   },
   tags,
   responses: {
