@@ -11,7 +11,7 @@ import { uploadFile } from '@/utils/upload_file';
 
 import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute, SigninRoute } from './routes';
 
-import { users } from '../schema';
+import { department, designation, users } from '../schema';
 
 export const signin: AppRouteHandler<SigninRoute> = async (c: any) => {
   const updates = c.req.valid('json');
@@ -20,11 +20,24 @@ export const signin: AppRouteHandler<SigninRoute> = async (c: any) => {
     return ObjectNotFound(c);
 
   const { email, pass } = await c.req.json();
-  const data = await db.query.users.findFirst({
-    where(fields, operators) {
-      return operators.eq(fields.email, email);
-    },
-  });
+  const resultPromise = db.select({
+    email: users.email,
+    pass: users.pass,
+    status: users.status,
+    uuid: users.uuid,
+    name: users.name,
+    can_access: users.can_access,
+    department_uuid: users.department_uuid,
+    designation_uuid: users.designation_uuid,
+    department_name: department.name,
+    designation_name: designation.name,
+  })
+    .from(users)
+    .leftJoin(department, eq(users.department_uuid, department.uuid))
+    .leftJoin(designation, eq(users.designation_uuid, designation.uuid))
+    .where(eq(users.email, email));
+
+  const [data] = await resultPromise;
 
   if (!data)
     return DataNotFound(c);
@@ -52,7 +65,15 @@ export const signin: AppRouteHandler<SigninRoute> = async (c: any) => {
 
   const token = await CreateToken(payload);
 
-  return c.json({ payload, token }, HSCode.OK);
+  const user = {
+    uuid: data.uuid,
+    name: data.name,
+    department_name: data.department_name,
+    designation_name: data.designation_name,
+  };
+
+  const can_access = data.can_access;
+  return c.json({ payload, token, can_access, user }, HSCode.OK);
 };
 
 export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
