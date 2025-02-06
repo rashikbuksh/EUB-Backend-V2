@@ -72,7 +72,7 @@ export const patch = createRoute({
   method: 'patch',
   request: {
     params: param.uuid,
-    body: jsonContent(
+    body: jsonContentRequired(
       patchSchema,
       'The department updates',
     ),
