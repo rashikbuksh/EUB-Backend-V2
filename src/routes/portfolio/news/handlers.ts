@@ -106,22 +106,21 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
 
   const resultPromiseForCount = await resultPromise;
 
-  const baseQuery = constructSelectAllQuery(resultPromise, c.req.valid('query'), 'created_at');
+  const limit = Number.parseInt(c.req.valid('query').limit) || 10; // Default limit to 10 if not provided
+  const page = Number.parseInt(c.req.valid('query').page) || 1; // Default page to 1 if not provided
+
+  const baseQuery = constructSelectAllQuery(resultPromise, c.req.valid('query'), 'created_at')
+    .limit(limit)
+    .offset((page - 1) * limit);
 
   const data = await baseQuery;
 
   const pagination = {
     total_record: resultPromiseForCount.length,
-    current_page: Number(c.req.valid('query').page) || 1,
-    total_page: Math.ceil(
-      resultPromiseForCount.length / c.req.valid('query').limit,
-    ),
-    next_page:
-        Number(c.req.valid('query').page) + 1
-        > Math.ceil(resultPromiseForCount.length / c.req.valid('query').limit)
-          ? null
-          : Number(c.req.valid('query').page) + 1,
-    prev_page: c.req.valid('query').page - 1 <= 0 ? null : c.req.valid('query').page - 1,
+    current_page: page,
+    total_page: Math.ceil(resultPromiseForCount.length / limit),
+    next_page: page + 1 > Math.ceil(resultPromiseForCount.length / limit) ? null : page + 1,
+    prev_page: page - 1 <= 0 ? null : page - 1,
   };
 
   const response = {
