@@ -24,7 +24,7 @@ export const insertSchema = createInsertSchema(
   uuid: true,
   programs_uuid: true,
   created_at: true,
-}).omit({
+}).partial({
   fee_per_course: true,
   updated_at: true,
   remarks: true,

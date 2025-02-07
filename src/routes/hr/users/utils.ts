@@ -54,7 +54,7 @@ export const insertSchema = createInsertSchema(
   email: true,
   pass: true,
   created_at: true,
-}).omit({
+}).partial({
   image: true,
   status: true,
   can_access: true,

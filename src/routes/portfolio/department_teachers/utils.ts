@@ -28,12 +28,13 @@ export const insertSchema = createInsertSchema(
   education: true,
   created_at: true,
   created_by: true,
-}).omit({
-  id: true,
+}).partial({
   department_head: true,
   publication: true,
   updated_at: true,
   remarks: true,
+}).omit({
+  id: true,
 });
 
 export const patchSchema = insertSchema.partial();

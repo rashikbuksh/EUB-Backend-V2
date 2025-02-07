@@ -28,10 +28,10 @@ export async function deleteFile(filePath: string) {
   fs.unlinkSync(fullFilePath);
 }
 
-export async function updateFile(file: any, filePath: string) {
+export async function updateFile(file: any, filePath: string, folderName: string) {
   // delete the old file
   deleteFile(filePath);
 
   // upload the new file
-  return uploadFile(file, filePath);
+  return uploadFile(file, folderName);
 }

@@ -63,7 +63,7 @@ export const insertSchema = createInsertSchema(
   hsc_passing_year: true,
   hsc_institute: true,
   created_at: true,
-}).omit({
+}).partial({
   bsc_name: true,
   bsc_cgpa: true,
   bsc_passing_year: true,

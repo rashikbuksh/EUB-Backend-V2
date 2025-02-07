@@ -38,7 +38,7 @@ export const insertSchema = createInsertSchema(
   computer_lab_fee_per_semester: true,
   science_lab_fee_per_semester: true,
   created_at: true,
-}).omit({
+}).partial({
   studio_lab_fee: true,
   updated_at: true,
   remarks: true,

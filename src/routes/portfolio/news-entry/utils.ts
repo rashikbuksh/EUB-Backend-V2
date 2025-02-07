@@ -25,7 +25,7 @@ export const insertSchema = createInsertSchema(
   news_uuid: true,
   documents: true,
   created_at: true,
-}).omit({
+}).partial({
   updated_at: true,
 });
 

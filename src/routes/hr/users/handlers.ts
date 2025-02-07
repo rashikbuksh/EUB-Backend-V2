@@ -7,7 +7,7 @@ import * as HSCode from 'stoker/http-status-codes';
 import db from '@/db';
 import { ComparePass, CreateToken, HashPass } from '@/middlewares/auth';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
-import { uploadFile } from '@/utils/upload_file';
+import { deleteFile, updateFile, uploadFile } from '@/utils/upload_file';
 
 import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute, SigninRoute } from './routes';
 
@@ -119,6 +119,25 @@ export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
   const updates = c.req.valid('json');
 
+  // updates includes image then do it else exclude it
+  if (updates.image) {
+    // get user image name
+    const userData = await db.query.users.findFirst({
+      where(fields, operators) {
+        return operators.eq(fields.uuid, uuid);
+      },
+    });
+
+    if (userData && userData.image) {
+      const imagePath = await updateFile(updates.image, userData.image, 'public/users');
+      updates.image = imagePath;
+    }
+    else {
+      const imagePath = await uploadFile(updates.image, 'public/users');
+      updates.image = imagePath;
+    }
+  }
+
   if (Object.keys(updates).length === 0)
     return ObjectNotFound(c);
 
@@ -137,6 +156,18 @@ export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
 
 export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
+
+  // get user image name
+
+  const userData = await db.query.users.findFirst({
+    where(fields, operators) {
+      return operators.eq(fields.uuid, uuid);
+    },
+  });
+
+  if (userData && userData.image) {
+    deleteFile(userData.image);
+  }
 
   const [data] = await db.delete(users)
     .where(eq(users.uuid, uuid))

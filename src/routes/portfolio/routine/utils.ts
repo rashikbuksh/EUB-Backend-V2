@@ -35,7 +35,7 @@ export const insertSchema = createInsertSchema(
   type: true,
   description: true,
   created_at: true,
-}).omit({
+}).partial({
   updated_at: true,
   remarks: true,
 });

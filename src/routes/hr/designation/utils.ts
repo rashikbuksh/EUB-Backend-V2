@@ -23,7 +23,7 @@ export const insertSchema = createInsertSchema(
   uuid: true,
   name: true,
   created_at: true,
-}).omit({
+}).partial({
   updated_at: true,
   remarks: true,
 });

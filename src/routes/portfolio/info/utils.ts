@@ -29,11 +29,12 @@ export const insertSchema = createInsertSchema(
   file: true,
   created_at: true,
   created_by: true,
-}).omit({
-  id: true,
+}).partial({
   is_global: true,
   updated_at: true,
   remarks: true,
+}).omit({
+  id: true,
 });
 
 export const patchSchema = insertSchema.partial();
