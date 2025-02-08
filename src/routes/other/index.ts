@@ -1,3 +1,7 @@
 import hr from './hr';
 
-export default hr;
+const other = [
+  ...hr,
+];
+
+export default other;
