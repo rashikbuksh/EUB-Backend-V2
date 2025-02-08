@@ -88,8 +88,10 @@ export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
   formData.pass = await HashPass(formData.pass);
 
   const image = formData.image;
+  let imagePath = null;
 
-  const imagePath = await uploadFile(image, 'public/users');
+  if (image)
+    imagePath = await uploadFile(image, 'public/users');
 
   const value = {
     uuid: formData.uuid,
