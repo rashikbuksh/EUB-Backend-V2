@@ -9,9 +9,8 @@ import type { ValueLabelRoute } from './routes';
 
 export const valueLabel: AppRouteHandler<ValueLabelRoute> = async (c: any) => {
   const resultPromise = db.select({
-    uuid: users.uuid,
-    name: users.name,
-
+    value: users.uuid,
+    label: users.name,
   })
     .from(users);
 

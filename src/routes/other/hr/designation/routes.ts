@@ -12,8 +12,8 @@ export const valueLabel = createRoute({
   responses: {
     [HSCode.OK]: jsonContent(
       z.object({
-        uuid: z.string(),
-        name: z.string(),
+        value: z.string(),
+        label: z.string(),
       }),
       'The valueLabel of designation',
     ),
