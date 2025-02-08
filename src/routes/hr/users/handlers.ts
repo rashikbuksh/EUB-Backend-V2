@@ -182,22 +182,57 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 };
 
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
-  const data = await db.query.users.findMany();
+  const resultPromise = db.select({
+    uuid: users.uuid,
+    name: users.name,
+    department_name: department.name,
+    designation_name: designation.name,
+    office: users.office,
+    phone: users.phone,
+    email: users.email,
+    image: users.image,
+    created_at: users.created_at,
+    updated_at: users.updated_at,
+    status: users.status,
+    can_access: users.can_access,
+    remarks: users.remarks,
+  })
+    .from(users)
+    .leftJoin(department, eq(users.department_uuid, department.uuid))
+    .leftJoin(designation, eq(users.designation_uuid, designation.uuid));
 
-  return c.json(data, HSCode.OK);
+  const data = await resultPromise;
+
+  return c.json(data || {}, HSCode.OK);
 };
 
 export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
 
-  const data = await db.query.users.findFirst({
-    where(fields, operators) {
-      return operators.eq(fields.uuid, uuid);
-    },
-  });
+  const resultPromise = db.select({
+    uuid: users.uuid,
+    name: users.name,
+    department_name: department.name,
+    designation_name: designation.name,
+    office: users.office,
+    phone: users.phone,
+    email: users.email,
+    image: users.image,
+    created_at: users.created_at,
+    updated_at: users.updated_at,
+    status: users.status,
+    can_access: users.can_access,
+    remarks: users.remarks,
+  })
+    .from(users)
+    .leftJoin(department, eq(users.department_uuid, department.uuid))
+    .leftJoin(designation, eq(users.designation_uuid, designation.uuid))
+    .where(eq(users.uuid, uuid));
+
+  const [data] = await resultPromise;
 
   if (!data)
     return DataNotFound(c);
 
-  return c.json(data, HSCode.OK);
+  return c.json(data || null, HSCode.OK);
 };
