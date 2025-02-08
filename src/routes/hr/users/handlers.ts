@@ -85,6 +85,8 @@ export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
 
   const formData = await c.req.parseBody();
 
+  formData.pass = await HashPass(formData.pass);
+
   const image = formData.image;
 
   const imagePath = await uploadFile(image, 'public/users');
@@ -117,10 +119,10 @@ export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
 
 export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
-  const updates = c.req.valid('json');
+  const formData = await c.req.parseBody();
 
   // updates includes image then do it else exclude it
-  if (updates.image) {
+  if (formData.image) {
     // get user image name
     const userData = await db.query.users.findFirst({
       where(fields, operators) {
@@ -129,20 +131,20 @@ export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
     });
 
     if (userData && userData.image) {
-      const imagePath = await updateFile(updates.image, userData.image, 'public/users');
-      updates.image = imagePath;
+      const imagePath = await updateFile(formData.image, userData.image, 'public/users');
+      formData.image = imagePath;
     }
     else {
-      const imagePath = await uploadFile(updates.image, 'public/users');
-      updates.image = imagePath;
+      const imagePath = await uploadFile(formData.image, 'public/users');
+      formData.image = imagePath;
     }
   }
 
-  if (Object.keys(updates).length === 0)
+  if (Object.keys(formData).length === 0)
     return ObjectNotFound(c);
 
   const [data] = await db.update(users)
-    .set(updates)
+    .set(formData)
     .where(eq(users.uuid, uuid))
     .returning({
       name: users.name,
