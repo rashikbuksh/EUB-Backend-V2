@@ -9,7 +9,7 @@ import { ComparePass, CreateToken, HashPass } from '@/middlewares/auth';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 import { deleteFile, updateFile, uploadFile } from '@/utils/upload_file';
 
-import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute, SigninRoute } from './routes';
+import type { CreateRoute, GetCanAccessRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute, SigninRoute } from './routes';
 
 import { department, designation, users } from '../schema';
 
@@ -235,6 +235,23 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     .from(users)
     .leftJoin(department, eq(users.department_uuid, department.uuid))
     .leftJoin(designation, eq(users.designation_uuid, designation.uuid))
+    .where(eq(users.uuid, uuid));
+
+  const [data] = await resultPromise;
+
+  if (!data)
+    return DataNotFound(c);
+
+  return c.json(data || null, HSCode.OK);
+};
+
+export const getCanAccess: AppRouteHandler<GetCanAccessRoute> = async (c: any) => {
+  const { uuid } = c.req.valid('param');
+
+  const resultPromise = db.select({
+    can_access: users.can_access,
+  })
+    .from(users)
     .where(eq(users.uuid, uuid));
 
   const [data] = await resultPromise;

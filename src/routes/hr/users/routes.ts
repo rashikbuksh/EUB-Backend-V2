@@ -175,6 +175,23 @@ export const signout = createRoute({
   },
 });
 
+export const getCanAccess = createRoute({
+  path: '/hr/users/can-access',
+  method: 'get',
+  tags,
+  request: {
+    params: param.uuid,
+  },
+  responses: {
+    [HSCode.OK]: jsonContent(
+      z.object({
+        can_access: z.string(),
+      }),
+      'The valueLabel of user',
+    ),
+  },
+});
+
 export type ListRoute = typeof list;
 export type CreateRoute = typeof create;
 export type SigninRoute = typeof signin;
@@ -182,3 +199,4 @@ export type GetOneRoute = typeof getOne;
 export type PatchRoute = typeof patch;
 export type RemoveRoute = typeof remove;
 export type SignoutRoute = typeof signout;
+export type GetCanAccessRoute = typeof getCanAccess;
