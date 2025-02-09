@@ -1,4 +1,5 @@
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
+import z from 'zod';
 
 import { dateTimePattern } from '@/utils';
 
@@ -14,12 +15,13 @@ export const insertSchema = createInsertSchema(
     uuid: schema => schema.uuid.length(21),
     title: schema => schema.title.min(4),
     program_uuid: schema => schema.program_uuid.length(21),
-    admission_fee: schema => schema.admission_fee.min(5),
-    tuition_fee_per_credit: schema => schema.tuition_fee_per_credit.min(5),
-    student_activity_fee: schema => schema.student_activity_fee.min(5),
-    library_fee_per_semester: schema => schema.library_fee_per_semester.min(5),
-    computer_lab_fee_per_semester: schema => schema.computer_lab_fee_per_semester.min(5),
-    science_lab_fee_per_semester: schema => schema.science_lab_fee_per_semester.min(5),
+    admission_fee: z.number().min(5),
+    tuition_fee_per_credit: z.number().min(5),
+    student_activity_fee: z.number().min(5),
+    library_fee_per_semester: z.number().min(5),
+    computer_lab_fee_per_semester: z.number().min(5),
+    science_lab_fee_per_semester: z.number().min(5),
+    studio_lab_fee: z.number().min(5).optional(),
     created_at: schema => schema.created_at.regex(dateTimePattern, {
       message: 'created_at must be in the format "YYYY-MM-DD HH:MM:SS"',
     }),
