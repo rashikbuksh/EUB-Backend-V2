@@ -176,7 +176,7 @@ export const signout = createRoute({
 });
 
 export const getCanAccess = createRoute({
-  path: '/hr/users/can-access',
+  path: '/hr/users/can-access/{uuid}',
   method: 'get',
   tags,
   request: {
