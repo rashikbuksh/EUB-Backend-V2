@@ -76,7 +76,10 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     updated_at: tuition_fee.updated_at,
     created_by: tuition_fee.created_by,
     remarks: tuition_fee.remarks,
-  }).from(tuition_fee).leftJoin(program, eq(tuition_fee.program_uuid, program.uuid)).where(eq(program.category, category));
+  }).from(tuition_fee).leftJoin(program, eq(tuition_fee.program_uuid, program.uuid));
+
+  if (category)
+    resultPromise.where(eq(program.category, category));
 
   const data = await resultPromise;
 
