@@ -122,8 +122,26 @@ export const remove = createRoute({
   },
 });
 
+export const getFinancialInfoByCategory = createRoute({
+  path: '/portfolio/financial-info/category/{category}',
+  method: 'get',
+  request: {
+    params: z.object({
+      category: z.string(),
+    }),
+  },
+  tags,
+  responses: {
+    [HSCode.OK]: jsonContent(
+      z.array(selectSchema),
+      'The list of financial-info',
+    ),
+  },
+});
+
 export type ListRoute = typeof list;
 export type CreateRoute = typeof create;
 export type GetOneRoute = typeof getOne;
 export type PatchRoute = typeof patch;
 export type RemoveRoute = typeof remove;
+export type GetFinancialInfoByCategoryRoute = typeof getFinancialInfoByCategory;
