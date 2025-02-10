@@ -95,11 +95,31 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
 export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
 
-  const data = await db.query.tuition_fee.findFirst({
-    where(fields, operators) {
-      return operators.eq(fields.uuid, uuid);
-    },
-  });
+  const resultPromise = db.select({
+    uuid: tuition_fee.uuid,
+    title: tuition_fee.title,
+    program_uuid: tuition_fee.program_uuid,
+    program_name: program.name,
+    category: program.category,
+    admission_fee: PG_DECIMAL_TO_FLOAT(tuition_fee.admission_fee),
+    tuition_fee_per_credit: PG_DECIMAL_TO_FLOAT(tuition_fee.tuition_fee_per_credit),
+    student_activity_fee: PG_DECIMAL_TO_FLOAT(tuition_fee.student_activity_fee),
+    library_fee_per_semester: PG_DECIMAL_TO_FLOAT(tuition_fee.library_fee_per_semester),
+    computer_lab_fee_per_semester: PG_DECIMAL_TO_FLOAT(tuition_fee.computer_lab_fee_per_semester),
+    science_lab_fee_per_semester: PG_DECIMAL_TO_FLOAT(tuition_fee.science_lab_fee_per_semester),
+    studio_lab_fee: PG_DECIMAL_TO_FLOAT(tuition_fee.studio_lab_fee),
+    created_at: tuition_fee.created_at,
+    updated_at: tuition_fee.updated_at,
+    created_by: tuition_fee.created_by,
+    created_by_name: hrSchema.users.name,
+    remarks: tuition_fee.remarks,
+  })
+    .from(tuition_fee)
+    .leftJoin(program, eq(tuition_fee.program_uuid, program.uuid))
+    .leftJoin(hrSchema.users, eq(tuition_fee.created_by, hrSchema.users.uuid))
+    .where(eq(tuition_fee.uuid, uuid));
+
+  const data = await resultPromise;
 
   if (!data)
     return DataNotFound(c);
