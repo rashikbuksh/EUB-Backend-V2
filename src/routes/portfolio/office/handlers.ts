@@ -9,6 +9,7 @@ import { uploadFile } from '@/utils/upload_file';
 
 import type {
   CreateRoute,
+  GetOfficeAndOfficeEntryDetailsByOfficeUuidRoute,
   GetOneRoute,
   ListRoute,
   PatchRoute,
@@ -97,5 +98,18 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
   if (!data)
     return DataNotFound(c);
 
+  return c.json(data || {}, HSCode.OK);
+};
+
+export const getOfficeAndOfficeEntryDetailsByOfficeUuid: AppRouteHandler<GetOfficeAndOfficeEntryDetailsByOfficeUuidRoute> = async (c: any) => {
+  const { uuid } = c.req.valid('param');
+
+  const response = await fetch(`http://localhost:3000/portfolio/office-entry/by/office-uuid/${uuid}`);
+
+  if (!response.ok) {
+    return c.json({ message: 'office not found' }, HSCode.NOT_FOUND);
+  }
+
+  const data = await response.json();
   return c.json(data || {}, HSCode.OK);
 };
