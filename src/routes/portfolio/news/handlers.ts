@@ -80,7 +80,7 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   // const data = await db.query.news.findMany();
-  const { department_name, latest } = c.req.valid('query');
+  const { department_name, latest, is_pagination } = c.req.valid('query');
   const resultPromise = db.select({
     id: news.id,
     uuid: news.uuid,
@@ -109,24 +109,30 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   const limit = Number.parseInt(c.req.valid('query').limit) || 10; // Default limit to 10 if not provided
   const page = Number.parseInt(c.req.valid('query').page) || 1; // Default page to 1 if not provided
 
-  const baseQuery = constructSelectAllQuery(resultPromise, c.req.valid('query'), 'created_at')
-    .limit(limit)
-    .offset((page - 1) * limit);
+  const baseQuery = is_pagination === 'false'
+    ? constructSelectAllQuery(resultPromise, c.req.valid('query'), 'created_at')
+        .limit(limit)
+        .offset((page - 1) * limit)
+    : resultPromise;
 
   const data = await baseQuery;
 
-  const pagination = {
-    total_record: resultPromiseForCount.length,
-    current_page: page,
-    total_page: Math.ceil(resultPromiseForCount.length / limit),
-    next_page: page + 1 > Math.ceil(resultPromiseForCount.length / limit) ? null : page + 1,
-    prev_page: page - 1 <= 0 ? null : page - 1,
-  };
+  const pagination = is_pagination === 'false'
+    ? null
+    : {
+        total_record: resultPromiseForCount.length,
+        current_page: page,
+        total_page: Math.ceil(resultPromiseForCount.length / limit),
+        next_page: page + 1 > Math.ceil(resultPromiseForCount.length / limit) ? null : page + 1,
+        prev_page: page - 1 <= 0 ? null : page - 1,
+      };
 
-  const response = {
-    data,
-    pagination,
-  };
+  const response = is_pagination === 'false'
+    ? data
+    : {
+        data,
+        pagination,
+      };
 
   return c.json(response || [], HSCode.OK);
 };

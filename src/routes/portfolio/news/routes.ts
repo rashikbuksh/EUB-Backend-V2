@@ -29,6 +29,7 @@ export const list = createRoute({
       q: z.string().optional(),
       sort: z.string().optional(),
       orderby: z.string().optional(),
+      is_pagination: z.string().optional(),
     }),
   },
 });
