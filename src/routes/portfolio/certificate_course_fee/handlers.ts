@@ -83,11 +83,23 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
 export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
 
-  const data = await db.query.certificate_course_fee.findFirst({
-    where(fields, operators) {
-      return operators.eq(fields.uuid, uuid);
-    },
-  });
+  const resultPromise = db.select({
+    uuid: certificate_course_fee.uuid,
+    program_uuid: certificate_course_fee.programs_uuid,
+    program_name: program.name,
+    fee_per_course: PG_DECIMAL_TO_FLOAT(certificate_course_fee.fee_per_course),
+    created_at: certificate_course_fee.created_at,
+    updated_at: certificate_course_fee.updated_at,
+    created_by: certificate_course_fee.created_by,
+    created_by_name: hrSchema.users.name,
+    remarks: certificate_course_fee.remarks,
+  })
+    .from(certificate_course_fee)
+    .leftJoin(program, eq(certificate_course_fee.programs_uuid, program.uuid))
+    .leftJoin(hrSchema.users, eq(certificate_course_fee.created_by, hrSchema.users.uuid))
+    .where(eq(certificate_course_fee.uuid, uuid));
+
+  const [data] = await resultPromise;
 
   if (!data)
     return DataNotFound(c);
