@@ -98,7 +98,7 @@ export const remove = createRoute({
 });
 
 export const getOfficeAndOfficeEntryDetailsByOfficeUuid = createRoute({
-  path: '/portfolio/office-office-entry/details/by/office-uuid/{uuid}',
+  path: '/portfolio/office-and-office-entry/details/by-office-uuid/{uuid}',
   method: 'get',
   request: {
     params: param.uuid,

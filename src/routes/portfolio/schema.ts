@@ -495,7 +495,12 @@ export const portfolio_authorities_rel = relations(authorities, ({ one }) => ({
   }),
 }));
 
-export const portfolio_office_rel = relations(office, ({ one }) => ({
+export const portfolio_office_rel = relations(office, ({ one, many }) => ({
+  // office_entries: many(office_entry, {
+  //   fields: [office.uuid],
+  //   references: [office_entry.office_uuid],
+  // }),
+  office_entries: many(office_entry),
   created_by: one(users, {
     fields: [office.created_by],
     references: [users.uuid],
