@@ -171,7 +171,7 @@ export const getFinancialInfoByCategory: AppRouteHandler<GetFinancialInfoByCateg
 
   const data = await resultPromise;
 
-  // make array of all data using faculty name
+  // group data using faculty name
   const dataByFaculty = data.reduce((acc: any, item: any) => {
     if (!acc[item.faculty_name]) {
       acc[item.faculty_name] = [];
@@ -180,7 +180,5 @@ export const getFinancialInfoByCategory: AppRouteHandler<GetFinancialInfoByCateg
     return acc;
   }, {});
 
-  console.log(dataByFaculty);
-
-  return c.json(data || [], HSCode.OK);
+  return c.json(dataByFaculty || [], HSCode.OK);
 };
