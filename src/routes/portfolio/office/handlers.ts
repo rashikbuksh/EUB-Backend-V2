@@ -1,9 +1,11 @@
 import type { AppRouteHandler } from '@/lib/types';
 
 import { eq } from 'drizzle-orm';
+import { alias } from 'drizzle-orm/pg-core';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
+import * as hrSchema from '@/routes/hr/schema';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 import { uploadFile } from '@/utils/upload_file';
 
@@ -16,7 +18,9 @@ import type {
   RemoveRoute,
 } from './routes';
 
-import { office } from '../schema';
+import { office, office_entry } from '../schema';
+
+// const user_information = alias(hrSchema.users, 'user_information');
 
 export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
   // const value = c.req.valid('json');
@@ -103,13 +107,17 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
 
 export const getOfficeAndOfficeEntryDetailsByOfficeUuid: AppRouteHandler<GetOfficeAndOfficeEntryDetailsByOfficeUuidRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
+  const data = await db.query.office.findFirst({
+    where(fields, operators) {
+      return operators.eq(fields.uuid, uuid);
+    },
+    with: {
+      office_entries: true,
+    },
+  });
 
-  const response = await fetch(`http://localhost:3000/portfolio/office-entry/by/office-uuid/${uuid}`);
+  if (!data)
+    return DataNotFound(c);
 
-  if (!response.ok) {
-    return c.json({ message: 'office not found' }, HSCode.NOT_FOUND);
-  }
-
-  const data = await response.json();
   return c.json(data || {}, HSCode.OK);
 };
