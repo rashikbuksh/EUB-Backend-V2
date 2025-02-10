@@ -71,7 +71,6 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     user_designation: hrSchema.designation.name,
     category: bot.category,
     status: bot.status,
-    file: bot.file,
     description: bot.description,
     created_by: bot.created_by,
     created_by_name: created_user.name,
