@@ -62,6 +62,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   const { category } = c.req.valid('query');
 
   const resultPromise = db.select({
+    id: tuition_fee.id,
     uuid: tuition_fee.uuid,
     title: tuition_fee.title,
     program_uuid: tuition_fee.program_uuid,
@@ -96,6 +97,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
 
   const resultPromise = db.select({
+    id: tuition_fee.id,
     uuid: tuition_fee.uuid,
     title: tuition_fee.title,
     program_uuid: tuition_fee.program_uuid,

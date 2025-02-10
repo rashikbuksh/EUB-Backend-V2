@@ -61,6 +61,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   // const data = await db.query.certificate_course_fee.findMany();
 
   const resultPromise = db.select({
+    id: certificate_course_fee.id,
     uuid: certificate_course_fee.uuid,
     program_uuid: certificate_course_fee.programs_uuid,
     program_name: program.name,
@@ -84,6 +85,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
 
   const resultPromise = db.select({
+    id: certificate_course_fee.id,
     uuid: certificate_course_fee.uuid,
     program_uuid: certificate_course_fee.programs_uuid,
     program_name: program.name,

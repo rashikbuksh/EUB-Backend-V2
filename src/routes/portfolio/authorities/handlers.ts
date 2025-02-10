@@ -63,6 +63,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   const { category } = c.req.valid('query');
 
   const resultPromise = db.select({
+    id: authorities.id,
     uuid: authorities.uuid,
     user_uuid: authorities.user_uuid,
     category: authorities.category,
@@ -113,6 +114,7 @@ export const getOneByCategory: AppRouteHandler<GetOneByCategoryRoute> = async (c
   const { category } = c.req.valid('param');
 
   const resultPromise = db.select({
+    id: authorities.id,
     uuid: authorities.uuid,
     user_uuid: authorities.user_uuid,
     category: authorities.category,
