@@ -94,8 +94,26 @@ export const remove = createRoute({
   },
 });
 
+export const getByOfficeUuid = createRoute({
+  path: '/portfolio/office-entry/by/office-uuid/{uuid}',
+  method: 'get',
+  request: {
+    params: param.uuid,
+  },
+  tags,
+  responses: {
+    [HSCode.OK]: jsonContent(z.array(selectSchema), 'The list of office-entry'),
+    [HSCode.NOT_FOUND]: jsonContent(notFoundSchema, 'office-entry not found'),
+    [HSCode.UNPROCESSABLE_ENTITY]: jsonContent(
+      createErrorSchema(param.uuid),
+      'Invalid id error',
+    ),
+  },
+});
+
 export type ListRoute = typeof list;
 export type CreateRoute = typeof create;
 export type GetOneRoute = typeof getOne;
 export type PatchRoute = typeof patch;
 export type RemoveRoute = typeof remove;
+export type GetByOfficeUuidRoute = typeof getByOfficeUuid;

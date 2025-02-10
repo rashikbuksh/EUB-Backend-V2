@@ -10,6 +10,7 @@ import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 
 import type {
   CreateRoute,
+  GetByOfficeUuidRoute,
   GetOneRoute,
   ListRoute,
   PatchRoute,
@@ -116,4 +117,38 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     return DataNotFound(c);
 
   return c.json(data || {}, HSCode.OK);
+};
+
+export const getByOfficeUuid: AppRouteHandler<GetByOfficeUuidRoute> = async (c: any) => {
+  const { uuid } = c.req.valid('param');
+
+  const resultPromise = db.select({
+    id: office_entry.id,
+    uuid: office_entry.uuid,
+    office_uuid: office_entry.office_uuid,
+    office_category: office.category,
+    user_uuid: office_entry.user_uuid,
+    user_name: user_information.name,
+    user_department: hrSchema.department.name,
+    user_designation: hrSchema.designation.name,
+    user_phone: user_information.phone,
+    user_email: user_information.email,
+    image: office.image,
+    created_at: office_entry.created_at,
+    created_by: office_entry.created_by,
+    created_by_name: hrSchema.users.name,
+    updated_at: office_entry.updated_at,
+    remarks: office_entry.remarks,
+  })
+    .from(office_entry)
+    .leftJoin(office, eq(office_entry.office_uuid, office.uuid))
+    .leftJoin(user_information, eq(office_entry.user_uuid, user_information.uuid))
+    .leftJoin(hrSchema.users, eq(office_entry.created_by, hrSchema.users.uuid))
+    .leftJoin(hrSchema.department, eq(user_information.department_uuid, hrSchema.department.uuid))
+    .leftJoin(hrSchema.designation, eq(user_information.designation_uuid, hrSchema.designation.uuid))
+    .where(eq(office_entry.office_uuid, uuid));
+
+  const data = await resultPromise;
+
+  return c.json(data || [], HSCode.OK);
 };
