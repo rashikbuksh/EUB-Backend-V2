@@ -5,7 +5,7 @@ import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
-import { uploadFile } from '@/utils/upload_file';
+import { deleteFile, updateFile, uploadFile } from '@/utils/upload_file';
 
 import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
 
@@ -39,13 +39,32 @@ export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
 
 export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
-  const updates = c.req.valid('json');
+  const formData = await c.req.parseBody();
 
-  if (Object.keys(updates).length === 0)
+  // updates includes documents then do it else exclude it
+  if (formData.documents) {
+    // get newsEntry documents name
+    const newsEntryData = await db.query.news_entry.findFirst({
+      where(fields, operators) {
+        return operators.eq(fields.uuid, uuid);
+      },
+    });
+
+    if (newsEntryData && newsEntryData.documents) {
+      const documentsPath = await updateFile(formData.documents, newsEntryData.documents, 'public/news-entry');
+      formData.documents = documentsPath;
+    }
+    else {
+      const documentsPath = await uploadFile(formData.documents, 'public/news-entry');
+      formData.documents = documentsPath;
+    }
+  }
+
+  if (Object.keys(formData).length === 0)
     return ObjectNotFound(c);
 
   const [data] = await db.update(news_entry)
-    .set(updates)
+    .set(formData)
     .where(eq(news_entry.uuid, uuid))
     .returning({
       name: news_entry.uuid,
@@ -59,6 +78,18 @@ export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
 
 export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
+
+  // get newsEntry file name
+
+  const newsEntryData = await db.query.news_entry.findFirst({
+    where(fields, operators) {
+      return operators.eq(fields.uuid, uuid);
+    },
+  });
+
+  if (newsEntryData && newsEntryData.documents) {
+    deleteFile(newsEntryData.documents);
+  }
 
   const [data] = await db.delete(news_entry)
     .where(eq(news_entry.uuid, uuid))
