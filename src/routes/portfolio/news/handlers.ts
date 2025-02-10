@@ -230,7 +230,7 @@ export async function getNewsAndNewsEntryDetailsByNewsUuid(c: any) {
 
   const newsData = await newsResultPromise;
 
-  const newsEntryResultPromise = db.query.news_entry.findFirst({
+  const newsEntryResultPromise = db.query.news_entry.findMany({
     where(fields, operators) {
       return operators.eq(fields.news_uuid, uuid);
     },
