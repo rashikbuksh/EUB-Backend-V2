@@ -1,6 +1,7 @@
 import type { AppRouteHandler } from '@/lib/types';
 
 import { eq, sql } from 'drizzle-orm';
+import { alias } from 'drizzle-orm/pg-core';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
@@ -10,6 +11,8 @@ import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 import type { CreateRoute, GetOneByCategoryRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
 
 import { authorities, department_teachers } from '../schema';
+
+const created_user = alias(hrSchema.users, 'created_user');
 
 export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
   const value = c.req.valid('json');
@@ -70,12 +73,17 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     image: hrSchema.users.image,
     education: department_teachers.education,
     contact: sql`jsonb_build_object('email', ${hrSchema.users.email}, 'phone', ${hrSchema.users.phone})`,
+    created_by: authorities.created_by,
+    created_by_name: created_user.name,
+    remarks: authorities.remarks,
+
   })
     .from(authorities)
     .leftJoin(hrSchema.users, eq(authorities.user_uuid, hrSchema.users.uuid))
     .leftJoin(hrSchema.designation, eq(hrSchema.users.designation_uuid, hrSchema.designation.uuid))
     .leftJoin(hrSchema.department, eq(hrSchema.users.department_uuid, hrSchema.department.uuid))
-    .leftJoin(department_teachers, eq(authorities.user_uuid, department_teachers.teacher_uuid));
+    .leftJoin(department_teachers, eq(authorities.user_uuid, department_teachers.teacher_uuid))
+    .leftJoin(created_user, eq(authorities.created_by, created_user.uuid));
 
   if (category) {
     resultPromise.where(eq(authorities.category, category));
@@ -115,12 +123,16 @@ export const getOneByCategory: AppRouteHandler<GetOneByCategoryRoute> = async (c
     image: hrSchema.users.image,
     education: department_teachers.education,
     contact: sql`jsonb_build_object('email', ${hrSchema.users.email}, 'phone', ${hrSchema.users.phone})`,
+    created_by: authorities.created_by,
+    created_by_name: created_user.name,
+    remarks: authorities.remarks,
   })
     .from(authorities)
     .leftJoin(hrSchema.users, eq(authorities.user_uuid, hrSchema.users.uuid))
     .leftJoin(hrSchema.designation, eq(hrSchema.users.designation_uuid, hrSchema.designation.uuid))
     .leftJoin(hrSchema.department, eq(hrSchema.users.department_uuid, hrSchema.department.uuid))
     .leftJoin(department_teachers, eq(hrSchema.users.uuid, department_teachers.teacher_uuid))
+    .leftJoin(created_user, eq(authorities.created_by, created_user.uuid))
     .where(eq(authorities.category, category));
 
   const data: any[] = await resultPromise;

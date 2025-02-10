@@ -1,6 +1,7 @@
 import type { AppRouteHandler } from '@/lib/types';
 
 import { eq } from 'drizzle-orm';
+import { alias } from 'drizzle-orm/pg-core';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
@@ -10,6 +11,8 @@ import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
 
 import { bot } from '../schema';
+
+const created_user = alias(hrSchema.users, 'created_user');
 
 export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
   const value = c.req.valid('json');
@@ -69,12 +72,15 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     status: bot.status,
     file: bot.file,
     description: bot.description,
+    created_by: bot.created_by,
+    created_by_name: created_user.name,
     created_at: bot.created_at,
     updated_at: bot.updated_at,
     remarks: bot.remarks,
   })
     .from(bot)
     .leftJoin(hrSchema.users, eq(bot.user_uuid, hrSchema.users.uuid))
+    .leftJoin(created_user, eq(bot.created_by, created_user.uuid))
     .leftJoin(hrSchema.designation, eq(hrSchema.users.designation_uuid, hrSchema.designation.uuid));
 
   if (category) {
