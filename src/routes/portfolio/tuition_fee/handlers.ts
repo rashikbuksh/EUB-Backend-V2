@@ -4,6 +4,7 @@ import { eq } from 'drizzle-orm';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
+import { PG_DECIMAL_TO_FLOAT } from '@/lib/variables';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 
 import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
@@ -65,13 +66,13 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     program_uuid: tuition_fee.program_uuid,
     program_name: program.name,
     category: program.category,
-    admission_fee: tuition_fee.admission_fee,
-    tuition_fee_per_credit: tuition_fee.tuition_fee_per_credit,
-    student_activity_fee: tuition_fee.student_activity_fee,
-    library_fee_per_semester: tuition_fee.library_fee_per_semester,
-    computer_lab_fee_per_semester: tuition_fee.computer_lab_fee_per_semester,
-    science_lab_fee_per_semester: tuition_fee.science_lab_fee_per_semester,
-    studio_lab_fee: tuition_fee.studio_lab_fee,
+    admission_fee: PG_DECIMAL_TO_FLOAT(tuition_fee.admission_fee),
+    tuition_fee_per_credit: PG_DECIMAL_TO_FLOAT(tuition_fee.tuition_fee_per_credit),
+    student_activity_fee: PG_DECIMAL_TO_FLOAT(tuition_fee.student_activity_fee),
+    library_fee_per_semester: PG_DECIMAL_TO_FLOAT(tuition_fee.library_fee_per_semester),
+    computer_lab_fee_per_semester: PG_DECIMAL_TO_FLOAT(tuition_fee.computer_lab_fee_per_semester),
+    science_lab_fee_per_semester: PG_DECIMAL_TO_FLOAT(tuition_fee.science_lab_fee_per_semester),
+    studio_lab_fee: PG_DECIMAL_TO_FLOAT(tuition_fee.studio_lab_fee),
     created_at: tuition_fee.created_at,
     updated_at: tuition_fee.updated_at,
     created_by: tuition_fee.created_by,
