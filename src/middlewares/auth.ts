@@ -32,6 +32,7 @@ export function isPublicRoute(url: string, method: string) {
     { url: '/v1/portfolio', method: 'GET' },
     { url: '/v1/portfolio/online-admission', method: 'POST' },
     { url: '/v1/portfolio/contact-us', method: 'POST' },
+    { url: '/v1/other/', method: 'GET' },
   ];
 
   return publicUrls.some(route => url.startsWith(route.url) && route.method === method);
