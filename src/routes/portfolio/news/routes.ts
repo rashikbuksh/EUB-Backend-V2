@@ -1,5 +1,5 @@
 import * as HSCode from 'stoker/http-status-codes';
-import { jsonContent, jsonContentRequired } from 'stoker/openapi/helpers';
+import { jsonContent } from 'stoker/openapi/helpers';
 import { createErrorSchema } from 'stoker/openapi/schemas';
 
 import { notFoundSchema } from '@/lib/constants';
@@ -88,11 +88,15 @@ export const patch = createRoute({
   path: '/portfolio/news/{uuid}',
   method: 'patch',
   request: {
-    params: param.uuid,
-    body: jsonContentRequired(
-      patchSchema,
-      'The news updates',
-    ),
+    body: {
+      content: {
+        'multipart/form-data': {
+          schema: {
+            ...patchSchema,
+          },
+        },
+      },
+    },
   },
   tags,
   responses: {

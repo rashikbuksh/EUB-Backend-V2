@@ -6,7 +6,7 @@ import * as HSCode from 'stoker/http-status-codes';
 import db from '@/db';
 import { constructSelectAllQuery } from '@/lib/variables';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
-import { uploadFile } from '@/utils/upload_file';
+import { deleteFile, updateFile, uploadFile } from '@/utils/upload_file';
 
 import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
 
@@ -37,7 +37,7 @@ export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
   };
 
   const [data] = await db.insert(news).values(value).returning({
-    name: news.created_by,
+    name: news.title,
   });
 
   return c.json(createToast('create', data.name ?? ''), HSCode.OK);
@@ -45,16 +45,36 @@ export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
 
 export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
-  const updates = c.req.valid('json');
+  const formData = await c.req.parseBody();
 
-  if (Object.keys(updates).length === 0)
+  // cover_image
+  // updates includes coverImage then do it else exclude it
+  if (formData.cover_image) {
+    // get news cover_image name
+    const newsData = await db.query.news.findFirst({
+      where(fields, operators) {
+        return operators.eq(fields.uuid, uuid);
+      },
+    });
+
+    if (newsData && newsData.cover_image) {
+      const coverImagePath = await updateFile(formData.cover_image, newsData.cover_image, 'public/news');
+      formData.cover_image = coverImagePath;
+    }
+    else {
+      const coverImagePath = await uploadFile(formData.cover_image, 'public/news');
+      formData.cover_image = coverImagePath;
+    }
+  }
+
+  if (Object.keys(formData).length === 0)
     return ObjectNotFound(c);
 
   const [data] = await db.update(news)
-    .set(updates)
+    .set(formData)
     .where(eq(news.uuid, uuid))
     .returning({
-      name: news.created_by,
+      name: news.title,
     });
 
   if (!data)
@@ -66,10 +86,22 @@ export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
 export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
 
+  // get news cover_image name
+
+  const newsData = await db.query.news.findFirst({
+    where(fields, operators) {
+      return operators.eq(fields.uuid, uuid);
+    },
+  });
+
+  if (newsData && newsData.cover_image) {
+    deleteFile(newsData.cover_image);
+  }
+
   const [data] = await db.delete(news)
     .where(eq(news.uuid, uuid))
     .returning({
-      name: news.created_by,
+      name: news.title,
     });
 
   if (!data)
