@@ -1,6 +1,7 @@
 import type { AppRouteHandler } from '@/lib/types';
 
 import { eq } from 'drizzle-orm';
+import { alias } from 'drizzle-orm/pg-core';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
@@ -10,6 +11,8 @@ import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
 
 import { department, department_teachers } from '../schema';
+
+const createdByUser = alias(hrSchema.users, 'createdByUser');
 
 export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
   const value = c.req.valid('json');
@@ -76,12 +79,14 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     journal: department_teachers.journal,
     created_at: department_teachers.created_at,
     updated_at: department_teachers.updated_at,
+    created_by: createdByUser.name,
     remarks: department_teachers.remarks,
   })
     .from(department_teachers)
     .leftJoin(department, eq(department_teachers.department_uuid, department.uuid))
     .leftJoin(hrSchema.users, eq(department_teachers.teacher_uuid, hrSchema.users.uuid))
-    .leftJoin(hrSchema.designation, eq(hrSchema.users.designation_uuid, hrSchema.designation.uuid));
+    .leftJoin(hrSchema.designation, eq(hrSchema.users.designation_uuid, hrSchema.designation.uuid))
+    .leftJoin(createdByUser, eq(department_teachers.created_by, createdByUser.uuid));
 
   if (portfolio_department)
     resultPromise.where(eq(department.name, portfolio_department));
@@ -111,12 +116,15 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     journal: department_teachers.journal,
     created_at: department_teachers.created_at,
     updated_at: department_teachers.updated_at,
+    created_by: department_teachers.created_by,
+    created_by_name: createdByUser.name,
     remarks: department_teachers.remarks,
   })
     .from(department_teachers)
     .leftJoin(department, eq(department_teachers.department_uuid, department.uuid))
     .leftJoin(hrSchema.users, eq(department_teachers.teacher_uuid, hrSchema.users.uuid))
     .leftJoin(hrSchema.designation, eq(hrSchema.users.designation_uuid, hrSchema.designation.uuid))
+    .leftJoin(createdByUser, eq(department_teachers.created_by, createdByUser.uuid))
     .where(eq(department_teachers.uuid, uuid));
 
   const data = await resultPromise;
@@ -124,5 +132,5 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
   if (!data)
     return DataNotFound(c);
 
-  return c.json(data || {}, HSCode.OK);
+  return c.json(data[0] || {}, HSCode.OK);
 };
