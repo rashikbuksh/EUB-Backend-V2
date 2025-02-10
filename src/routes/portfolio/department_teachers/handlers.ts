@@ -79,7 +79,8 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     journal: department_teachers.journal,
     created_at: department_teachers.created_at,
     updated_at: department_teachers.updated_at,
-    created_by: createdByUser.name,
+    created_by: department_teachers.created_by,
+    created_by_name: createdByUser.name,
     remarks: department_teachers.remarks,
   })
     .from(department_teachers)

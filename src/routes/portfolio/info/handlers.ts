@@ -5,7 +5,7 @@ import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
-import { uploadFile } from '@/utils/upload_file';
+import { deleteFile, updateFile, uploadFile } from '@/utils/upload_file';
 
 import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
 
@@ -34,7 +34,7 @@ export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
   };
 
   const [data] = await db.insert(info).values(value).returning({
-    name: info.created_by,
+    name: info.id,
   });
 
   return c.json(createToast('create', data.name ?? ''), HSCode.OK);
@@ -42,16 +42,35 @@ export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
 
 export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
-  const updates = c.req.valid('json');
+  const formData = await c.req.parseBody();
 
-  if (Object.keys(updates).length === 0)
+  // updates includes file then do it else exclude it
+  if (formData.file) {
+    // get info file name
+    const infoData = await db.query.info.findFirst({
+      where(fields, operators) {
+        return operators.eq(fields.uuid, uuid);
+      },
+    });
+
+    if (infoData && infoData.file) {
+      const filePath = await updateFile(formData.file, infoData.file, 'public/info');
+      formData.file = filePath;
+    }
+    else {
+      const filePath = await uploadFile(formData.file, 'public/info');
+      formData.file = filePath;
+    }
+  }
+
+  if (Object.keys(formData).length === 0)
     return ObjectNotFound(c);
 
   const [data] = await db.update(info)
-    .set(updates)
+    .set(formData)
     .where(eq(info.uuid, uuid))
     .returning({
-      name: info.created_by,
+      name: info.id,
     });
 
   if (!data)
@@ -63,10 +82,22 @@ export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
 export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
 
+  // get info file name
+
+  const infoData = await db.query.info.findFirst({
+    where(fields, operators) {
+      return operators.eq(fields.uuid, uuid);
+    },
+  });
+
+  if (infoData && infoData.file) {
+    deleteFile(infoData.file);
+  }
+
   const [data] = await db.delete(info)
     .where(eq(info.uuid, uuid))
     .returning({
-      name: info.created_by,
+      name: info.id,
     });
 
   if (!data)

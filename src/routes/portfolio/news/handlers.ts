@@ -6,7 +6,7 @@ import * as HSCode from 'stoker/http-status-codes';
 import db from '@/db';
 import { constructSelectAllQuery } from '@/lib/variables';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
-import { uploadFile } from '@/utils/upload_file';
+import { deleteFile, updateFile, uploadFile } from '@/utils/upload_file';
 
 import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
 
@@ -37,7 +37,7 @@ export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
   };
 
   const [data] = await db.insert(news).values(value).returning({
-    name: news.created_by,
+    name: news.title,
   });
 
   return c.json(createToast('create', data.name ?? ''), HSCode.OK);
@@ -45,16 +45,36 @@ export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
 
 export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
-  const updates = c.req.valid('json');
+  const formData = await c.req.parseBody();
 
-  if (Object.keys(updates).length === 0)
+  // cover_image
+  // updates includes coverImage then do it else exclude it
+  if (formData.cover_image) {
+    // get news cover_image name
+    const newsData = await db.query.news.findFirst({
+      where(fields, operators) {
+        return operators.eq(fields.uuid, uuid);
+      },
+    });
+
+    if (newsData && newsData.cover_image) {
+      const coverImagePath = await updateFile(formData.cover_image, newsData.cover_image, 'public/news');
+      formData.cover_image = coverImagePath;
+    }
+    else {
+      const coverImagePath = await uploadFile(formData.cover_image, 'public/news');
+      formData.cover_image = coverImagePath;
+    }
+  }
+
+  if (Object.keys(formData).length === 0)
     return ObjectNotFound(c);
 
   const [data] = await db.update(news)
-    .set(updates)
+    .set(formData)
     .where(eq(news.uuid, uuid))
     .returning({
-      name: news.created_by,
+      name: news.title,
     });
 
   if (!data)
@@ -66,10 +86,22 @@ export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
 export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
 
+  // get news cover_image name
+
+  const newsData = await db.query.news.findFirst({
+    where(fields, operators) {
+      return operators.eq(fields.uuid, uuid);
+    },
+  });
+
+  if (newsData && newsData.cover_image) {
+    deleteFile(newsData.cover_image);
+  }
+
   const [data] = await db.delete(news)
     .where(eq(news.uuid, uuid))
     .returning({
-      name: news.created_by,
+      name: news.title,
     });
 
   if (!data)
@@ -80,7 +112,7 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   // const data = await db.query.news.findMany();
-  const { department_name, latest } = c.req.valid('query');
+  const { department_name, latest, is_pagination } = c.req.valid('query');
   const resultPromise = db.select({
     id: news.id,
     uuid: news.uuid,
@@ -93,6 +125,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     created_at: news.created_at,
     cover_image: news.cover_image,
     published_date: news.published_date,
+    remarks: news.remarks,
     carousel: sql`ARRAY(SELECT json_build_object('value', uuid, 'label', documents) FROM portfolio.news_entry WHERE news_uuid = portfolio.news.uuid)`,
   })
     .from(news)
@@ -109,24 +142,30 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   const limit = Number.parseInt(c.req.valid('query').limit) || 10; // Default limit to 10 if not provided
   const page = Number.parseInt(c.req.valid('query').page) || 1; // Default page to 1 if not provided
 
-  const baseQuery = constructSelectAllQuery(resultPromise, c.req.valid('query'), 'created_at')
-    .limit(limit)
-    .offset((page - 1) * limit);
+  const baseQuery = is_pagination === 'false'
+    ? constructSelectAllQuery(resultPromise, c.req.valid('query'), 'created_at')
+        .limit(limit)
+        .offset((page - 1) * limit)
+    : resultPromise;
 
   const data = await baseQuery;
 
-  const pagination = {
-    total_record: resultPromiseForCount.length,
-    current_page: page,
-    total_page: Math.ceil(resultPromiseForCount.length / limit),
-    next_page: page + 1 > Math.ceil(resultPromiseForCount.length / limit) ? null : page + 1,
-    prev_page: page - 1 <= 0 ? null : page - 1,
-  };
+  const pagination = is_pagination === 'false'
+    ? null
+    : {
+        total_record: resultPromiseForCount.length,
+        current_page: page,
+        total_page: Math.ceil(resultPromiseForCount.length / limit),
+        next_page: page + 1 > Math.ceil(resultPromiseForCount.length / limit) ? null : page + 1,
+        prev_page: page - 1 <= 0 ? null : page - 1,
+      };
 
-  const response = {
-    data,
-    pagination,
-  };
+  const response = is_pagination === 'false'
+    ? data
+    : {
+        data,
+        pagination,
+      };
 
   return c.json(response || [], HSCode.OK);
 };
@@ -152,6 +191,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     created_at: news.created_at,
     cover_image: news.cover_image,
     published_date: news.published_date,
+    remarks: news.remarks,
     carousel: sql`ARRAY(SELECT json_build_object('value', uuid, 'label', documents) FROM portfolio.news_entry WHERE news_uuid = portfolio.news.uuid)`,
   })
     .from(news)

@@ -60,17 +60,17 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 };
 
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
-  const { category } = c.req.valid('query');
+  const { category, is_admin } = c.req.valid('query');
 
   // const data = await db.query.bot.findMany();
   const resultPromise = db.select({
+    id: bot.id,
     uuid: bot.uuid,
     user_uuid: bot.user_uuid,
     user_name: hrSchema.users.name,
     user_designation: hrSchema.designation.name,
     category: bot.category,
     status: bot.status,
-    file: bot.file,
     description: bot.description,
     created_by: bot.created_by,
     created_by_name: created_user.name,
@@ -88,40 +88,6 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   }
 
   const data: any[] = await resultPromise;
-
-  // const formattedData = data.map((item) => {
-  //   const formattedItem: any = {
-  //     uuid: item.uuid,
-  //     user_uuid: item.user_uuid,
-  //     user_name: item.user_name,
-  //     user_designation: item.user_designation,
-  //     category: item.category,
-  //     status: item.status,
-  //     file: item.file,
-  //     description: item.description,
-  //     created_at: item.created_at,
-  //     updated_at: item.updated_at,
-  //     remarks: item.remarks,
-  //   };
-
-  //   if (item.status === 'chairman') {
-  //     formattedItem.chairperson = {
-  //       id: item.user_uuid,
-  //       name: item.user_name,
-  //       designation: item.user_designation,
-  //     };
-  //   }
-  //   else if (item.status === 'member') {
-  //     formattedItem.member = formattedItem.member || [];
-  //     formattedItem.member.push({
-  //       id: item.user_uuid,
-  //       name: item.user_name,
-  //       designation: item.user_designation,
-  //     });
-  //   }
-
-  //   return formattedItem;
-  // });
   interface Person {
     id: string;
     name: string;
@@ -150,7 +116,15 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     }
   });
 
-  return c.json(formattedData, HSCode.OK);
+  let filterData;
+  if (is_admin === 'true') {
+    filterData = data;
+  }
+  else {
+    filterData = formattedData;
+  }
+
+  return c.json(filterData, HSCode.OK);
 };
 
 export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {

@@ -17,6 +17,7 @@ export const list = createRoute({
   request: {
     query: z.object({
       category: z.string().optional(),
+      is_admin: z.string().optional(),
     }),
   },
   responses: {
