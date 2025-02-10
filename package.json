@@ -18,7 +18,8 @@
     "db-drop": "drizzle-kit drop",
     "db-introspect": "drizzle-kit introspect",
     "db-push": "drizzle-kit push",
-    "db-studio": "drizzle-kit studio --port 4000"
+    "db-studio": "drizzle-kit studio --port 4000",
+    "deploy": "git pull && npm run build && pm2 kill && pm2 resurrect"
   },
   "dependencies": {
     "@hono/node-server": "^1.13.7",

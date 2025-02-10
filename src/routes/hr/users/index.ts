@@ -11,6 +11,7 @@ const router = createRouter()
   .openapi(routes.patch, handlers.patch)
   .openapi(routes.remove, handlers.remove)
   .openapi(routes.getCanAccess, handlers.getCanAccess)
-  .openapi(routes.patchCanAccess, handlers.patchCanAccess);
+  .openapi(routes.patchCanAccess, handlers.patchCanAccess)
+  .openapi(routes.patchStatus, handlers.patchStatus);
 
 export default router;

@@ -9,7 +9,17 @@ import { ComparePass, CreateToken, HashPass } from '@/middlewares/auth';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 import { deleteFile, updateFile, uploadFile } from '@/utils/upload_file';
 
-import type { CreateRoute, GetCanAccessRoute, GetOneRoute, ListRoute, PatchCanAccessRoute, PatchRoute, RemoveRoute, SigninRoute } from './routes';
+import type {
+  CreateRoute,
+  GetCanAccessRoute,
+  GetOneRoute,
+  ListRoute,
+  PatchCanAccessRoute,
+  PatchRoute,
+  PatchStatusRoute,
+  RemoveRoute,
+  SigninRoute,
+} from './routes';
 
 import { department, designation, users } from '../schema';
 
@@ -268,6 +278,23 @@ export const patchCanAccess: AppRouteHandler<PatchCanAccessRoute> = async (c: an
 
   const [data] = await db.update(users)
     .set({ can_access })
+    .where(eq(users.uuid, uuid))
+    .returning({
+      name: users.name,
+    });
+
+  if (!data)
+    return DataNotFound(c);
+
+  return c.json(createToast('update', data.name), HSCode.OK);
+};
+
+export const patchStatus: AppRouteHandler<PatchStatusRoute> = async (c: any) => {
+  const { uuid } = c.req.valid('param');
+  const { status } = await c.req.json();
+
+  const [data] = await db.update(users)
+    .set({ status })
     .where(eq(users.uuid, uuid))
     .returning({
       name: users.name,

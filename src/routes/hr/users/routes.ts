@@ -207,6 +207,21 @@ export const patchCanAccess = createRoute({
   },
 });
 
+export const patchStatus = createRoute({
+  path: '/hr/users/status/{uuid}',
+  method: 'patch',
+  tags,
+  request: {
+    params: param.uuid,
+  },
+  responses: {
+    [HSCode.OK]: jsonContent(
+      z.array(selectSchema),
+      'The valueLabel of user',
+    ),
+  },
+});
+
 export type ListRoute = typeof list;
 export type CreateRoute = typeof create;
 export type SigninRoute = typeof signin;
@@ -216,3 +231,4 @@ export type RemoveRoute = typeof remove;
 export type SignoutRoute = typeof signout;
 export type GetCanAccessRoute = typeof getCanAccess;
 export type PatchCanAccessRoute = typeof patchCanAccess;
+export type PatchStatusRoute = typeof patchStatus;
