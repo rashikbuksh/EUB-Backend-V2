@@ -30,6 +30,7 @@ export function isPublicRoute(url: string, method: string) {
   const publicUrls: PublicUrlProps[] = [
     { url: '/v1/signin', method: 'POST' },
     { url: '/v1/portfolio', method: 'GET' },
+    { url: '/v1/portfolio/online-admission', method: 'POST' },
   ];
 
   return publicUrls.some(route => url.startsWith(route.url) && route.method === method);
