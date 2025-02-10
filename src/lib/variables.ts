@@ -25,8 +25,8 @@ export function PG_DECIMAL(column: ColumnProps['default']) {
   }).notNull();
 }
 
-export function PG_DECIMAL_TO_FLOAT(column: ColumnProps['default']) {
-  return sql`coalesce(${column},0)::float8`;
+export function PG_DECIMAL_TO_FLOAT(column: any) {
+  return sql`coalesce(${sql.raw(column.name)}, 0)::float8`;
 }
 
 export function constructSelectAllQuery(
