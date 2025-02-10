@@ -88,6 +88,7 @@ export const patch = createRoute({
   path: '/portfolio/news/{uuid}',
   method: 'patch',
   request: {
+    params: param.uuid,
     body: {
       content: {
         'multipart/form-data': {
