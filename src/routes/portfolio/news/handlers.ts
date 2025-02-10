@@ -125,6 +125,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     created_at: news.created_at,
     cover_image: news.cover_image,
     published_date: news.published_date,
+    remarks: news.remarks,
     carousel: sql`ARRAY(SELECT json_build_object('value', uuid, 'label', documents) FROM portfolio.news_entry WHERE news_uuid = portfolio.news.uuid)`,
   })
     .from(news)
@@ -190,6 +191,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     created_at: news.created_at,
     cover_image: news.cover_image,
     published_date: news.published_date,
+    remarks: news.remarks,
     carousel: sql`ARRAY(SELECT json_build_object('value', uuid, 'label', documents) FROM portfolio.news_entry WHERE news_uuid = portfolio.news.uuid)`,
   })
     .from(news)

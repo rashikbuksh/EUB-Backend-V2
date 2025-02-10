@@ -6,7 +6,7 @@ import * as HSCode from 'stoker/http-status-codes';
 import db from '@/db';
 import * as hrSchema from '@/routes/hr/schema';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
-import { uploadFile } from '@/utils/upload_file';
+import { deleteFile, updateFile, uploadFile } from '@/utils/upload_file';
 
 import type { CreateRoute, GetOneDepartmentRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
 
@@ -40,13 +40,32 @@ export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
 
 export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
-  const updates = c.req.valid('json');
+  const formData = await c.req.parseBody();
 
-  if (Object.keys(updates).length === 0)
+  // updates includes file then do it else exclude it
+  if (formData.file) {
+    // get routine file name
+    const routineData = await db.query.routine.findFirst({
+      where(fields, operators) {
+        return operators.eq(fields.uuid, uuid);
+      },
+    });
+
+    if (routineData && routineData.file) {
+      const filePath = await updateFile(formData.file, routineData.file, 'public/routine');
+      formData.file = filePath;
+    }
+    else {
+      const filePath = await uploadFile(formData.file, 'public/routine');
+      formData.file = filePath;
+    }
+  }
+
+  if (Object.keys(formData).length === 0)
     return ObjectNotFound(c);
 
   const [data] = await db.update(routine)
-    .set(updates)
+    .set(formData)
     .where(eq(routine.uuid, uuid))
     .returning({
       name: routine.uuid,
@@ -60,6 +79,18 @@ export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
 
 export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
+
+  // get routine file name
+
+  const routineData = await db.query.routine.findFirst({
+    where(fields, operators) {
+      return operators.eq(fields.uuid, uuid);
+    },
+  });
+
+  if (routineData && routineData.file) {
+    deleteFile(routineData.file);
+  }
 
   const [data] = await db.delete(routine)
     .where(eq(routine.uuid, uuid))
@@ -112,16 +143,32 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
 export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
 
-  const data = await db.query.routine.findFirst({
-    where(fields, operators) {
-      return operators.eq(fields.uuid, uuid);
-    },
-  });
+  const resultPromise = db.select({
+    id: routine.id,
+    uuid: routine.uuid,
+    department_uuid: routine.department_uuid,
+    department_name: department.name,
+    programs: routine.programs,
+    type: routine.type,
+    file: routine.file,
+    description: routine.description,
+    created_at: routine.created_at,
+    updated_at: routine.updated_at,
+    created_by: routine.created_by,
+    created_by_name: hrSchema.users.name,
+    remarks: routine.remarks,
+  })
+    .from(routine)
+    .leftJoin(department, eq(routine.department_uuid, department.uuid))
+    .leftJoin(hrSchema.users, eq(routine.created_by, hrSchema.users.uuid))
+    .where(eq(routine.uuid, uuid));
+
+  const data = await resultPromise;
 
   if (!data)
     return DataNotFound(c);
 
-  return c.json(data || {}, HSCode.OK);
+  return c.json(data[0] || {}, HSCode.OK);
 };
 
 export const getOneDepartment: AppRouteHandler<GetOneDepartmentRoute> = async (c: any) => {
