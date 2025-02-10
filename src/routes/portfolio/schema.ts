@@ -469,7 +469,7 @@ export const financial_info_id = portfolio.sequence('financial_info_id', DEFAULT
 export const financial_info = portfolio.table('financial_info', {
   id: integer('id').default(sql`nextval('portfolio.financial_info_id')`),
   uuid: uuid_primary,
-  department_uuid: defaultUUID('department_uuid').notNull().references(() => department.uuid, DEFAULT_OPERATION),
+  department_uuid: defaultUUID('department_uuid').notNull().unique().references(() => department.uuid, DEFAULT_OPERATION),
   total_credit: integer('total_credit').default(sql`0`),
   total_cost: integer('total_cost').default(sql`0`),
   admission_fee: integer('admission_fee').default(sql`0`),
@@ -484,8 +484,8 @@ export const financial_info = portfolio.table('financial_info', {
   waiver_90: integer('waiver_90').default(sql`0`),
   waiver_95: integer('waiver_95').default(sql`0`),
   waiver_100: integer('waiver_100').default(sql`0`),
-  created_at: DateTime('created_at').notNull(),
-  updated_at: DateTime('updated_at'),
+  created_at: DateTime('created_at').notNull().$defaultFn(() => 'now()'),
+  updated_at: DateTime('updated_at').$onUpdate(() => 'now()'),
   created_by: defaultUUID('created_by').references(() => users.uuid, DEFAULT_OPERATION),
   remarks: text('remarks'),
 });
@@ -500,8 +500,8 @@ export const contact_us = portfolio.table('contact_us', {
   email: text('email').notNull(),
   question: text('question').notNull(),
   description: text('description').notNull(),
-  created_at: DateTime('created_at').notNull(),
-  updated_at: DateTime('updated_at'),
+  created_at: DateTime('created_at').notNull().$defaultFn(() => 'now()'),
+  updated_at: DateTime('updated_at').$onUpdate(() => 'now()'),
 });
 
 //* relations
