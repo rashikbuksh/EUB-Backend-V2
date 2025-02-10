@@ -463,6 +463,47 @@ export const news_entry = portfolio.table('news_entry', {
   updated_at: DateTime('updated_at').$onUpdate(() => 'now()'),
 });
 
+//* Financial Info
+export const financial_info_id = portfolio.sequence('financial_info_id', DEFAULT_SEQUENCE);
+
+export const financial_info = portfolio.table('financial_info', {
+  id: integer('id').default(sql`nextval('portfolio.financial_info_id')`),
+  uuid: uuid_primary,
+  department_uuid: defaultUUID('department_uuid').notNull().unique().references(() => department.uuid, DEFAULT_OPERATION),
+  total_credit: integer('total_credit').default(sql`0`),
+  total_cost: integer('total_cost').default(sql`0`),
+  admission_fee: integer('admission_fee').default(sql`0`),
+  waiver_50: integer('waiver_50').default(sql`0`),
+  waiver_55: integer('waiver_55').default(sql`0`),
+  waiver_60: integer('waiver_60').default(sql`0`),
+  waiver_65: integer('waiver_65').default(sql`0`),
+  waiver_70: integer('waiver_70').default(sql`0`),
+  waiver_75: integer('waiver_75').default(sql`0`),
+  waiver_80: integer('waiver_80').default(sql`0`),
+  waiver_85: integer('waiver_85').default(sql`0`),
+  waiver_90: integer('waiver_90').default(sql`0`),
+  waiver_95: integer('waiver_95').default(sql`0`),
+  waiver_100: integer('waiver_100').default(sql`0`),
+  created_at: DateTime('created_at').notNull().$defaultFn(() => 'now()'),
+  updated_at: DateTime('updated_at').$onUpdate(() => 'now()'),
+  created_by: defaultUUID('created_by').references(() => users.uuid, DEFAULT_OPERATION),
+  remarks: text('remarks'),
+});
+
+//* contact us
+
+export const contact_us_id = portfolio.sequence('contact_us_id', DEFAULT_SEQUENCE);
+
+export const contact_us = portfolio.table('contact_us', {
+  id: integer('id').default(sql`nextval('portfolio.contact_us_id')`),
+  full_name: text('full_name').notNull(),
+  email: text('email').notNull(),
+  question: text('question').notNull(),
+  description: text('description').notNull(),
+  created_at: DateTime('created_at').notNull().$defaultFn(() => 'now()'),
+  updated_at: DateTime('updated_at').$onUpdate(() => 'now()'),
+});
+
 //* relations
 export const portfolio_news_rel = relations(news, ({ one, many }) => ({
 

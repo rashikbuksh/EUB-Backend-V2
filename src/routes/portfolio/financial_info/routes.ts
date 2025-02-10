@@ -1,5 +1,5 @@
 import * as HSCode from 'stoker/http-status-codes';
-import { jsonContent } from 'stoker/openapi/helpers';
+import { jsonContent, jsonContentRequired } from 'stoker/openapi/helpers';
 import { createErrorSchema } from 'stoker/openapi/schemas';
 
 import { notFoundSchema } from '@/lib/constants';
@@ -8,39 +8,39 @@ import { createRoute, z } from '@hono/zod-openapi';
 
 import { insertSchema, patchSchema, selectSchema } from './utils';
 
-const tags = ['portfolio.job_circular'];
+const tags = ['portfolio.financial_info'];
 
 export const list = createRoute({
-  path: '/portfolio/job-circular',
+  path: '/portfolio/financial-info',
   method: 'get',
   tags,
+  request: {
+    query: z.object({
+      category: z.string().optional(),
+    }),
+  },
   responses: {
     [HSCode.OK]: jsonContent(
       z.array(selectSchema),
-      'The list of job-circular',
+      'The list of financial-info',
     ),
   },
 });
 
 export const create = createRoute({
-  path: '/portfolio/job-circular',
+  path: '/portfolio/financial-info',
   method: 'post',
   request: {
-    body: {
-      content: {
-        'multipart/form-data': {
-          schema: {
-            ...insertSchema,
-          },
-        },
-      },
-    },
+    body: jsonContentRequired(
+      insertSchema,
+      'The financial-info to create',
+    ),
   },
   tags,
   responses: {
     [HSCode.OK]: jsonContent(
       selectSchema,
-      'The created job-circular',
+      'The created financial-info',
     ),
     [HSCode.UNPROCESSABLE_ENTITY]: jsonContent(
       createErrorSchema(insertSchema),
@@ -50,7 +50,7 @@ export const create = createRoute({
 });
 
 export const getOne = createRoute({
-  path: '/portfolio/job-circular/{uuid}',
+  path: '/portfolio/financial-info/{uuid}',
   method: 'get',
   request: {
     params: param.uuid,
@@ -59,11 +59,11 @@ export const getOne = createRoute({
   responses: {
     [HSCode.OK]: jsonContent(
       selectSchema,
-      'The requested job-circular',
+      'The requested financial-info',
     ),
     [HSCode.NOT_FOUND]: jsonContent(
       notFoundSchema,
-      'job-circular not found',
+      'financial-info not found',
     ),
     [HSCode.UNPROCESSABLE_ENTITY]: jsonContent(
       createErrorSchema(param.uuid),
@@ -73,29 +73,24 @@ export const getOne = createRoute({
 });
 
 export const patch = createRoute({
-  path: '/portfolio/job-circular/{uuid}',
+  path: '/portfolio/financial-info/{uuid}',
   method: 'patch',
   request: {
     params: param.uuid,
-    body: {
-      content: {
-        'multipart/form-data': {
-          schema: {
-            ...patchSchema,
-          },
-        },
-      },
-    },
+    body: jsonContentRequired(
+      patchSchema,
+      'The financial-info updates',
+    ),
   },
   tags,
   responses: {
     [HSCode.OK]: jsonContent(
       selectSchema,
-      'The updated job-circular',
+      'The updated financial-info',
     ),
     [HSCode.NOT_FOUND]: jsonContent(
       notFoundSchema,
-      'job-circular not found',
+      'financial-info not found',
     ),
     [HSCode.UNPROCESSABLE_ENTITY]: jsonContent(
       createErrorSchema(patchSchema)
@@ -106,7 +101,7 @@ export const patch = createRoute({
 });
 
 export const remove = createRoute({
-  path: '/portfolio/job-circular/{uuid}',
+  path: '/portfolio/financial-info/{uuid}',
   method: 'delete',
   request: {
     params: param.uuid,
@@ -114,11 +109,11 @@ export const remove = createRoute({
   tags,
   responses: {
     [HSCode.NO_CONTENT]: {
-      description: 'job-circular deleted',
+      description: 'financial-info deleted',
     },
     [HSCode.NOT_FOUND]: jsonContent(
       notFoundSchema,
-      'job-circular not found',
+      'financial-info not found',
     ),
     [HSCode.UNPROCESSABLE_ENTITY]: jsonContent(
       createErrorSchema(param.uuid),
