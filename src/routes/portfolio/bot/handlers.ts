@@ -64,6 +64,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
 
   // const data = await db.query.bot.findMany();
   const resultPromise = db.select({
+    id: bot.id,
     uuid: bot.uuid,
     user_uuid: bot.user_uuid,
     user_name: hrSchema.users.name,
