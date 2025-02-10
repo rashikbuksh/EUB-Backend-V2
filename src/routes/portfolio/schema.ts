@@ -97,7 +97,7 @@ export const certificate_course_fee_id = portfolio.sequence(
 export const certificate_course_fee = portfolio.table('certificate_course_fee', {
   id: integer('id').default(sql`nextval('portfolio.certificate_course_fee_id')`),
   uuid: uuid_primary,
-  programs_uuid: defaultUUID('programs_uuid').notNull().references(() => program.uuid, DEFAULT_OPERATION),
+  programs_uuid: defaultUUID('programs_uuid').notNull().unique().references(() => program.uuid, DEFAULT_OPERATION),
   fee_per_course: PG_DECIMAL('fee_per_course').default(sql`0`),
   created_at: DateTime('created_at').notNull(),
   updated_at: DateTime('updated_at'),
@@ -116,7 +116,7 @@ export const tuition_fee = portfolio.table('tuition_fee', {
   id: integer('id').default(sql`nextval('portfolio.tuition_fee_id')`),
   uuid: uuid_primary,
   title: text('title').notNull(),
-  program_uuid: defaultUUID('program_uuid').notNull().references(() => program.uuid, DEFAULT_OPERATION),
+  program_uuid: defaultUUID('program_uuid').notNull().unique().references(() => program.uuid, DEFAULT_OPERATION),
   admission_fee: PG_DECIMAL('admission_fee').notNull(),
   tuition_fee_per_credit: PG_DECIMAL('tuition_fee_per_credit').notNull(),
   student_activity_fee: PG_DECIMAL('student_activity_fee').notNull(),
