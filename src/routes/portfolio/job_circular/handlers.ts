@@ -5,7 +5,7 @@ import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
-import { uploadFile } from '@/utils/upload_file';
+import { deleteFile, updateFile, uploadFile } from '@/utils/upload_file';
 
 import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
 
@@ -43,13 +43,32 @@ export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
 
 export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
-  const updates = c.req.valid('json');
+  const formData = await c.req.parseBody();
 
-  if (Object.keys(updates).length === 0)
+  // updates includes image then do it else exclude it
+  if (formData.file) {
+    // get jobCircular image name
+    const jobCircularData = await db.query.job_circular.findFirst({
+      where(fields, operators) {
+        return operators.eq(fields.uuid, uuid);
+      },
+    });
+
+    if (jobCircularData && jobCircularData.file) {
+      const filePath = await updateFile(formData.file, jobCircularData.file, 'public/job-circular');
+      formData.file = filePath;
+    }
+    else {
+      const filePath = await uploadFile(formData.file, 'public/job-circular');
+      formData.file = filePath;
+    }
+  }
+
+  if (Object.keys(formData).length === 0)
     return ObjectNotFound(c);
 
   const [data] = await db.update(job_circular)
-    .set(updates)
+    .set(formData)
     .where(eq(job_circular.uuid, uuid))
     .returning({
       name: job_circular.title,
@@ -63,6 +82,18 @@ export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
 
 export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
+
+  // get jobCircular file name
+
+  const jobCircularData = await db.query.job_circular.findFirst({
+    where(fields, operators) {
+      return operators.eq(fields.uuid, uuid);
+    },
+  });
+
+  if (jobCircularData && jobCircularData.file) {
+    deleteFile(jobCircularData.file);
+  }
 
   const [data] = await db.delete(job_circular)
     .where(eq(job_circular.uuid, uuid))
