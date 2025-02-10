@@ -7,7 +7,7 @@ import * as HSCode from 'stoker/http-status-codes';
 import db from '@/db';
 import * as hrSchema from '@/routes/hr/schema';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
-import { uploadFile } from '@/utils/upload_file';
+import { deleteFile, updateFile, uploadFile } from '@/utils/upload_file';
 
 import type {
   CreateRoute,
@@ -49,14 +49,34 @@ export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
 
 export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
-  const updates = c.req.valid('json');
+  const formData = await c.req.parseBody();
 
-  if (Object.keys(updates).length === 0)
+  // updates includes image then do it else exclude it
+
+  if (formData.image) {
+    // get office image name
+
+    const officeData = await db.query.office.findFirst({
+      where(fields, operators) {
+        return operators.eq(fields.uuid, uuid);
+      },
+    });
+
+    if (officeData && officeData.image) {
+      const imagePath = await updateFile(formData.image, officeData.image, 'public/office');
+      formData.image = imagePath;
+    }
+    else {
+      const imagePath = await uploadFile(formData.image, 'public/office');
+      formData.image = imagePath;
+    }
+  }
+  if (Object.keys(formData).length === 0)
     return ObjectNotFound(c);
 
   const [data] = await db
     .update(office)
-    .set(updates)
+    .set(formData)
     .where(eq(office.uuid, uuid))
     .returning({
       name: office.created_by,
@@ -70,6 +90,16 @@ export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
 
 export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
+
+  const officeData = await db.query.office.findFirst({
+    where(fields, operators) {
+      return operators.eq(fields.uuid, uuid);
+    },
+  });
+
+  if (officeData && officeData.image) {
+    deleteFile(officeData.image);
+  }
 
   const [data] = await db
     .delete(office)
