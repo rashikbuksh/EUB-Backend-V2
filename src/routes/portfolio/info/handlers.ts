@@ -5,7 +5,7 @@ import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
-import { updateFile, uploadFile } from '@/utils/upload_file';
+import { deleteFile, updateFile, uploadFile } from '@/utils/upload_file';
 
 import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
 
@@ -44,9 +44,9 @@ export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
   const formData = await c.req.parseBody();
 
-  // updates includes image then do it else exclude it
+  // updates includes file then do it else exclude it
   if (formData.file) {
-    // get user image name
+    // get info file name
     const infoData = await db.query.info.findFirst({
       where(fields, operators) {
         return operators.eq(fields.uuid, uuid);
@@ -81,6 +81,18 @@ export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
 
 export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
+
+  // get info file name
+
+  const infoData = await db.query.info.findFirst({
+    where(fields, operators) {
+      return operators.eq(fields.uuid, uuid);
+    },
+  });
+
+  if (infoData && infoData.file) {
+    deleteFile(infoData.file);
+  }
 
   const [data] = await db.delete(info)
     .where(eq(info.uuid, uuid))
