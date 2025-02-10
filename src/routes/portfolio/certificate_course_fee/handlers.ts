@@ -99,10 +99,10 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     .leftJoin(hrSchema.users, eq(certificate_course_fee.created_by, hrSchema.users.uuid))
     .where(eq(certificate_course_fee.uuid, uuid));
 
-  const [data] = await resultPromise;
+  const data = await resultPromise;
 
   if (!data)
     return DataNotFound(c);
 
-  return c.json(data || {}, HSCode.OK);
+  return c.json(data[0] || {}, HSCode.OK);
 };
