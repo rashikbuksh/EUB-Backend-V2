@@ -205,3 +205,37 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
 
   return c.json(data[0] || {}, HSCode.OK);
 };
+
+export async function getNewsAndNewsEntryDetailsByNewsUuid(c: any) {
+  const { uuid } = c.req.valid('param');
+
+  const newsResultPromise = db.select({
+    id: news.id,
+    uuid: news.uuid,
+    department_uuid: news.department_uuid,
+    department_name: department.name,
+    title: news.title,
+    subtitle: news.subtitle,
+    description: news.description,
+    content: news.content,
+    created_at: news.created_at,
+    cover_image: news.cover_image,
+    published_date: news.published_date,
+    remarks: news.remarks,
+    carousel: sql`ARRAY(SELECT json_build_object('value', uuid, 'label', documents) FROM portfolio.news_entry WHERE news_uuid = portfolio.news.uuid)`,
+  })
+    .from(news)
+    .leftJoin(department, eq(news.department_uuid, department.uuid))
+    .where(eq(news.uuid, uuid));
+
+  const newsData = await newsResultPromise;
+
+  const newsEntryResultPromise = await db.query.news_entry.findMany();
+
+  const newsEntryData = await newsEntryResultPromise;
+
+  if (!newsData || !newsEntryData)
+    return DataNotFound(c);
+
+  return c.json({ news: newsData[0] || {}, news_entry: newsEntryData || [] }, HSCode.OK);
+}
