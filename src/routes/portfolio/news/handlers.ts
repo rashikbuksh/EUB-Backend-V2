@@ -230,11 +230,15 @@ export async function getNewsAndNewsEntryDetailsByNewsUuid(c: any) {
 
   const newsData = await newsResultPromise;
 
-  const newsEntryResultPromise = await db.query.news_entry.findMany();
+  const newsEntryResultPromise = db.query.news_entry.findFirst({
+    where(fields, operators) {
+      return operators.eq(fields.news_uuid, uuid);
+    },
+  });
 
   const newsEntryData = await newsEntryResultPromise;
 
-  if (!newsData || !newsEntryData)
+  if (!newsData)
     return DataNotFound(c);
 
   return c.json({ news: newsData[0] || {}, news_entry: newsEntryData || [] }, HSCode.OK);
