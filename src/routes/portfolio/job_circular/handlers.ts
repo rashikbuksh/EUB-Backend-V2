@@ -4,12 +4,13 @@ import { eq } from 'drizzle-orm';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
+import * as hrSchema from '@/routes/hr/schema';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 import { deleteFile, updateFile, uploadFile } from '@/utils/upload_file';
 
 import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
 
-import { job_circular } from '../schema';
+import { faculty, job_circular } from '../schema';
 
 export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
   // const value = c.req.valid('json');
@@ -108,7 +109,26 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 };
 
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
-  const data = await db.query.job_circular.findMany();
+  const resultPromise = db.select({
+    title: job_circular.title,
+    uuid: job_circular.uuid,
+    faculty_uuid: job_circular.faculty_uuid,
+    faculty_name: faculty.name,
+    category: job_circular.category,
+    location: job_circular.location,
+    file: job_circular.file,
+    deadline: job_circular.deadline,
+    created_at: job_circular.created_at,
+    updated_at: job_circular.updated_at,
+    created_by: job_circular.created_by,
+    created_by_name: hrSchema.users.name,
+    remarks: job_circular.remarks,
+  })
+    .from(job_circular)
+    .leftJoin(faculty, eq(job_circular.faculty_uuid, faculty.uuid))
+    .leftJoin(hrSchema.users, eq(job_circular.created_by, hrSchema.users.uuid));
+
+  const data = await resultPromise;
 
   return c.json(data || [], HSCode.OK);
 };
@@ -116,14 +136,30 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
 export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
 
-  const data = await db.query.job_circular.findFirst({
-    where(fields, operators) {
-      return operators.eq(fields.uuid, uuid);
-    },
-  });
+  const resultPromise = db.select({
+    title: job_circular.title,
+    uuid: job_circular.uuid,
+    faculty_uuid: job_circular.faculty_uuid,
+    faculty_name: faculty.name,
+    category: job_circular.category,
+    location: job_circular.location,
+    file: job_circular.file,
+    deadline: job_circular.deadline,
+    created_at: job_circular.created_at,
+    updated_at: job_circular.updated_at,
+    created_by: job_circular.created_by,
+    created_by_name: hrSchema.users.name,
+    remarks: job_circular.remarks,
+  })
+    .from(job_circular)
+    .leftJoin(faculty, eq(job_circular.faculty_uuid, faculty.uuid))
+    .leftJoin(hrSchema.users, eq(job_circular.created_by, hrSchema.users.uuid))
+    .where(eq(job_circular.uuid, uuid));
+
+  const data = await resultPromise;
 
   if (!data)
     return DataNotFound(c);
 
-  return c.json(data || {}, HSCode.OK);
+  return c.json(data[0] || {}, HSCode.OK);
 };

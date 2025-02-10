@@ -4,6 +4,7 @@ import { eq } from 'drizzle-orm';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
+import * as hrSchema from '@/routes/hr/schema';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 import { deleteFile, updateFile, uploadFile } from '@/utils/upload_file';
 
@@ -121,12 +122,14 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     file: info.file,
     is_global: info.is_global,
     created_by: info.created_by,
+    created_by_name: hrSchema.users.name,
     created_at: info.created_at,
     updated_at: info.updated_at,
   })
     .from(info)
     .leftJoin(department, eq(info.department_uuid, department.uuid))
-    .leftJoin(faculty, eq(department.faculty_uuid, faculty.uuid));
+    .leftJoin(faculty, eq(department.faculty_uuid, faculty.uuid))
+    .leftJoin(hrSchema.users, eq(info.created_by, hrSchema.users.uuid));
 
   if (page_name) {
     resultPromise.where(eq(info.page_name, page_name));
@@ -140,14 +143,32 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
 export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
 
-  const data = await db.query.info.findFirst({
-    where(fields, operators) {
-      return operators.eq(fields.uuid, uuid);
-    },
-  });
+  const resultPromise = db.select({
+    id: info.id,
+    uuid: info.uuid,
+    description: info.description,
+    page_name: info.page_name,
+    department_uuid: info.department_uuid,
+    department_name: department.name,
+    faculty_uuid: faculty.uuid,
+    faculty_name: faculty.name,
+    file: info.file,
+    is_global: info.is_global,
+    created_by: info.created_by,
+    created_by_name: hrSchema.users.name,
+    created_at: info.created_at,
+    updated_at: info.updated_at,
+  })
+    .from(info)
+    .leftJoin(department, eq(info.department_uuid, department.uuid))
+    .leftJoin(faculty, eq(department.faculty_uuid, faculty.uuid))
+    .leftJoin(hrSchema.users, eq(info.created_by, hrSchema.users.uuid))
+    .where(eq(info.uuid, uuid));
+
+  const data = await resultPromise;
 
   if (!data)
     return DataNotFound(c);
 
-  return c.json(data || {}, HSCode.OK);
+  return c.json(data[0] || {}, HSCode.OK);
 };
