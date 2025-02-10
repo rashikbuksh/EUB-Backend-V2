@@ -222,24 +222,24 @@ export async function getNewsAndNewsEntryDetailsByNewsUuid(c: any) {
     cover_image: news.cover_image,
     published_date: news.published_date,
     remarks: news.remarks,
-    carousel: sql`ARRAY(SELECT json_build_object('value', uuid, 'label', documents) FROM portfolio.news_entry WHERE news_uuid = portfolio.news.uuid)`,
+    news_entry: sql`ARRAY(SELECT json_build_object('uuid', uuid, 'documents', documents,'created_at', created_at, 'updated_at',updated_at) FROM portfolio.news_entry WHERE news_uuid = portfolio.news.uuid)`,
   })
     .from(news)
     .leftJoin(department, eq(news.department_uuid, department.uuid))
     .where(eq(news.uuid, uuid));
 
-  const newsData = await newsResultPromise;
+  const data = await newsResultPromise;
 
-  const newsEntryResultPromise = db.query.news_entry.findMany({
-    where(fields, operators) {
-      return operators.eq(fields.news_uuid, uuid);
-    },
-  });
+  // const newsEntryResultPromise = db.query.news_entry.findMany({
+  //   where(fields, operators) {
+  //     return operators.eq(fields.news_uuid, uuid);
+  //   },
+  // });
 
-  const newsEntryData = await newsEntryResultPromise;
+  // const newsEntryData = await newsEntryResultPromise;
 
-  if (!newsData)
+  if (!data)
     return DataNotFound(c);
 
-  return c.json({ news: newsData[0] || {}, news_entry: newsEntryData || [] }, HSCode.OK);
+  return c.json(data[0] || {}, HSCode.OK);
 }
