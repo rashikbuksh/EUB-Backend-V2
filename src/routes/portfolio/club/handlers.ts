@@ -1,6 +1,7 @@
 import type { AppRouteHandler } from '@/lib/types';
 
 import { eq } from 'drizzle-orm';
+import { alias } from 'drizzle-orm/pg-core';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
@@ -10,6 +11,8 @@ import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
 
 import { club, department, faculty } from '../schema';
+
+const createdByUser = alias(hrSchema.users, 'createdByUser');
 
 export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
   const value = c.req.valid('json');
@@ -77,13 +80,15 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     created_at: club.created_at,
     updated_at: club.updated_at,
     created_by: club.created_by,
+    created_by_name: createdByUser.name,
     remarks: club.remarks,
   })
     .from(club)
     .leftJoin(department, eq(club.department_uuid, department.uuid))
     .leftJoin(faculty, eq(department.faculty_uuid, faculty.uuid))
     .leftJoin(hrSchema.users, eq(club.president_uuid, hrSchema.users.uuid))
-    .leftJoin(hrSchema.designation, eq(hrSchema.users.designation_uuid, hrSchema.designation.uuid));
+    .leftJoin(hrSchema.designation, eq(hrSchema.users.designation_uuid, hrSchema.designation.uuid))
+    .leftJoin(createdByUser, eq(club.created_by, createdByUser.uuid));
 
   if (portfolio_faculty)
     resultPromise.where(eq(faculty.name, portfolio_faculty));
@@ -114,6 +119,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     created_at: club.created_at,
     updated_at: club.updated_at,
     created_by: club.created_by,
+    created_by_name: createdByUser.name,
     remarks: club.remarks,
   })
     .from(club)
@@ -121,6 +127,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     .leftJoin(faculty, eq(department.faculty_uuid, faculty.uuid))
     .leftJoin(hrSchema.users, eq(club.president_uuid, hrSchema.users.uuid))
     .leftJoin(hrSchema.designation, eq(hrSchema.users.designation_uuid, hrSchema.designation.uuid))
+    .leftJoin(createdByUser, eq(club.created_by, createdByUser.uuid))
     .where(eq(club.uuid, uuid));
 
   const data = await resultPromise;
