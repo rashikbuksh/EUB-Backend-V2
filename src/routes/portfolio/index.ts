@@ -2,9 +2,11 @@ import authorities from './authorities';
 import bot from './bot';
 import certificate_course_fee from './certificate_course_fee';
 import club from './club';
+import contact_us from './contact_us';
 import department from './department';
 import department_teachers from './department_teachers';
 import faculty from './faculty';
+import financial_info from './financial_info';
 import info from './info';
 import job_circular from './job_circular';
 import news from './news';
@@ -34,4 +36,6 @@ export default [
   job_circular,
   routine,
   department_teachers,
+  financial_info,
+  contact_us,
 ];
