@@ -5,13 +5,34 @@ import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
+import { uploadFile } from '@/utils/upload_file';
 
 import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
 
 import { job_circular } from '../schema';
 
 export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
-  const value = c.req.valid('json');
+  // const value = c.req.valid('json');
+
+  const formData = await c.req.parseBody();
+
+  const file = formData.file;
+
+  const filePath = await uploadFile(file, 'public/job-circular');
+
+  const value = {
+    uuid: formData.uuid,
+    title: formData.title,
+    faculty_uuid: formData.faculty_uuid,
+    category: formData.category,
+    location: formData.location,
+    file: filePath,
+    deadline: formData.deadline,
+    created_at: formData.created_at,
+    updated_at: formData.updated_at,
+    created_by: formData.created_by,
+    remarks: formData.remarks,
+  };
 
   const [data] = await db.insert(job_circular).values(value).returning({
     name: job_circular.title,
