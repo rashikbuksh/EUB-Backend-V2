@@ -139,13 +139,11 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
 
   const resultPromiseForCount = await resultPromise;
 
-  const limit = Number.parseInt(c.req.valid('query').limit) || 10; // Default limit to 10 if not provided
-  const page = Number.parseInt(c.req.valid('query').page) || 1; // Default page to 1 if not provided
+  const limit = Number.parseInt(c.req.valid('query').limit);
+  const page = Number.parseInt(c.req.valid('query').page);
 
   const baseQuery = is_pagination === 'false'
     ? constructSelectAllQuery(resultPromise, c.req.valid('query'), 'created_at')
-        .limit(limit)
-        .offset((page - 1) * limit)
     : resultPromise;
 
   const data = await baseQuery;
