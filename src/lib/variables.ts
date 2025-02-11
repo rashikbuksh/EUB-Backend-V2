@@ -75,9 +75,9 @@ export function constructSelectAllQuery(
   }
 
   // Apply pagination
-  if (page) {
-    const limitValue = limit || 10; // Set your desired limit per page
-    const offset = (page - 1) * limitValue;
+  if (page && limit) {
+    const limitValue = Number(limit); // Set your desired limit per page
+    const offset = (Number(page) - 1) * limitValue;
     baseQuery = baseQuery.limit(limitValue).offset(offset);
   }
 

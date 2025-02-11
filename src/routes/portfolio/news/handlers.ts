@@ -144,8 +144,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
 
   const baseQuery = is_pagination === 'false'
     ? resultPromise
-    : constructSelectAllQuery(resultPromise, c.req.valid('query'), 'created_at')
-     ;
+    : constructSelectAllQuery(resultPromise, c.req.valid('query'), 'created_at', [department.name.name]);
 
   const data = await baseQuery;
 
@@ -153,7 +152,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     ? null
     : {
         total_record: resultPromiseForCount.length,
-        current_page: page,
+        current_page: Number(page),
         total_page: Math.ceil(resultPromiseForCount.length / limit),
         next_page: page + 1 > Math.ceil(resultPromiseForCount.length / limit) ? null : page + 1,
         prev_page: page - 1 <= 0 ? null : page - 1,
