@@ -14,6 +14,15 @@ export const list = createRoute({
   path: '/portfolio/job-circular',
   method: 'get',
   tags,
+  request: {
+    query: z.object({
+      limit: z.string().optional(),
+      page: z.string().optional(),
+      q: z.string().optional(),
+      sort: z.string().optional(),
+      orderby: z.string().optional(),
+    }),
+  },
   responses: {
     [HSCode.OK]: jsonContent(
       z.array(selectSchema),
