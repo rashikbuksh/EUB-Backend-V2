@@ -110,6 +110,8 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 };
 
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
+  const { is_pagination } = c.req.valid('query');
+
   const resultPromise = db.select({
     title: job_circular.title,
     uuid: job_circular.uuid,
@@ -134,22 +136,28 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   const limit = Number.parseInt(c.req.valid('query').limit);
   const page = Number.parseInt(c.req.valid('query').page);
 
-  const baseQuery = constructSelectAllQuery(resultPromise, c.req.valid('query'), 'created_at');
+  const baseQuery = is_pagination === 'false'
+    ? resultPromise
+    : constructSelectAllQuery(resultPromise, c.req.valid('query'), 'created_at');
 
   const data = await baseQuery;
 
-  const pagination = {
-    total_record: resultPromiseForCount.length,
-    current_page: page,
-    total_page: Math.ceil(resultPromiseForCount.length / limit),
-    next_page: page + 1 > Math.ceil(resultPromiseForCount.length / limit) ? null : page + 1,
-    prev_page: page - 1 <= 0 ? null : page - 1,
-  };
+  const pagination = is_pagination === 'false'
+    ? null
+    : {
+        total_record: resultPromiseForCount.length,
+        current_page: page,
+        total_page: Math.ceil(resultPromiseForCount.length / limit),
+        next_page: page + 1 > Math.ceil(resultPromiseForCount.length / limit) ? null : page + 1,
+        prev_page: page - 1 <= 0 ? null : page - 1,
+      };
 
-  const response = {
-    data,
-    pagination,
-  };
+  const response = is_pagination === 'false'
+    ? data
+    : {
+        data,
+        pagination,
+      };
 
   return c.json(response || [], HSCode.OK);
 };
