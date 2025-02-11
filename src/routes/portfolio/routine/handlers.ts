@@ -107,6 +107,8 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   const { portfolio_department, program, type } = c.req.valid('query');
 
+  console.log(portfolio_department, program, type);
+
   const resultPromise = db.select({
     id: routine.id,
     uuid: routine.uuid,
