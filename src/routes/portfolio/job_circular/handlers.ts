@@ -146,10 +146,10 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     prev_page: page - 1 <= 0 ? null : page - 1,
   };
 
-  const response = {
+  const response = [
     ...data,
     pagination,
-  };
+  ];
 
   return c.json(response || [], HSCode.OK);
 };
