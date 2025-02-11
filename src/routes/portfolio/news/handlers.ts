@@ -222,7 +222,7 @@ export async function getNewsAndNewsEntryDetailsByNewsUuid(c: any) {
     cover_image: news.cover_image,
     published_date: news.published_date,
     remarks: news.remarks,
-    news_entry: sql`ARRAY(SELECT json_build_object('uuid', uuid, 'documents', documents,'created_at', created_at, 'updated_at',updated_at) FROM portfolio.news_entry WHERE news_uuid = portfolio.news.uuid)`,
+    entry: sql`ARRAY(SELECT json_build_object('uuid', uuid, 'documents', documents,'created_at', created_at, 'updated_at',updated_at) FROM portfolio.news_entry WHERE news_uuid = portfolio.news.uuid)`,
   })
     .from(news)
     .leftJoin(department, eq(news.department_uuid, department.uuid))
