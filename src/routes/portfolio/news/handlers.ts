@@ -1,6 +1,6 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { eq, sql } from 'drizzle-orm';
+import { desc, eq, sql } from 'drizzle-orm';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
@@ -8,7 +8,7 @@ import { constructSelectAllQuery } from '@/lib/variables';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 import { deleteFile, updateFile, uploadFile } from '@/utils/upload_file';
 
-import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
+import type { CreateRoute, GetLatestNewsRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
 
 import { department, news } from '../schema';
 
@@ -241,3 +241,34 @@ export async function getNewsAndNewsEntryDetailsByNewsUuid(c: any) {
 
   return c.json(data[0] || {}, HSCode.OK);
 }
+
+export const getLatestNews: AppRouteHandler<GetLatestNewsRoute> = async (c: any) => {
+  const { department_uuid } = c.req.valid('query');
+
+  const resultPromise = db.select({
+    id: news.id,
+    uuid: news.uuid,
+    department_uuid: news.department_uuid,
+    department_name: department.name,
+    title: news.title,
+    subtitle: news.subtitle,
+    description: news.description,
+    content: news.content,
+    created_at: news.created_at,
+    cover_image: news.cover_image,
+    published_date: news.published_date,
+    remarks: news.remarks,
+  })
+    .from(news)
+    .leftJoin(department, eq(news.department_uuid, department.uuid))
+    .where(department_uuid ? eq(news.department_uuid, department_uuid) : sql`true`)
+    .orderBy(desc(news.created_at))
+    .limit(10);
+
+  const data = await resultPromise;
+
+  if (!data)
+    return DataNotFound(c);
+
+  return c.json(data[0] || {}, HSCode.OK);
+};

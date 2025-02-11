@@ -156,9 +156,27 @@ export const getNewsAndNewsEntryDetailsByNewsUuid = createRoute({
   },
 });
 
+export const getLatestNews = createRoute({
+  path: '/portfolio/news/latest',
+  method: 'get',
+  tags,
+  request: {
+    query: z.object({
+      department_uuid: z.string().optional(),
+    }),
+  },
+  responses: {
+    [HSCode.OK]: jsonContent(
+      selectSchema,
+      'The latest news',
+    ),
+  },
+});
+
 export type ListRoute = typeof list;
 export type CreateRoute = typeof create;
 export type GetOneRoute = typeof getOne;
 export type PatchRoute = typeof patch;
 export type RemoveRoute = typeof remove;
 export type GetNewsAndNewsEntryDetailsByNewsUuidRoute = typeof getNewsAndNewsEntryDetailsByNewsUuid;
+export type GetLatestNewsRoute = typeof getLatestNews;
