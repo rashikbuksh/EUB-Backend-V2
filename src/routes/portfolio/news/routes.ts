@@ -162,7 +162,7 @@ export const getLatestNews = createRoute({
   tags,
   request: {
     query: z.object({
-      department_uuid: z.string().optional(),
+      department_name: z.string().optional(),
     }),
   },
   responses: {

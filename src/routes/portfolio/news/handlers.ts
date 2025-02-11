@@ -243,7 +243,7 @@ export async function getNewsAndNewsEntryDetailsByNewsUuid(c: any) {
 }
 
 export const getLatestNews: AppRouteHandler<GetLatestNewsRoute> = async (c: any) => {
-  const { department_uuid } = c.req.valid('query');
+  const { department_name } = c.req.valid('query');
 
   const resultPromise = db.select({
     id: news.id,
@@ -261,7 +261,7 @@ export const getLatestNews: AppRouteHandler<GetLatestNewsRoute> = async (c: any)
   })
     .from(news)
     .leftJoin(department, eq(news.department_uuid, department.uuid))
-    .where(department_uuid ? eq(news.department_uuid, department_uuid) : sql`true`)
+    .where(department_name ? eq(department.name, department_name) : sql`true`)
     .orderBy(desc(news.created_at))
     .limit(10);
 
