@@ -157,7 +157,7 @@ export const getNewsAndNewsEntryDetailsByNewsUuid = createRoute({
 });
 
 export const getLatestNews = createRoute({
-  path: '/portfolio/news/latest',
+  path: '/portfolio/news-latest',
   method: 'get',
   tags,
   request: {
@@ -167,8 +167,8 @@ export const getLatestNews = createRoute({
   },
   responses: {
     [HSCode.OK]: jsonContent(
-      selectSchema,
-      'The latest news',
+      z.array(selectSchema),
+      'The list of news',
     ),
   },
 });
