@@ -1,5 +1,6 @@
 import type { AppRouteHandler } from '@/lib/types';
 
+import { desc } from 'drizzle-orm';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
@@ -12,7 +13,8 @@ export const valueLabel: AppRouteHandler<ValueLabelRoute> = async (c: any) => {
     value: faculty.uuid,
     label: faculty.name,
   })
-    .from(faculty);
+    .from(faculty)
+    .orderBy(desc(faculty.name));
 
   const data = await resultPromise;
 
