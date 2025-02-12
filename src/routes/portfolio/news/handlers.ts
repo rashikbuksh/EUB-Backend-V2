@@ -6,7 +6,7 @@ import * as HSCode from 'stoker/http-status-codes';
 import db from '@/db';
 import { constructSelectAllQuery } from '@/lib/variables';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
-import { deleteFile, updateFile, uploadFile } from '@/utils/upload_file';
+import { deleteFile, insertFile, updateFile } from '@/utils/upload_file';
 
 import type { CreateRoute, GetLatestNewsRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
 
@@ -19,7 +19,7 @@ export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
 
   const cover_image = formData.cover_image;
 
-  const coverImagePath = await uploadFile(cover_image, 'public/news');
+  const coverImagePath = await insertFile(cover_image, 'public/news');
 
   const value = {
     uuid: formData.uuid,
@@ -62,7 +62,7 @@ export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
       formData.cover_image = coverImagePath;
     }
     else {
-      const coverImagePath = await uploadFile(formData.cover_image, 'public/news');
+      const coverImagePath = await insertFile(formData.cover_image, 'public/news');
       formData.cover_image = coverImagePath;
     }
   }

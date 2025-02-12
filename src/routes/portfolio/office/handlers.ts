@@ -7,7 +7,7 @@ import * as HSCode from 'stoker/http-status-codes';
 import db from '@/db';
 // import * as hrSchema from '@/routes/hr/schema';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
-import { deleteFile, updateFile, uploadFile } from '@/utils/upload_file';
+import { deleteFile, insertFile, updateFile } from '@/utils/upload_file';
 
 import type {
   CreateRoute,
@@ -27,7 +27,7 @@ export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
   const formData = await c.req.parseBody();
   const image = formData.image;
 
-  const filePath = await uploadFile(image, 'public/office');
+  const filePath = await insertFile(image, 'public/office');
 
   const value = {
     uuid: formData.uuid,
@@ -67,7 +67,7 @@ export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
       formData.image = imagePath;
     }
     else {
-      const imagePath = await uploadFile(formData.image, 'public/office');
+      const imagePath = await insertFile(formData.image, 'public/office');
       formData.image = imagePath;
     }
   }

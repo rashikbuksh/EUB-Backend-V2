@@ -8,7 +8,7 @@ import nanoid from '@/lib/nanoid';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-export async function uploadFile(file: any, folderName: string) {
+export async function insertFile(file: any, folderName: string) {
   const buffer = await file.arrayBuffer(); // Ensure this is awaited
 
   const upload_path = `/uploads/${folderName}/${nanoid()}.${file.name.split('.').pop()}`;
@@ -33,5 +33,5 @@ export async function updateFile(file: any, oldFilePath: string, folderName: str
   deleteFile(oldFilePath);
 
   // upload the new file
-  return uploadFile(file, folderName);
+  return insertFile(file, folderName);
 }
