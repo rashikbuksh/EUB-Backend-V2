@@ -21,6 +21,7 @@ export const insertSchema = createInsertSchema(
       message: 'date_of_birth must be in the format "YYYY-MM-DD"',
     }),
     phone_number: schema => schema.phone_number.min(11),
+    bkash: schema => schema.bkash.min(11),
     ssc_passing_year: schema => schema.ssc_passing_year.min(4),
     hsc_passing_year: schema => schema.hsc_passing_year.min(4),
     created_at: schema => schema.created_at.regex(dateTimePattern, {
@@ -63,6 +64,7 @@ export const insertSchema = createInsertSchema(
   hsc_passing_year: true,
   hsc_institute: true,
   created_at: true,
+  bkash: true,
 }).partial({
   bsc_name: true,
   bsc_cgpa: true,
