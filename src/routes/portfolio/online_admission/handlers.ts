@@ -4,11 +4,12 @@ import { eq } from 'drizzle-orm';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
+import * as hrSchema from '@/routes/hr/schema';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 
 import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
 
-import { online_admission } from '../schema';
+import { online_admission, program } from '../schema';
 
 export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
   const value = c.req.valid('json');
@@ -56,7 +57,57 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 };
 
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
-  const data = await db.query.online_admission.findMany();
+  // const data = await db.query.online_admission.findMany();
+
+  const resultPromise = db.select({
+    id: online_admission.id,
+    uuid: online_admission.uuid,
+    semester: online_admission.semester,
+    program_uuid: online_admission.program_uuid,
+    program_name: program.name,
+    applicant_name: online_admission.applicant_name,
+    father_name: online_admission.father_name,
+    mother_name: online_admission.mother_name,
+    local_guardian: online_admission.local_guardian,
+    date_of_birth: online_admission.date_of_birth,
+    nationality: online_admission.nationality,
+    blood_group: online_admission.blood_group,
+    phone_number: online_admission.phone_number,
+    email: online_admission.email,
+    gender: online_admission.gender,
+    marital_status: online_admission.marital_status,
+    present_address: online_admission.present_address,
+    village: online_admission.village,
+    post_office: online_admission.post_office,
+    thana: online_admission.thana,
+    district: online_admission.district,
+    ssc_group: online_admission.ssc_group,
+    ssc_grade: online_admission.ssc_grade,
+    ssc_gpa: online_admission.ssc_gpa,
+    ssc_board: online_admission.ssc_board,
+    ssc_passing_year: online_admission.ssc_passing_year,
+    ssc_institute: online_admission.ssc_institute,
+    hsc_group: online_admission.hsc_group,
+    hsc_grade: online_admission.hsc_grade,
+    hsc_gpa: online_admission.hsc_gpa,
+    hsc_board: online_admission.hsc_board,
+    hsc_passing_year: online_admission.hsc_passing_year,
+    hsc_institute: online_admission.hsc_institute,
+    bsc_name: online_admission.bsc_name,
+    bsc_cgpa: online_admission.bsc_cgpa,
+    bsc_passing_year: online_admission.bsc_passing_year,
+    bsc_institute: online_admission.bsc_institute,
+    created_at: online_admission.created_at,
+    updated_at: online_admission.updated_at,
+    created_by: online_admission.created_by,
+    created_by_name: hrSchema.users.name,
+    remarks: online_admission.remarks,
+  })
+    .from(online_admission)
+    .leftJoin(program, eq(online_admission.program_uuid, program.uuid))
+    .leftJoin(hrSchema.users, eq(online_admission.created_by, hrSchema.users.uuid));
+
+  const data = await resultPromise;
 
   return c.json(data || [], HSCode.OK);
 };
