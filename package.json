@@ -19,7 +19,7 @@
     "db-introspect": "drizzle-kit introspect",
     "db-push": "drizzle-kit push",
     "db-studio": "drizzle-kit studio --port 4000",
-    "deploy": "git pull && npm run build && pm2 kill && pm2 resurrect"
+    "deploy": "git pull && npm run build && pm2 restart eub_v2_backend --update-env"
   },
   "dependencies": {
     "@hono/node-server": "^1.13.7",
