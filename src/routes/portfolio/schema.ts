@@ -208,7 +208,7 @@ export const online_admission = portfolio.table('online_admission', {
   updated_at: DateTime('updated_at'),
   created_by: defaultUUID('created_by').references(() => users.uuid, DEFAULT_OPERATION),
   remarks: text('remarks'),
-  bkash: text('bkash').notNull().default(sql`01000000000`),
+  bkash: text('bkash').notNull(),
 });
 
 //* faculty
