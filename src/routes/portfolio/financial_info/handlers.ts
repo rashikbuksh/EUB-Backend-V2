@@ -62,6 +62,8 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     uuid: financial_info.uuid,
     department_uuid: financial_info.department_uuid,
     department_name: department.name,
+    faculty_uuid: department.faculty_uuid,
+    faculty_name: faculty.name,
     category: department.category,
     total_credit: financial_info.total_credit,
     total_cost: financial_info.total_cost,
@@ -85,6 +87,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   })
     .from(financial_info)
     .leftJoin(department, eq(financial_info.department_uuid, department.uuid))
+    .leftJoin(faculty, eq(department.faculty_uuid, faculty.uuid))
     .leftJoin(hrSchema.users, eq(financial_info.created_by, hrSchema.users.uuid));
 
   const data: any[] = await resultPromise;
