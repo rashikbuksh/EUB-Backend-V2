@@ -102,6 +102,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     created_by: online_admission.created_by,
     created_by_name: hrSchema.users.name,
     remarks: online_admission.remarks,
+    bkash: online_admission.bkash,
   })
     .from(online_admission)
     .leftJoin(program, eq(online_admission.program_uuid, program.uuid))
@@ -167,6 +168,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     spring: sql`CASE WHEN ${online_admission.semester} = 'spring' THEN true ELSE false END`,
     summer: sql`CASE WHEN ${online_admission.semester} = 'summer' THEN true ELSE false END`,
     fall: sql`CASE WHEN ${online_admission.semester} = 'fall' THEN true ELSE false END`,
+    bkash: online_admission.bkash,
   })
     .from(online_admission)
     .leftJoin(program, eq(online_admission.program_uuid, program.uuid))
