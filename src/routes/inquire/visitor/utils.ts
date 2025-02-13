@@ -32,7 +32,7 @@ export const insertSchema = createInsertSchema(
   subject_preference: true,
   prev_institution: true,
   from_where: true,
-  dept: true,
+  department: true,
   through: true,
 }).partial({
   updated_at: true,
