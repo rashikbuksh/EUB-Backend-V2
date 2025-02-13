@@ -61,6 +61,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
 
   const resultPromise = db.select({
     id: visitor.id,
+    uuid: visitor.uuid,
     name: visitor.name,
     category: visitor.category,
     mobile: visitor.mobile,
