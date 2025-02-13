@@ -36,7 +36,7 @@ export const visitor = inquire.table('visitor', {
   through: text('through').notNull(),
   status: visitor_status('status').notNull(),
   created_at: DateTime('created_at').notNull().$defaultFn(() => 'now()'),
-  updated_at: DateTime('updated_at').$onUpdate(() => 'now()'),
+  updated_at: DateTime('updated_at'),
   created_by: defaultUUID('created_by').references(
     () => users.uuid,
     DEFAULT_OPERATION,
