@@ -32,7 +32,7 @@ export const visitor = inquire.table('visitor', {
   subject_preference: text('subject_preference').notNull(),
   prev_institution: text('prev_institution').notNull(),
   from_where: text('from_where').notNull(),
-  dept: text('dept').notNull(),
+  department: text('department').notNull(),
   through: text('through').notNull(),
   status: visitor_status('status').notNull(),
   created_at: DateTime('created_at').notNull().$defaultFn(() => 'now()'),
