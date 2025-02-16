@@ -8,7 +8,7 @@ import db from '@/db';
 import * as hrSchema from '@/routes/hr/schema';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 
-import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
+import type { CreateRoute, GetOneRoute, GetTeacherDetailsRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
 
 import { department, department_teachers } from '../schema';
 
@@ -138,6 +138,47 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
 
   if (!data)
     return DataNotFound(c);
+
+  return c.json(data[0] || {}, HSCode.OK);
+};
+
+export const getTeacherDetails: AppRouteHandler<GetTeacherDetailsRoute> = async (c: any) => {
+  const { uuid } = c.req.valid('param');
+
+  const resultPromise = db.select({
+    id: department_teachers.id,
+    uuid: department_teachers.uuid,
+    department_uuid: department_teachers.department_uuid,
+    department_name: department.name,
+    teacher_uuid: department_teachers.teacher_uuid,
+    teacher_name: hrSchema.users.name,
+    teacher_designation: hrSchema.designation.name,
+    teacher_phone: hrSchema.users.phone,
+    teacher_email: hrSchema.users.email,
+    office: hrSchema.users.office,
+    teacher_image: hrSchema.users.image,
+    department_head: department_teachers.department_head,
+    education: department_teachers.education,
+    publication: department_teachers.publication,
+    journal: department_teachers.journal,
+    appointment_date: department_teachers.appointment_date,
+    resign_date: department_teachers.resign_date,
+    about: department_teachers.about,
+    created_at: department_teachers.created_at,
+    updated_at: department_teachers.updated_at,
+    created_by: department_teachers.created_by,
+    created_by_name: createdByUser.name,
+    remarks: department_teachers.remarks,
+
+  })
+    .from(department_teachers)
+    .leftJoin(department, eq(department_teachers.department_uuid, department.uuid))
+    .leftJoin(hrSchema.users, eq(department_teachers.teacher_uuid, hrSchema.users.uuid))
+    .leftJoin(hrSchema.designation, eq(hrSchema.users.designation_uuid, hrSchema.designation.uuid))
+    .leftJoin(createdByUser, eq(department_teachers.created_by, createdByUser.uuid))
+    .where(eq(department_teachers.teacher_uuid, uuid));
+
+  const data = await resultPromise;
 
   return c.json(data[0] || {}, HSCode.OK);
 };
