@@ -176,7 +176,7 @@ export const getTeacherDetails: AppRouteHandler<GetTeacherDetailsRoute> = async 
     .leftJoin(hrSchema.users, eq(department_teachers.teacher_uuid, hrSchema.users.uuid))
     .leftJoin(hrSchema.designation, eq(hrSchema.users.designation_uuid, hrSchema.designation.uuid))
     .leftJoin(createdByUser, eq(department_teachers.created_by, createdByUser.uuid))
-    .where(eq(department_teachers.teacher_uuid, uuid));
+    .where(eq(department_teachers.uuid, uuid));
 
   const data = await resultPromise;
 
