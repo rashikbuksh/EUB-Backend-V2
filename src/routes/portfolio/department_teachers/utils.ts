@@ -33,6 +33,10 @@ export const insertSchema = createInsertSchema(
   publication: true,
   updated_at: true,
   remarks: true,
+  journal: true,
+  appointment_date: true,
+  resign_date: true,
+  about: true,
 }).omit({
   id: true,
 });
