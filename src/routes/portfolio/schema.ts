@@ -283,6 +283,7 @@ export const info_page_name = portfolio.enum('info_page_name', [
   'information_about_provisional_certificates',
   'clubs_and_society',
   'academic_information_and_policies',
+  'journal',
 ]);
 
 export const info_id = portfolio.sequence('info_id', DEFAULT_SEQUENCE);
