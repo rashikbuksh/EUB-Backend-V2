@@ -43,11 +43,11 @@ export const insertSchema = createInsertSchema(
   table_name: true,
   total_credit: true,
   total_cost: true,
-  admission_fee: true,
   created_at: true,
   created_by: true,
 }).partial({
   total_waiver_amount: true,
+  admission_fee: true,
   waiver_50: true,
   waiver_55: true,
   waiver_60: true,
