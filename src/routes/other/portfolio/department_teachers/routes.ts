@@ -18,6 +18,17 @@ export const valueLabelForPublication = createRoute({
       'The valueLabel of department',
     ),
   },
+  request: {
+    query: z.object({
+      latest: z.string().optional(),
+      limit: z.string().optional(),
+      page: z.string().optional(),
+      q: z.string().optional(),
+      sort: z.string().optional(),
+      orderby: z.string().optional(),
+      is_pagination: z.string().optional(),
+    }),
+  },
 });
 
 export type ValueLabelRouteForPublication = typeof valueLabelForPublication;
