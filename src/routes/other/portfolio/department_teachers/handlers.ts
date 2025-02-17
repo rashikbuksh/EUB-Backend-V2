@@ -32,7 +32,7 @@ export const valueLabelForPublication: AppRouteHandler<ValueLabelRouteForPublica
   const page = Number.parseInt(c.req.valid('query').page);
   const baseQuery = is_pagination === 'false'
     ? resultPromise
-    : constructSelectAllQuery(resultPromise, c.req.valid('query'), 'created_at', [department_teachers.publication.name]);
+    : constructSelectAllQuery(resultPromise, c.req.valid('query'), 'created_at');
 
   const data = await baseQuery;
 
