@@ -13,8 +13,10 @@ export const insertSchema = createInsertSchema(
   {
     uuid: schema => schema.uuid.length(21),
     department_uuid: schema => schema.department_uuid.length(21),
+    table_name: z.string(),
     total_credit: z.number(),
     total_cost: z.number(),
+    total_waiver_amount: z.number().optional().default(0),
     admission_fee: z.number(),
     waiver_50: z.number().optional().default(0),
     waiver_55: z.number().optional().default(0),
@@ -38,12 +40,14 @@ export const insertSchema = createInsertSchema(
 ).required({
   uuid: true,
   department_uuid: true,
+  table_name: true,
   total_credit: true,
   total_cost: true,
   admission_fee: true,
   created_at: true,
   created_by: true,
 }).partial({
+  total_waiver_amount: true,
   waiver_50: true,
   waiver_55: true,
   waiver_60: true,

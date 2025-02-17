@@ -471,12 +471,21 @@ export const news_entry = portfolio.table('news_entry', {
 //* Financial Info
 export const financial_info_id = portfolio.sequence('financial_info_id', DEFAULT_SEQUENCE);
 
+export const financial_info_table = portfolio.enum('financial_info_table', [
+  'engineering_hsc',
+  'engineering_diploma',
+  'bba',
+  'arts',
+]);
+
 export const financial_info = portfolio.table('financial_info', {
   id: integer('id').default(sql`nextval('portfolio.financial_info_id')`),
   uuid: uuid_primary,
   department_uuid: defaultUUID('department_uuid').notNull().unique().references(() => department.uuid, DEFAULT_OPERATION),
+  table_name: financial_info_table('table_name').notNull(),
   total_credit: integer('total_credit').default(sql`0`),
   total_cost: integer('total_cost').default(sql`0`),
+  total_waiver_amount: integer('total_waiver_amount').default(sql`0`),
   admission_fee: integer('admission_fee').default(sql`0`),
   waiver_50: integer('waiver_50').default(sql`0`),
   waiver_55: integer('waiver_55').default(sql`0`),
