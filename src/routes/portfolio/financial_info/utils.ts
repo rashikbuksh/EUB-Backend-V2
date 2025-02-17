@@ -17,7 +17,7 @@ export const insertSchema = createInsertSchema(
     total_credit: z.number(),
     total_cost: z.number(),
     total_waiver_amount: z.number().optional().default(0),
-    admission_fee: z.number(),
+    admission_fee: z.number().optional().default(0),
     waiver_50: z.number().optional().default(0),
     waiver_55: z.number().optional().default(0),
     waiver_60: z.number().optional().default(0),
