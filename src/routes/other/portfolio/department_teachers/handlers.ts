@@ -4,12 +4,15 @@ import { eq, sql } from 'drizzle-orm';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
+import { constructSelectAllQuery } from '@/lib/variables';
 import * as hrSchema from '@/routes/hr/schema';
 import { department, department_teachers, faculty } from '@/routes/portfolio/schema';
 
 import type { ValueLabelRouteForPublication } from './routes';
 
 export const valueLabelForPublication: AppRouteHandler<ValueLabelRouteForPublication> = async (c: any) => {
+  const { latest, is_pagination } = c.req.valid('query');
+
   const resultPromise = db.select({
     value: sql`CONCAT(users.name, ' - ', faculty.name)`,
     label: department_teachers.publication,
@@ -19,7 +22,36 @@ export const valueLabelForPublication: AppRouteHandler<ValueLabelRouteForPublica
     .leftJoin(department, eq(department_teachers.department_uuid, department.uuid))
     .leftJoin(faculty, eq(department.faculty_uuid, faculty.uuid));
 
-  const data = await resultPromise;
+  if (latest === 'true') {
+    resultPromise.orderBy(sql`DATE(${department_teachers.created_at}) DESC`).limit(10);
+  }
 
-  return c.json(data, HSCode.OK);
+  const resultPromiseForCount = await resultPromise;
+
+  const limit = Number.parseInt(c.req.valid('query').limit);
+  const page = Number.parseInt(c.req.valid('query').page);
+  const baseQuery = is_pagination === 'false'
+    ? resultPromise
+    : constructSelectAllQuery(resultPromise, c.req.valid('query'), 'created_at', [department_teachers.publication.name]);
+
+  const data = await baseQuery;
+
+  const pagination = is_pagination === 'false'
+    ? null
+    : {
+        total_record: resultPromiseForCount.length,
+        current_page: Number(page),
+        total_page: Math.ceil(resultPromiseForCount.length / limit),
+        next_page: page + 1 > Math.ceil(resultPromiseForCount.length / limit) ? null : page + 1,
+        prev_page: page - 1 <= 0 ? null : page - 1,
+      };
+
+  const response = is_pagination === 'false'
+    ? data
+    : {
+        data,
+        pagination,
+      };
+
+  return c.json(response, HSCode.OK);
 };
