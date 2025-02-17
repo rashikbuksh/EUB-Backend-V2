@@ -1,5 +1,5 @@
 import { relations, sql } from 'drizzle-orm';
-import { boolean, integer, pgSchema, text } from 'drizzle-orm/pg-core';
+import { boolean, integer, pgSchema, text, unique } from 'drizzle-orm/pg-core';
 
 import { DateTime, defaultUUID, PG_DECIMAL, uuid_primary } from '@/lib/variables';
 import { DEFAULT_OPERATION, DEFAULT_SEQUENCE } from '@/utils/db';
@@ -481,7 +481,7 @@ export const financial_info_table = portfolio.enum('financial_info_table', [
 export const financial_info = portfolio.table('financial_info', {
   id: integer('id').default(sql`nextval('portfolio.financial_info_id')`),
   uuid: uuid_primary,
-  department_uuid: defaultUUID('department_uuid').notNull().unique().references(() => department.uuid, DEFAULT_OPERATION),
+  department_uuid: defaultUUID('department_uuid').notNull().references(() => department.uuid, DEFAULT_OPERATION),
   table_name: financial_info_table('table_name').notNull(),
   total_credit: integer('total_credit').default(sql`0`),
   total_cost: integer('total_cost').default(sql`0`),
@@ -502,7 +502,9 @@ export const financial_info = portfolio.table('financial_info', {
   updated_at: DateTime('updated_at').$onUpdate(() => 'now()'),
   created_by: defaultUUID('created_by').references(() => users.uuid, DEFAULT_OPERATION),
   remarks: text('remarks'),
-});
+}, table => [
+  unique().on(table.department_uuid, table.table_name),
+]);
 
 //* contact us
 
