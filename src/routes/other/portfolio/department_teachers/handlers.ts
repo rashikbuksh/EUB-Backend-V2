@@ -14,8 +14,8 @@ export const valueLabelForPublication: AppRouteHandler<ValueLabelRouteForPublica
   const { latest, is_pagination } = c.req.valid('query');
 
   const resultPromise = db.select({
-    value: sql`CONCAT(users.name, ' - ', faculty.name)`,
-    label: department_teachers.publication,
+    value: department_teachers.publication,
+    label: sql`CONCAT(users.name, ' - ', faculty.name)`,
   })
     .from(department_teachers)
     .leftJoin(hrSchema.users, eq(department_teachers.teacher_uuid, hrSchema.users.uuid))
