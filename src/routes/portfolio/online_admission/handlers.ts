@@ -4,6 +4,7 @@ import { eq, sql } from 'drizzle-orm';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
+import { PG_DECIMAL_TO_FLOAT } from '@/lib/variables';
 import * as hrSchema from '@/routes/hr/schema';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 
@@ -83,18 +84,18 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     district: online_admission.district,
     ssc_group: online_admission.ssc_group,
     ssc_grade: online_admission.ssc_grade,
-    ssc_gpa: online_admission.ssc_gpa,
+    ssc_gpa: PG_DECIMAL_TO_FLOAT(online_admission.ssc_gpa),
     ssc_board: online_admission.ssc_board,
     ssc_passing_year: online_admission.ssc_passing_year,
     ssc_institute: online_admission.ssc_institute,
     hsc_group: online_admission.hsc_group,
     hsc_grade: online_admission.hsc_grade,
-    hsc_gpa: online_admission.hsc_gpa,
+    hsc_gpa: PG_DECIMAL_TO_FLOAT(online_admission.hsc_gpa),
     hsc_board: online_admission.hsc_board,
     hsc_passing_year: online_admission.hsc_passing_year,
     hsc_institute: online_admission.hsc_institute,
     bsc_name: online_admission.bsc_name,
-    bsc_cgpa: online_admission.bsc_cgpa,
+    bsc_cgpa: PG_DECIMAL_TO_FLOAT(online_admission.bsc_cgpa),
     bsc_passing_year: online_admission.bsc_passing_year,
     bsc_institute: online_admission.bsc_institute,
     created_at: online_admission.created_at,
@@ -146,18 +147,18 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     district: online_admission.district,
     ssc_group: online_admission.ssc_group,
     ssc_grade: online_admission.ssc_grade,
-    ssc_gpa: online_admission.ssc_gpa,
+    ssc_gpa: PG_DECIMAL_TO_FLOAT(online_admission.ssc_gpa),
     ssc_board: online_admission.ssc_board,
     ssc_passing_year: online_admission.ssc_passing_year,
     ssc_institute: online_admission.ssc_institute,
     hsc_group: online_admission.hsc_group,
     hsc_grade: online_admission.hsc_grade,
-    hsc_gpa: online_admission.hsc_gpa,
+    hsc_gpa: PG_DECIMAL_TO_FLOAT(online_admission.hsc_gpa),
     hsc_board: online_admission.hsc_board,
     hsc_passing_year: online_admission.hsc_passing_year,
     hsc_institute: online_admission.hsc_institute,
     bsc_name: online_admission.bsc_name,
-    bsc_cgpa: online_admission.bsc_cgpa,
+    bsc_cgpa: PG_DECIMAL_TO_FLOAT(online_admission.bsc_cgpa),
     bsc_passing_year: online_admission.bsc_passing_year,
     bsc_institute: online_admission.bsc_institute,
     created_at: online_admission.created_at,
