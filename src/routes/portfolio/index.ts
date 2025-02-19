@@ -11,6 +11,7 @@ import info from './info';
 import job_circular from './job_circular';
 import news from './news';
 import news_entry from './news-entry';
+import offer from './offer';
 import office from './office';
 import office_entry from './office_entry';
 import online_admission from './online_admission';
@@ -38,4 +39,5 @@ export default [
   department_teachers,
   financial_info,
   contact_us,
+  offer,
 ];
