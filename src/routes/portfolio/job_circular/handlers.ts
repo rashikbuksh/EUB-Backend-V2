@@ -138,7 +138,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
 
   const baseQuery = is_pagination === 'false'
     ? resultPromise
-    : constructSelectAllQuery(resultPromise, c.req.valid('query'), 'created_at');
+    : constructSelectAllQuery(resultPromise, c.req.valid('query'), 'created_at', [hrSchema.users.name.name, faculty.name.name]);
 
   const data = await baseQuery;
 

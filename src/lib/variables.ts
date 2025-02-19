@@ -1,4 +1,4 @@
-import { asc, desc, like, or, sql } from 'drizzle-orm';
+import { asc, desc, or, sql } from 'drizzle-orm';
 import { char, decimal, timestamp } from 'drizzle-orm/pg-core';
 
 import type { ColumnProps } from './types';
@@ -37,24 +37,66 @@ export function constructSelectAllQuery(
 ) {
   const { q, page, limit, sort, orderby } = params;
 
-  // Get search fields from table
-  const searchFields = Object.keys(baseQuery.config.table).filter(
+  // Get search fields from the main table
+  const searchFields = Object.keys(baseQuery.config.table[Symbol.for('drizzle:Columns')]).filter(
     field =>
       field !== 'uuid'
       && field !== 'id'
       && field !== 'created_at'
-      && field !== 'updated_at',
+      && field !== 'updated_at'
+      && field !== 'department_head'
+      && field !== 'appointment_date'
+      && field !== 'resign_date'
+      && field !== 'deadline',
   );
 
+  // Get table name from baseQuery
+  const tableNameSymbol = Object.getOwnPropertySymbols(baseQuery.config.table).find(symbol =>
+    symbol.toString().includes('OriginalName'),
+  );
+  const tableName = tableNameSymbol ? baseQuery.config.table[tableNameSymbol] : 'unknown_table';
+
+  // Include table name with fields for the main table
+  const searchFieldsWithTable = searchFields.map(field => `"${tableName}"."${field}"`);
+
   // Include additional search fields from joined tables
-  const allSearchFields = [...searchFields, ...additionalSearchFields];
+  const joinedTables = baseQuery.config.joins || [];
+  joinedTables.forEach((join: any) => {
+    const joinTableNameSymbol = Object.getOwnPropertySymbols(join.table).find(symbol =>
+      symbol.toString().includes('OriginalName'),
+    );
+
+    const joinTableName = joinTableNameSymbol ? join.table[joinTableNameSymbol] : '';
+
+    const joinTableFields = Object.keys(join.table[Symbol.for('drizzle:Columns')]).filter(
+      field =>
+        field !== 'uuid'
+        && field !== 'id'
+        && field !== 'created_at'
+        && field !== 'updated_at'
+        && field !== 'department_head'
+        && field !== 'appointment_date'
+        && field !== 'resign_date'
+        && field !== 'deadline',
+    ).filter(field => additionalSearchFields.includes(field));
+
+    const joinFieldsWithTable = joinTableFields.map(field => joinTableName ? `"${joinTableName}"."${field}"` : `"${field}"`);
+
+    searchFieldsWithTable.push(...joinFieldsWithTable);
+  });
+
+  // Include additional search fields from joined tables
+  const allSearchFields = [...searchFieldsWithTable];
 
   // Apply search filter
   if (q) {
-    const searchConditions = allSearchFields.map(field =>
-      like(sql`${field}`, `%${q}%`),
-    );
-    baseQuery = baseQuery.where(or(...searchConditions));
+    const searchConditions = allSearchFields.map((field) => {
+      return sql`LOWER(${sql.raw(field)}) LIKE LOWER(${`%${q}%`})`;
+    });
+
+    if (searchConditions.length > 0) {
+      baseQuery = baseQuery.where(sql`${or(...searchConditions)}`);
+    }
   }
 
   // Apply sorting
@@ -71,7 +113,7 @@ export function constructSelectAllQuery(
           defaultSortField
         ],
       ),
-    ); // Default sorting
+    );
   }
 
   // Apply pagination
