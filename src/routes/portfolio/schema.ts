@@ -520,6 +520,23 @@ export const contact_us = portfolio.table('contact_us', {
   updated_at: DateTime('updated_at').$onUpdate(() => 'now()'),
 });
 
+//* offer
+export const offer_id = portfolio.sequence('offer_id', DEFAULT_SEQUENCE);
+
+export const offer = portfolio.table('offer', {
+  id: integer('id').default(sql`nextval('portfolio.offer_id')`),
+  uuid: uuid_primary,
+  serial: integer('serial').unique().notNull(),
+  title: text('title').notNull(),
+  subtitle: text('subtitle').notNull(),
+  file: text('file').default(sql`null`),
+  deadline: DateTime('deadline').notNull(),
+  created_by: defaultUUID('created_by').references(() => users.uuid, DEFAULT_OPERATION),
+  created_at: DateTime('created_at').notNull().$defaultFn(() => 'now()'),
+  updated_at: DateTime('updated_at'),
+  remarks: text('remarks'),
+});
+
 //* relations
 export const portfolio_news_rel = relations(news, ({ one, many }) => ({
 
@@ -706,4 +723,12 @@ export const portfolio_info_rel = relations(info, ({ one }) => ({
     references: [users.uuid],
   }),
 }));
+
+export const portfolio_offer_rel = relations(offer, ({ one }) => ({
+  created_by: one(users, {
+    fields: [offer.created_by],
+    references: [users.uuid],
+  }),
+}));
+
 export default portfolio;
