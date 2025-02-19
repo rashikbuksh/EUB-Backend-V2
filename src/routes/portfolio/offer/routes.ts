@@ -23,15 +23,16 @@ export const create = createRoute({
   path: '/portfolio/offer',
   method: 'post',
   request: {
-    body: {
-      content: {
-        'multipart/form-data': {
-          schema: {
-            ...insertSchema,
-          },
-        },
-      },
-    },
+    body: jsonContentRequired(insertSchema, 'The offer to create'),
+
+    // content: {
+    //   'multipart/form-data': {
+    //     schema: {
+    //       ...insertSchema,
+    //     },
+    //   },
+    // },
+
   },
   tags,
   responses: {
