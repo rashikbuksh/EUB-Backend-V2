@@ -13,6 +13,9 @@ export const insertSchema = createInsertSchema(
     uuid: schema => schema.uuid.length(21),
     department_uuid: schema => schema.department_uuid.length(21),
     teacher_uuid: schema => schema.teacher_uuid.length(21),
+    designation: schema => schema.designation.length(100),
+    phone: schema => schema.phone.min(1),
+    email: schema => schema.email.length(100),
     created_by: schema => schema.created_by.length(21),
     created_at: schema => schema.created_at.regex(dateTimePattern, {
       message: 'created_at must be in the format "YYYY-MM-DD HH:MM:SS"',
@@ -28,6 +31,9 @@ export const insertSchema = createInsertSchema(
   education: true,
   created_at: true,
   created_by: true,
+  designation: true,
+  phone: true,
+  email: true,
 }).partial({
   department_head: true,
   publication: true,

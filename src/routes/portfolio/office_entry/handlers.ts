@@ -79,9 +79,9 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     user_uuid: office_entry.user_uuid,
     user_name: user_information.name,
     user_department: hrSchema.department.name,
-    user_designation: hrSchema.designation.name,
-    user_phone: user_information.phone,
-    user_email: user_information.email,
+    user_designation: office_entry.designation,
+    user_phone: office_entry.phone,
+    user_email: office_entry.email,
     image: user_information.image,
     created_at: office_entry.created_at,
     created_by: office_entry.created_by,
@@ -92,9 +92,9 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     .from(office_entry)
     .leftJoin(office, eq(office_entry.office_uuid, office.uuid))
     .leftJoin(user_information, eq(office_entry.user_uuid, user_information.uuid))
-    .leftJoin(hrSchema.users, eq(office_entry.created_by, hrSchema.users.uuid))
     .leftJoin(hrSchema.department, eq(user_information.department_uuid, hrSchema.department.uuid))
-    .leftJoin(hrSchema.designation, eq(user_information.designation_uuid, hrSchema.designation.uuid));
+    .leftJoin(hrSchema.designation, eq(user_information.designation_uuid, hrSchema.designation.uuid))
+    .leftJoin(hrSchema.users, eq(office_entry.created_by, hrSchema.users.uuid));
 
   if (category)
     resultPromise.where(eq(office.category, category));
@@ -130,9 +130,9 @@ export const getByOfficeUuid: AppRouteHandler<GetByOfficeUuidRoute> = async (c: 
     user_uuid: office_entry.user_uuid,
     user_name: user_information.name,
     user_department: hrSchema.department.name,
-    user_designation: hrSchema.designation.name,
-    user_phone: user_information.phone,
-    user_email: user_information.email,
+    user_designation: office_entry.designation,
+    user_phone: office_entry.phone,
+    user_email: office_entry.email,
     image: user_information.image,
     created_at: office_entry.created_at,
     created_by: office_entry.created_by,
