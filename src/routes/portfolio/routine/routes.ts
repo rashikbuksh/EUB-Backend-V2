@@ -25,6 +25,7 @@ export const list = createRoute({
       portfolio_department: z.string().optional(),
       program: z.string().optional(),
       type: z.string().optional(),
+      access: z.string().optional(),
     }),
   },
 });

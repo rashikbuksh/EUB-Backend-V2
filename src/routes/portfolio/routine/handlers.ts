@@ -1,6 +1,6 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { and, eq } from 'drizzle-orm';
+import { and, eq, inArray } from 'drizzle-orm';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
@@ -106,7 +106,12 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 };
 
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
-  const { portfolio_department, program, type } = c.req.valid('query');
+  const { portfolio_department, program, type, access } = c.req.valid('query');
+
+  let accessArray = [];
+  if (access) {
+    accessArray = access.split(',');
+  }
 
   const resultPromise = db.select({
     id: routine.id,
@@ -161,6 +166,9 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   }
   else if (type) {
     resultPromise.where(eq(routine.type, type));
+  }
+  if (accessArray.length > 0) {
+    resultPromise.where(inArray(department.short_name, accessArray));
   }
 
   const data = await resultPromise;
