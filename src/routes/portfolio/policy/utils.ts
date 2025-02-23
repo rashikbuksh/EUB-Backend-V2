@@ -21,7 +21,6 @@ export const insertSchema = createInsertSchema(
   },
 ).required({
   uuid: true,
-  serial: true,
   name: true,
   department: true,
   published_date: true,
