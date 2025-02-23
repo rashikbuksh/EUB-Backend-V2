@@ -1,5 +1,5 @@
 import * as HSCode from 'stoker/http-status-codes';
-import { jsonContent, jsonContentRequired } from 'stoker/openapi/helpers';
+import { jsonContent } from 'stoker/openapi/helpers';
 import { createErrorSchema } from 'stoker/openapi/schemas';
 
 import { notFoundSchema } from '@/lib/constants';
@@ -23,20 +23,22 @@ export const create = createRoute({
   path: '/portfolio/policy',
   method: 'post',
   request: {
-    body: jsonContentRequired(insertSchema, 'The policy to create'),
-
-    // content: {
-    //   'multipart/form-data': {
-    //     schema: {
-    //       ...insertSchema,
-    //     },
-    //   },
-    // },
-
+    body: {
+      content: {
+        'multipart/form-data': {
+          schema: {
+            ...insertSchema,
+          },
+        },
+      },
+    },
   },
   tags,
   responses: {
-    [HSCode.OK]: jsonContent(selectSchema, 'The created policy'),
+    [HSCode.OK]: jsonContent(
+      selectSchema,
+      'The created policy',
+    ),
     [HSCode.UNPROCESSABLE_ENTITY]: jsonContent(
       createErrorSchema(insertSchema),
       'The validation error(s)',
@@ -66,7 +68,15 @@ export const patch = createRoute({
   method: 'patch',
   request: {
     params: param.uuid,
-    body: jsonContentRequired(patchSchema, 'The policy updates'),
+    body: {
+      content: {
+        'multipart/form-data': {
+          schema: {
+            ...patchSchema,
+          },
+        },
+      },
+    },
   },
   tags,
   responses: {
