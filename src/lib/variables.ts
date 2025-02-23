@@ -52,7 +52,8 @@ export function constructSelectAllQuery(
       && field !== 'file'
       && field !== 'cover_image'
       && field !== 'documents'
-      && field !== 'image',
+      && field !== 'image'
+      && field !== 'table_name',
   );
 
   // Get table name from baseQuery
