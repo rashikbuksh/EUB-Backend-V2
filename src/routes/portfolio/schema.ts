@@ -559,6 +559,29 @@ export const policy = portfolio.table('policy', {
   remarks: text('remarks'),
 });
 
+// * Tender
+
+export const table_name_enum_tender = portfolio.enum('table_name_enum_tender', [
+  'std_for_goods',
+  'std_for_works',
+  'safe',
+  'evaluation',
+]);
+
+export const tender = portfolio.table('tender', {
+  uuid: uuid_primary,
+  table_name: table_name_enum_tender('table_name').notNull(),
+  code: text('code').notNull(),
+  type: text('type').notNull(),
+  title: text('title').notNull(),
+  published_date: DateTime('published_date').notNull(),
+  file: text('file').default(sql`null`),
+  created_by: defaultUUID('created_by').references(() => users.uuid, DEFAULT_OPERATION),
+  created_at: DateTime('created_at').notNull().$defaultFn(() => 'now()'),
+  updated_at: DateTime('updated_at'),
+  remarks: text('remarks'),
+});
+
 //* relations
 export const portfolio_news_rel = relations(news, ({ one, many }) => ({
 
@@ -752,6 +775,13 @@ export const portfolio_offer_rel = relations(offer, ({ one }) => ({
 export const portfolio_policy_rel = relations(policy, ({ one }) => ({
   created_by: one(users, {
     fields: [policy.created_by],
+    references: [users.uuid],
+  }),
+}));
+
+export const portfolio_tender_rel = relations(tender, ({ one }) => ({
+  created_by: one(users, {
+    fields: [tender.created_by],
     references: [users.uuid],
   }),
 }));
