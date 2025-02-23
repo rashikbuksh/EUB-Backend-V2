@@ -18,6 +18,7 @@ import online_admission from './online_admission';
 import policy from './policy';
 import program from './program';
 import routine from './routine';
+import tender from './tender';
 import tuition_fee from './tuition_fee';
 
 export default [
@@ -42,4 +43,5 @@ export default [
   contact_us,
   offer,
   policy,
+  tender,
 ];
