@@ -292,11 +292,9 @@ export const info_id = portfolio.sequence('info_id', DEFAULT_SEQUENCE);
 export const info = portfolio.table('info', {
   id: integer('id').default(sql`nextval('portfolio.info_id')`),
   uuid: uuid_primary,
-  department_uuid: defaultUUID('department_uuid').default(sql`null`).references(() => department.uuid, DEFAULT_OPERATION),
   description: text('description').notNull(),
   page_name: info_page_name('page_name').notNull(),
   file: text('file').notNull(),
-  is_global: boolean('is_global').default(false),
   created_at: DateTime('created_at').notNull(),
   updated_at: DateTime('updated_at'),
   created_by: defaultUUID('created_by').references(
@@ -349,6 +347,7 @@ export const routine_programs = portfolio.enum('routine_programs', [
 export const routine_type = portfolio.enum('routine_type', [
   'class_routine',
   'exam_schedule',
+  'notices',
 ]);
 
 export const routine = portfolio.table('routine', {
@@ -363,6 +362,7 @@ export const routine = portfolio.table('routine', {
   updated_at: DateTime('updated_at'),
   created_by: defaultUUID('created_by').references(() => users.uuid, DEFAULT_OPERATION),
   remarks: text('remarks'),
+  is_global: boolean('is_global').default(false),
 });
 
 //* club
@@ -736,10 +736,6 @@ export const portfolio_department_teachers_rel = relations(department_teachers, 
 }));
 
 export const portfolio_info_rel = relations(info, ({ one }) => ({
-  department: one(department, {
-    fields: [info.department_uuid],
-    references: [department.uuid],
-  }),
   created_by: one(users, {
     fields: [info.created_by],
     references: [users.uuid],
