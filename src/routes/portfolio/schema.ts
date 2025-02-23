@@ -58,6 +58,7 @@ export const bot = portfolio.table('bot', {
   uuid: uuid_primary,
   category: bot_category('category').notNull(),
   user_uuid: defaultUUID('user_uuid').notNull().references(() => users.uuid, DEFAULT_OPERATION),
+  user_designation: text('user_designation').notNull().default('teacher'),
   status: bot_status('status').notNull(),
   description: text('description').notNull(),
   created_at: DateTime('created_at').notNull(),

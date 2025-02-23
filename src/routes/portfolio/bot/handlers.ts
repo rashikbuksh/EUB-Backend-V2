@@ -68,7 +68,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     uuid: bot.uuid,
     user_uuid: bot.user_uuid,
     user_name: hrSchema.users.name,
-    user_designation: hrSchema.designation.name,
+    user_designation: bot.user_designation,
     category: bot.category,
     status: bot.status,
     description: bot.description,
