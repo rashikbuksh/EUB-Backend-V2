@@ -264,11 +264,33 @@ export const department_category = portfolio.enum('department_category', [
   'certificate',
 ]);
 
+export const department_short_name = portfolio.enum('department_short_name', [
+  'bba',
+  'bsc-cse',
+  'bsc-textile',
+  'bsc-mechanical',
+  'bsc-ip',
+  'bsc-eee',
+  'bsc-civil',
+  'emba',
+  'mba',
+  'mba-one-year',
+  'thm',
+  'ba-english',
+  'bss-economics',
+  'llb',
+  'llm',
+  'ma-english',
+  'mgds-one-year',
+  'mss-economics',
+  'd-eee',
+]);
+
 export const department = portfolio.table('department', {
   id: integer('id').default(sql`nextval('portfolio.department_id')`),
   uuid: uuid_primary,
   name: text('name').notNull(),
-  short_name: text('short_name').default(sql`null`),
+  short_name: department_short_name('short_name').default('bba'),
   faculty_uuid: defaultUUID('faculty_uuid').notNull().references(() => faculty.uuid, DEFAULT_OPERATION),
   category: department_category('category').notNull(),
   created_at: DateTime('created_at').notNull(),
