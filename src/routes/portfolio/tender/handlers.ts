@@ -135,12 +135,11 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     remarks: tender.remarks,
   })
     .from(tender)
-    .leftJoin(hrSchema.users, eq(tender.created_by, hrSchema.users.uuid))
-    .where(
-      table_name
-        ? eq(tender.table_name, table_name)
-        : undefined,
-    );
+    .leftJoin(hrSchema.users, eq(tender.created_by, hrSchema.users.uuid));
+
+  if (table_name) {
+    resultPromise.where(eq(tender.table_name, table_name));
+  }
 
   const resultPromiseForCount = await resultPromise;
 
