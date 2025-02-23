@@ -27,6 +27,7 @@ export const insertSchema = createInsertSchema(
 ).required({
   uuid: true,
   name: true,
+  short_name: true,
   faculty_uuid: true,
   category: true,
   created_at: true,

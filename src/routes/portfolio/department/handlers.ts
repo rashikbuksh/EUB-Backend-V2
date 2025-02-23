@@ -61,6 +61,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     {
       uuid: department.uuid,
       name: department.name,
+      short_name: department.short_name,
       faculty_uuid: department.faculty_uuid,
       faculty_name: faculty.name,
       category: department.category,
@@ -86,6 +87,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     {
       uuid: department.uuid,
       name: department.name,
+      short_name: department.short_name,
       faculty_uuid: department.faculty_uuid,
       faculty_name: faculty.name,
       category: department.category,
