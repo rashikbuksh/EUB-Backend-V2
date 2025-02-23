@@ -47,7 +47,8 @@ export function constructSelectAllQuery(
       && field !== 'department_head'
       && field !== 'appointment_date'
       && field !== 'resign_date'
-      && field !== 'deadline',
+      && field !== 'deadline'
+      && field !== 'published_date',
   );
 
   // Get table name from baseQuery
