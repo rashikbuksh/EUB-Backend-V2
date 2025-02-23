@@ -94,9 +94,10 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     designation: string;
   }
 
-  const formattedData: { chairperson: Person | null; member: Person[] } = {
+  const formattedData: { chairperson: Person | null; member: Person[]; member_secretary: Person[] } = {
     chairperson: null,
     member: [],
+    member_secretary: [],
   };
 
   data.forEach((item, index) => {
@@ -114,6 +115,13 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
         designation: item.user_designation,
       });
     }
+    else if (item.status === 'member_secretary') {
+      formattedData.member_secretary.push({
+        id: (index + 2).toString(),
+        name: item.user_name,
+        designation: item.user_designation,
+      });
+    };
   });
 
   let filterData;
