@@ -25,9 +25,7 @@ export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
     uuid: formData.uuid,
     description: formData.description,
     page_name: formData.page_name,
-    department_uuid: formData.department_uuid,
     file: filePath,
-    is_global: formData.is_global,
     created_at: formData.created_at,
     updated_at: formData.updated_at,
     created_by: formData.created_by,
@@ -120,19 +118,15 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     uuid: info.uuid,
     description: info.description,
     page_name: info.page_name,
-    department_uuid: info.department_uuid,
-    department_name: department.name,
     faculty_uuid: faculty.uuid,
     faculty_name: faculty.name,
     file: info.file,
-    is_global: info.is_global,
     created_by: info.created_by,
     created_by_name: hrSchema.users.name,
     created_at: info.created_at,
     updated_at: info.updated_at,
   })
     .from(info)
-    .leftJoin(department, eq(info.department_uuid, department.uuid))
     .leftJoin(faculty, eq(department.faculty_uuid, faculty.uuid))
     .leftJoin(hrSchema.users, eq(info.created_by, hrSchema.users.uuid));
 
@@ -156,19 +150,15 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     uuid: info.uuid,
     description: info.description,
     page_name: info.page_name,
-    department_uuid: info.department_uuid,
-    department_name: department.name,
     faculty_uuid: faculty.uuid,
     faculty_name: faculty.name,
     file: info.file,
-    is_global: info.is_global,
     created_by: info.created_by,
     created_by_name: hrSchema.users.name,
     created_at: info.created_at,
     updated_at: info.updated_at,
   })
     .from(info)
-    .leftJoin(department, eq(info.department_uuid, department.uuid))
     .leftJoin(faculty, eq(department.faculty_uuid, faculty.uuid))
     .leftJoin(hrSchema.users, eq(info.created_by, hrSchema.users.uuid))
     .where(eq(info.uuid, uuid));

@@ -29,6 +29,7 @@ export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
     updated_at: formData.updated_at,
     created_by: formData.created_by,
     remarks: formData.remarks,
+    is_global: formData.is_global,
   };
 
   const [data] = await db.insert(routine).values(value).returning({
@@ -121,6 +122,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     created_by: routine.created_by,
     created_by_name: hrSchema.users.name,
     remarks: routine.remarks,
+    is_global: routine.is_global,
   })
     .from(routine)
     .leftJoin(department, eq(routine.department_uuid, department.uuid))
@@ -183,6 +185,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     created_by: routine.created_by,
     created_by_name: hrSchema.users.name,
     remarks: routine.remarks,
+    is_global: routine.is_global,
   })
     .from(routine)
     .leftJoin(department, eq(routine.department_uuid, department.uuid))
