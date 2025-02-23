@@ -24,12 +24,12 @@ export const insertSchema = createInsertSchema(
 ).required({
   uuid: true,
   description: true,
-  department_uuid: true,
   page_name: true,
   file: true,
   created_at: true,
   created_by: true,
 }).partial({
+  department_uuid: true,
   is_global: true,
   updated_at: true,
   remarks: true,

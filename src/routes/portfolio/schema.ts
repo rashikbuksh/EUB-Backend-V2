@@ -292,7 +292,7 @@ export const info_id = portfolio.sequence('info_id', DEFAULT_SEQUENCE);
 export const info = portfolio.table('info', {
   id: integer('id').default(sql`nextval('portfolio.info_id')`),
   uuid: uuid_primary,
-  department_uuid: defaultUUID('department_uuid').notNull().references(
+  department_uuid: defaultUUID('department_uuid').references(
     () => department.uuid,
     DEFAULT_OPERATION,
   ),
