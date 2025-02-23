@@ -18,6 +18,12 @@ export const list = createRoute({
     query: z.object({
       page_name: z.string().optional(),
       access: z.string().optional(),
+      limit: z.string().optional(),
+      page: z.string().optional(),
+      q: z.string().optional(),
+      sort: z.string().optional(),
+      orderby: z.string().optional(),
+      is_pagination: z.string().optional(),
     }),
   },
   responses: {

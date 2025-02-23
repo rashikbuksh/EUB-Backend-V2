@@ -4,13 +4,14 @@ import { eq, inArray } from 'drizzle-orm';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
+import { constructSelectAllQuery } from '@/lib/variables';
 import * as hrSchema from '@/routes/hr/schema';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 import { deleteFile, insertFile, updateFile } from '@/utils/upload_file';
 
 import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
 
-import { department, faculty, info } from '../schema';
+import { info } from '../schema';
 
 export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
   // const value = c.req.valid('json');
@@ -106,7 +107,7 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 };
 
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
-  const { page_name, access } = c.req.valid('query');
+  const { page_name, access, is_pagination } = c.req.valid('query');
 
   let accessArray = [];
   if (access) {
@@ -118,8 +119,6 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     uuid: info.uuid,
     description: info.description,
     page_name: info.page_name,
-    faculty_uuid: faculty.uuid,
-    faculty_name: faculty.name,
     file: info.file,
     created_by: info.created_by,
     created_by_name: hrSchema.users.name,
@@ -127,7 +126,6 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     updated_at: info.updated_at,
   })
     .from(info)
-    .leftJoin(faculty, eq(department.faculty_uuid, faculty.uuid))
     .leftJoin(hrSchema.users, eq(info.created_by, hrSchema.users.uuid));
 
   if (page_name) {
@@ -137,9 +135,35 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     resultPromise.where(inArray(info.page_name, accessArray));
   }
 
-  const data = await resultPromise;
+  const resultPromiseForCount = await resultPromise;
 
-  return c.json(data || [], HSCode.OK);
+  const limit = Number.parseInt(c.req.valid('query').limit);
+  const page = Number.parseInt(c.req.valid('query').page);
+
+  const baseQuery = is_pagination === 'true'
+    ? constructSelectAllQuery(resultPromise, c.req.valid('query'), 'created_at', [hrSchema.users.name.name])
+    : resultPromise;
+
+  const data = await baseQuery;
+
+  const pagination = is_pagination === 'true'
+    ? {
+        total_record: resultPromiseForCount.length,
+        current_page: page,
+        total_page: Math.ceil(resultPromiseForCount.length / limit),
+        next_page: page + 1 > Math.ceil(resultPromiseForCount.length / limit) ? null : page + 1,
+        prev_page: page - 1 <= 0 ? null : page - 1,
+      }
+    : null;
+
+  const response = is_pagination === 'true'
+    ? {
+        data,
+        pagination,
+      }
+    : data;
+
+  return c.json(response || [], HSCode.OK);
 };
 
 export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
@@ -150,8 +174,6 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     uuid: info.uuid,
     description: info.description,
     page_name: info.page_name,
-    faculty_uuid: faculty.uuid,
-    faculty_name: faculty.name,
     file: info.file,
     created_by: info.created_by,
     created_by_name: hrSchema.users.name,
@@ -159,7 +181,6 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     updated_at: info.updated_at,
   })
     .from(info)
-    .leftJoin(faculty, eq(department.faculty_uuid, faculty.uuid))
     .leftJoin(hrSchema.users, eq(info.created_by, hrSchema.users.uuid))
     .where(eq(info.uuid, uuid));
 
