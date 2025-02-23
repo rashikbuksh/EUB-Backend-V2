@@ -1,6 +1,6 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { eq } from 'drizzle-orm';
+import { eq, inArray } from 'drizzle-orm';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
@@ -108,14 +108,12 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 };
 
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
-  const { page_name } = c.req.valid('query');
+  const { page_name, access } = c.req.valid('query');
 
-  // if (access) {
-  //   //* access is comma separated
-  //   //* make it an array
-  //   const accessArray = access.split(',');
-  //   console.log('access', access);
-  // }
+  let accessArray = [];
+  if (access) {
+    accessArray = access.split(',');
+  }
 
   const resultPromise = db.select({
     id: info.id,
@@ -140,6 +138,9 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
 
   if (page_name) {
     resultPromise.where(eq(info.page_name, page_name));
+  }
+  if (access) {
+    resultPromise.where(inArray(info.page_name, accessArray));
   }
 
   const data = await resultPromise;
