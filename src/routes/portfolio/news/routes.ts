@@ -30,6 +30,7 @@ export const list = createRoute({
       sort: z.string().optional(),
       orderby: z.string().optional(),
       is_pagination: z.string().optional(),
+      access: z.string().optional(),
     }),
   },
 });

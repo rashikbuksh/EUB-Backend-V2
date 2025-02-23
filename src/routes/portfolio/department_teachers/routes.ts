@@ -23,6 +23,7 @@ export const list = createRoute({
   request: {
     query: z.object({
       portfolio_department: z.string().optional(),
+      access: z.string().optional(),
     }),
   },
 });

@@ -17,6 +17,7 @@ export const list = createRoute({
   request: {
     query: z.object({
       portfolio_faculty: z.string().optional(),
+      access: z.string().optional(),
     }),
   },
   responses: {
