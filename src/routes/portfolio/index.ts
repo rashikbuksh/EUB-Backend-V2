@@ -15,6 +15,7 @@ import offer from './offer';
 import office from './office';
 import office_entry from './office_entry';
 import online_admission from './online_admission';
+import policy from './policy';
 import program from './program';
 import routine from './routine';
 import tuition_fee from './tuition_fee';
@@ -40,4 +41,5 @@ export default [
   financial_info,
   contact_us,
   offer,
+  policy,
 ];
