@@ -552,7 +552,6 @@ export const policy_id = portfolio.sequence('policy_id', DEFAULT_SEQUENCE);
 export const policy = portfolio.table('policy', {
   id: integer('id').default(sql`nextval('portfolio.policy_id')`),
   uuid: uuid_primary,
-  serial: integer('serial').unique().notNull(),
   name: text('name').notNull(),
   department: text('department').notNull(),
   published_date: DateTime('published_date').notNull(),
