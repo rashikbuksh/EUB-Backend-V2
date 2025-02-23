@@ -7,7 +7,7 @@ import db from '@/db';
 import { constructSelectAllQuery } from '@/lib/variables';
 import * as hrSchema from '@/routes/hr/schema';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
-import { deleteFile } from '@/utils/upload_file';
+import { deleteFile, insertFile, updateFile } from '@/utils/upload_file';
 
 import type {
   CreateRoute,
@@ -20,10 +20,27 @@ import type {
 import { policy } from '../schema';
 
 export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
-  const value = c.req.valid('json');
+  const formData = await c.req.parseBody();
+
+  const file = formData.file;
+
+  const filePath = await insertFile(file, 'public/policy');
+
+  const value = {
+    uuid: formData.uuid,
+    serial: formData.serial,
+    name: formData.name,
+    department: formData.department,
+    published_date: formData.published_date,
+    file: filePath,
+    created_at: formData.created_at,
+    updated_at: formData.updated_at,
+    created_by: formData.created_by,
+    remarks: formData.remarks,
+  };
 
   const [data] = await db.insert(policy).values(value).returning({
-    name: policy.created_by,
+    name: policy.name,
   });
 
   return c.json(createToast('create', data.name ?? ''), HSCode.OK);
@@ -31,8 +48,27 @@ export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
 
 export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
+  const formData = await c.req.parseBody();
 
-  const formData = c.req.valid('json');
+  // file
+  // updates includes file then do it else exclude it
+  if (formData.file) {
+    // get policy file name
+    const policyData = await db.query.policy.findFirst({
+      where(fields, operators) {
+        return operators.eq(fields.uuid, uuid);
+      },
+    });
+
+    if (policyData && policyData.file) {
+      const filePath = await updateFile(formData.file, policyData.file, 'public/policy');
+      formData.file = filePath;
+    }
+    else {
+      const filePath = await insertFile(formData.file, 'public/policy');
+      formData.file = filePath;
+    }
+  }
 
   if (Object.keys(formData).length === 0)
     return ObjectNotFound(c);
@@ -42,7 +78,7 @@ export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
     .set(formData)
     .where(eq(policy.uuid, uuid))
     .returning({
-      name: policy.created_by,
+      name: policy.name,
     });
 
   if (!data)
@@ -53,6 +89,8 @@ export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
 
 export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
+
+  // get policy file name
 
   const policyData = await db.query.policy.findFirst({
     where(fields, operators) {
@@ -68,7 +106,7 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
     .delete(policy)
     .where(eq(policy.uuid, uuid))
     .returning({
-      name: policy.created_by,
+      name: policy.name,
     });
 
   if (!data)
