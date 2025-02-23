@@ -138,7 +138,11 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     .leftJoin(hrSchema.users, eq(tender.created_by, hrSchema.users.uuid));
 
   if (table_name) {
+    console.log('table_name', table_name);
+
     resultPromise.where(eq(tender.table_name, table_name));
+
+    console.log(resultPromise.toSQL());
   }
 
   const resultPromiseForCount = await resultPromise;
