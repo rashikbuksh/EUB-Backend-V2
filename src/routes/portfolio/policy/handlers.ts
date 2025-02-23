@@ -4,6 +4,7 @@ import { eq } from 'drizzle-orm';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
+import { constructSelectAllQuery } from '@/lib/variables';
 import * as hrSchema from '@/routes/hr/schema';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 import { deleteFile } from '@/utils/upload_file';
@@ -79,6 +80,8 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   // const data = await db.query.policy.findMany();
 
+  const { is_pagination } = c.req.valid('query');
+
   const resultPromise = db.select({
     id: policy.id,
     uuid: policy.uuid,
@@ -95,9 +98,35 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     .from(policy)
     .leftJoin(hrSchema.users, eq(policy.created_by, hrSchema.users.uuid));
 
-  const data = await resultPromise;
+  const resultPromiseForCount = await resultPromise;
 
-  return c.json(data || [], HSCode.OK);
+  const limit = Number.parseInt(c.req.valid('query').limit);
+  const page = Number.parseInt(c.req.valid('query').page);
+
+  const baseQuery = is_pagination === 'false'
+    ? resultPromise
+    : constructSelectAllQuery(resultPromise, c.req.valid('query'), 'created_at', [hrSchema.users.name.name]);
+
+  const data = await baseQuery;
+
+  const pagination = is_pagination === 'false'
+    ? null
+    : {
+        total_record: resultPromiseForCount.length,
+        current_page: page,
+        total_page: Math.ceil(resultPromiseForCount.length / limit),
+        next_page: page + 1 > Math.ceil(resultPromiseForCount.length / limit) ? null : page + 1,
+        prev_page: page - 1 <= 0 ? null : page - 1,
+      };
+
+  const response = is_pagination === 'false'
+    ? data
+    : {
+        data,
+        pagination,
+      };
+
+  return c.json(response || [], HSCode.OK);
 };
 
 export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {

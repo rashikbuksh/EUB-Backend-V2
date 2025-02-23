@@ -13,6 +13,16 @@ const tags = ['portfolio.policy'];
 export const list = createRoute({
   path: '/portfolio/policy',
   method: 'get',
+  request: {
+    query: z.object({
+      limit: z.string().optional(),
+      page: z.string().optional(),
+      q: z.string().optional(),
+      sort: z.string().optional(),
+      orderby: z.string().optional(),
+      is_pagination: z.string().optional(),
+    }),
+  },
   tags,
   responses: {
     [HSCode.OK]: jsonContent(z.array(selectSchema), 'The list of policy'),
