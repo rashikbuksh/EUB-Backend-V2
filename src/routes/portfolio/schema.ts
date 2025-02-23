@@ -545,6 +545,23 @@ export const offer = portfolio.table('offer', {
   remarks: text('remarks'),
 });
 
+//* policy
+export const policy_id = portfolio.sequence('policy_id', DEFAULT_SEQUENCE);
+
+export const policy = portfolio.table('policy', {
+  id: integer('id').default(sql`nextval('portfolio.policy_id')`),
+  uuid: uuid_primary,
+  serial: integer('serial').unique().notNull(),
+  name: text('name').notNull(),
+  department: text('department').notNull(),
+  published_date: DateTime('published_date').notNull(),
+  file: text('file').default(sql`null`),
+  created_by: defaultUUID('created_by').references(() => users.uuid, DEFAULT_OPERATION),
+  created_at: DateTime('created_at').notNull().$defaultFn(() => 'now()'),
+  updated_at: DateTime('updated_at'),
+  remarks: text('remarks'),
+});
+
 //* relations
 export const portfolio_news_rel = relations(news, ({ one, many }) => ({
 
@@ -735,6 +752,13 @@ export const portfolio_info_rel = relations(info, ({ one }) => ({
 export const portfolio_offer_rel = relations(offer, ({ one }) => ({
   created_by: one(users, {
     fields: [offer.created_by],
+    references: [users.uuid],
+  }),
+}));
+
+export const portfolio_policy_rel = relations(policy, ({ one }) => ({
+  created_by: one(users, {
+    fields: [policy.created_by],
     references: [users.uuid],
   }),
 }));

@@ -110,6 +110,13 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   const { page_name } = c.req.valid('query');
 
+  // if (access) {
+  //   //* access is comma separated
+  //   //* make it an array
+  //   const accessArray = access.split(',');
+  //   console.log('access', access);
+  // }
+
   const resultPromise = db.select({
     id: info.id,
     uuid: info.uuid,
