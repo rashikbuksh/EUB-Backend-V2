@@ -20,4 +20,21 @@ export const valueLabel = createRoute({
   },
 });
 
+export const userAccess = createRoute({
+  path: '/other/hr/users-can-access/value/label',
+  method: 'get',
+  tags,
+  responses: {
+    [HSCode.OK]: jsonContent(
+      z.object({
+        value: z.string(),
+        label: z.string(),
+        can_access: z.string(),
+      }),
+      'The valueLabel can_access of user',
+    ),
+  },
+});
+
 export type ValueLabelRoute = typeof valueLabel;
+export type UserAccessRoute = typeof userAccess;
