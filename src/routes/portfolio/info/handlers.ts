@@ -128,13 +128,6 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     .from(info)
     .leftJoin(hrSchema.users, eq(info.created_by, hrSchema.users.uuid));
 
-  if (page_name) {
-    resultPromise.where(eq(info.page_name, page_name));
-  }
-  if (access) {
-    resultPromise.where(inArray(info.page_name, accessArray));
-  }
-
   const resultPromiseForCount = await resultPromise;
 
   const limit = Number.parseInt(c.req.valid('query').limit);
@@ -143,6 +136,14 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   const baseQuery = is_pagination === 'true'
     ? constructSelectAllQuery(resultPromise, c.req.valid('query'), 'created_at', [hrSchema.users.name.name])
     : resultPromise;
+
+  if (page_name) {
+    baseQuery.groupBy(info.uuid, hrSchema.users.name);
+    baseQuery.having(eq(info.page_name, page_name));
+    if (access) {
+      baseQuery.having(inArray(info.page_name, accessArray));
+    }
+  }
 
   const data = await baseQuery;
 

@@ -137,13 +137,6 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     .from(news)
     .leftJoin(department, eq(news.department_uuid, department.uuid));
 
-  if (department_name)
-    resultPromise.where(eq(department.name, department_name));
-
-  if (accessArray.length > 0) {
-    resultPromise.where(inArray(department.short_name, accessArray));
-  }
-
   if (latest === 'true')
     resultPromise.orderBy(sql`DATE(${news.published_date}) DESC`).limit(10);
 
@@ -155,6 +148,14 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   const baseQuery = is_pagination === 'false'
     ? resultPromise
     : constructSelectAllQuery(resultPromise, c.req.valid('query'), 'created_at', [department.name.name]);
+
+  if (department_name) {
+    baseQuery.groupBy(news.uuid, department.name);
+    baseQuery.having(eq(department.name, department_name));
+    if (accessArray.length > 0) {
+      baseQuery.having(inArray(department.short_name, accessArray));
+    }
+  }
 
   const data = await baseQuery;
 

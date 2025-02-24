@@ -137,14 +137,6 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     .from(tender)
     .leftJoin(hrSchema.users, eq(tender.created_by, hrSchema.users.uuid));
 
-  if (table_name) {
-    console.log('table_name', table_name);
-
-    resultPromise.where(eq(tender.table_name, table_name));
-
-    console.log(resultPromise.toSQL());
-  }
-
   const resultPromiseForCount = await resultPromise;
 
   const limit = Number.parseInt(c.req.valid('query').limit);
@@ -153,6 +145,11 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   const baseQuery = is_pagination === 'false'
     ? resultPromise
     : constructSelectAllQuery(resultPromise, c.req.valid('query'), 'created_at', [hrSchema.users.name.name]);
+
+  if (table_name) {
+    baseQuery.groupBy(tender.uuid, hrSchema.users.name);
+    baseQuery.having(eq(tender.table_name, table_name));
+  }
 
   const data = await baseQuery;
 
