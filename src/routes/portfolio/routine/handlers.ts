@@ -9,7 +9,7 @@ import * as hrSchema from '@/routes/hr/schema';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 import { deleteFile, insertFile, updateFile } from '@/utils/upload_file';
 
-import type { CreateRoute, GetOneDepartmentRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
+import type { CreateRoute, GetOneDepartmentRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
 
 import { department, routine } from '../schema';
 
@@ -209,6 +209,35 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     : data;
 
   return c.json(response || [], HSCode.OK);
+};
+
+export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
+  const { uuid } = c.req.valid('params');
+
+  const resultPromise = db.select({
+    id: routine.id,
+    uuid: routine.uuid,
+    department_uuid: routine.department_uuid,
+    department_name: department.name,
+    programs: routine.programs,
+    type: routine.type,
+    file: routine.file,
+    description: routine.description,
+    created_at: routine.created_at,
+    updated_at: routine.updated_at,
+    created_by: routine.created_by,
+    created_by_name: hrSchema.users.name,
+    remarks: routine.remarks,
+    is_global: routine.is_global,
+  })
+    .from(routine)
+    .leftJoin(department, eq(routine.department_uuid, department.uuid))
+    .leftJoin(hrSchema.users, eq(routine.created_by, hrSchema.users.uuid))
+    .where(eq(routine.uuid, uuid));
+
+  const data = await resultPromise;
+
+  return c.json(data || [], HSCode.OK);
 };
 
 export const getOneDepartment: AppRouteHandler<GetOneDepartmentRoute> = async (c: any) => {
