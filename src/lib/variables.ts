@@ -54,14 +54,17 @@ export function constructSelectAllQuery(
       && field !== 'documents'
       && field !== 'image'
       && field !== 'table_name'
-      && field !== 'page_name',
+      && field !== 'page_name'
+      && field !== 'programs'
+      && field !== 'type'
+      && field !== 'is_global',
   );
 
   // Get table name from baseQuery
   const tableNameSymbol = Object.getOwnPropertySymbols(baseQuery.config.table).find(symbol =>
     symbol.toString().includes('OriginalName'),
   );
-  const tableName = tableNameSymbol ? baseQuery.config.table[tableNameSymbol] : 'unknown_table';
+  const tableName = tableNameSymbol ? baseQuery.config.table[tableNameSymbol] : '';
 
   // Include table name with fields for the main table
   const searchFieldsWithTable = searchFields.map(field => `"${tableName}"."${field}"`);

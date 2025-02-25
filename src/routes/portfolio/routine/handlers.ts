@@ -4,11 +4,12 @@ import { and, eq, inArray } from 'drizzle-orm';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
+import { constructSelectAllQuery } from '@/lib/variables';
 import * as hrSchema from '@/routes/hr/schema';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 import { deleteFile, insertFile, updateFile } from '@/utils/upload_file';
 
-import type { CreateRoute, GetOneDepartmentRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
+import type { CreateRoute, GetOneDepartmentRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
 
 import { department, routine } from '../schema';
 
@@ -106,7 +107,7 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 };
 
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
-  const { portfolio_department, program, type, access } = c.req.valid('query');
+  const { portfolio_department, program, type, access, is_pagination } = c.req.valid('query');
 
   let accessArray = [];
   if (access) {
@@ -133,79 +134,81 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     .leftJoin(department, eq(routine.department_uuid, department.uuid))
     .leftJoin(hrSchema.users, eq(routine.created_by, hrSchema.users.uuid));
 
+  const resultPromiseForCount = await resultPromise;
+
+  const limit = Number.parseInt(c.req.valid('query').limit);
+  const page = Number.parseInt(c.req.valid('query').page);
+
+  const baseQuery = is_pagination === 'true'
+    ? constructSelectAllQuery(resultPromise, c.req.valid('query'), 'created_at', [department.name.name, hrSchema.users.name.name])
+    : resultPromise;
+
   if (portfolio_department && program && type) {
-    resultPromise.where(and(
+    baseQuery.groupBy(routine.uuid, department.name, hrSchema.users.name);
+    baseQuery.having(and(
       eq(department.name, portfolio_department),
       eq(routine.programs, program),
       eq(routine.type, type),
     ));
   }
   else if (portfolio_department && program) {
-    resultPromise.where(and(
+    baseQuery.groupBy(routine.uuid, department.name, hrSchema.users.name);
+    baseQuery.having(and(
       eq(department.name, portfolio_department),
       eq(routine.programs, program),
     ));
   }
   else if (portfolio_department && type) {
-    resultPromise.where(and(
+    baseQuery.groupBy(routine.uuid, department.name, hrSchema.users.name);
+    baseQuery.having(and(
       eq(department.name, portfolio_department),
       eq(routine.type, type),
     ));
   }
   else if (program && type) {
-    resultPromise.where(and(
+    baseQuery.groupBy(routine.uuid, department.name, hrSchema.users.name);
+    baseQuery.having(and(
       eq(routine.programs, program),
       eq(routine.type, type),
     ));
   }
   else if (portfolio_department) {
-    resultPromise.where(eq(department.name, portfolio_department));
+    baseQuery.groupBy(routine.uuid, department.name, hrSchema.users.name);
+    baseQuery.having(eq(department.name, portfolio_department));
   }
   else if (program) {
-    resultPromise.where(eq(routine.programs, program));
+    baseQuery.groupBy(routine.uuid, department.name, hrSchema.users.name);
+    baseQuery.having(eq(routine.programs, program));
   }
   else if (type) {
-    resultPromise.where(eq(routine.type, type));
+    baseQuery.groupBy(routine.uuid, department.name, hrSchema.users.name);
+    baseQuery.having(eq(routine.type, type));
   }
   if (accessArray.length > 0) {
-    resultPromise.where(inArray(department.short_name, accessArray));
+    baseQuery.groupBy(routine.uuid, department.name, hrSchema.users.name);
+    baseQuery.having(inArray(department.short_name, accessArray));
   }
 
-  const data = await resultPromise;
+  const data = await baseQuery;
 
-  return c.json(data || [], HSCode.OK);
-};
+  const pagination = is_pagination === 'true'
+    ? {
+        total_record: resultPromiseForCount.length,
+        current_page: Number(page),
+        total_page: Math.ceil(resultPromiseForCount.length / limit),
+        next_page: page + 1 > Math.ceil(resultPromiseForCount.length / limit) ? null : page + 1,
+        prev_page: page - 1 <= 0 ? null : page - 1,
+      }
+    : null;
 
-export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
-  const { uuid } = c.req.valid('param');
+  const response = is_pagination === 'true'
+    ? {
+        data,
+        pagination,
+      }
+    : data;
 
-  const resultPromise = db.select({
-    id: routine.id,
-    uuid: routine.uuid,
-    department_uuid: routine.department_uuid,
-    department_name: department.name,
-    programs: routine.programs,
-    type: routine.type,
-    file: routine.file,
-    description: routine.description,
-    created_at: routine.created_at,
-    updated_at: routine.updated_at,
-    created_by: routine.created_by,
-    created_by_name: hrSchema.users.name,
-    remarks: routine.remarks,
-    is_global: routine.is_global,
-  })
-    .from(routine)
-    .leftJoin(department, eq(routine.department_uuid, department.uuid))
-    .leftJoin(hrSchema.users, eq(routine.created_by, hrSchema.users.uuid))
-    .where(eq(routine.uuid, uuid));
-
-  const data = await resultPromise;
-
-  if (!data)
-    return DataNotFound(c);
-
-  return c.json(data[0] || {}, HSCode.OK);
+  return c.json(response || [], HSCode.OK);
 };
 
 export const getOneDepartment: AppRouteHandler<GetOneDepartmentRoute> = async (c: any) => {

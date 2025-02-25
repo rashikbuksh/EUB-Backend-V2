@@ -26,6 +26,12 @@ export const list = createRoute({
       program: z.string().optional(),
       type: z.string().optional(),
       access: z.string().optional(),
+      limit: z.string().optional(),
+      page: z.string().optional(),
+      q: z.string().optional(),
+      sort: z.string().optional(),
+      orderby: z.string().optional(),
+      is_pagination: z.string().optional(),
     }),
   },
 });
