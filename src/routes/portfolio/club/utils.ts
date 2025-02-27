@@ -15,7 +15,6 @@ export const insertSchema = createInsertSchema(
     department_uuid: schema => schema.department_uuid.length(21),
     president_uuid: schema => schema.president_uuid.length(21),
     president_email: schema => schema.president_email.min(1),
-    president_phone: schema => schema.president_phone.min(11),
     created_by: schema => schema.created_by.length(21),
     created_at: schema => schema.created_at.regex(dateTimePattern, {
       message: 'created_at must be in the format "YYYY-MM-DD HH:MM:SS"',
