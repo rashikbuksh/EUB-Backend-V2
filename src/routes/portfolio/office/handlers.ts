@@ -115,7 +115,9 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 };
 
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
-  const data = await db.query.office.findMany();
+  const data = await db.query.office.findMany({
+    orderBy: (office, { desc }) => [desc(office.created_at)],
+  });
 
   return c.json(data || [], HSCode.OK);
 };
@@ -142,8 +144,11 @@ export const getOfficeAndOfficeEntryDetailsByOfficeUuid: AppRouteHandler<GetOffi
       return operators.eq(fields.uuid, uuid);
     },
     with: {
-      office_entries: true,
+      office_entries: {
+        orderBy: (office_entries, { desc }) => [desc(office_entries.created_at)],
+      },
     },
+
   });
 
   if (!data)
