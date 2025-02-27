@@ -21,7 +21,6 @@ export const insertSchema = createInsertSchema(
     date_of_birth: schema => schema.date_of_birth.regex(datePattern, {
       message: 'date_of_birth must be in the format "YYYY-MM-DD"',
     }),
-    phone_number: schema => schema.phone_number.min(11),
     bkash: schema => schema.bkash.min(11),
     ssc_passing_year: schema => schema.ssc_passing_year.min(4),
     hsc_passing_year: schema => schema.hsc_passing_year.min(4),

@@ -34,7 +34,6 @@ export const insertSchema = createInsertSchema(
     department_uuid: schema => schema.department_uuid.length(21),
     designation_uuid: schema => schema.designation_uuid.length(21),
     office: schema => schema.office.min(1).max(255),
-    phone: schema => schema.phone.min(1),
     email: schema => schema.email.min(1),
     pass: schema => schema.pass.min(4).max(50),
     created_at: schema => schema.created_at.regex(dateTimePattern, {
