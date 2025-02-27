@@ -180,7 +180,7 @@ export const online_admission = portfolio.table('online_admission', {
   date_of_birth: DateTime('date_of_birth').notNull(),
   nationality: text('nationality').notNull(),
   blood_group: online_admission_blood_group('blood_group').notNull(),
-  phone_number: text('phone_number').notNull(),
+  phone_number: text('phone_number').default(sql`null`),
   email: text('email').notNull(),
   gender: online_admission_gender('gender').notNull(),
   marital_status: online_admission_marital_status('marital_status').notNull(),

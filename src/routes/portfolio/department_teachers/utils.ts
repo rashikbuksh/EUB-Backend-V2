@@ -32,9 +32,9 @@ export const insertSchema = createInsertSchema(
   created_at: true,
   created_by: true,
   teacher_designation: true,
-  teacher_phone: true,
   teacher_email: true,
 }).partial({
+  teacher_phone: true,
   department_head: true,
   publication: true,
   updated_at: true,

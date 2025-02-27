@@ -50,11 +50,11 @@ export const insertSchema = createInsertSchema(
   designation_uuid: true,
   department_uuid: true,
   office: true,
-  phone: true,
   email: true,
   pass: true,
   created_at: true,
 }).partial({
+  phone: true,
   image: true,
   status: true,
   can_access: true,
