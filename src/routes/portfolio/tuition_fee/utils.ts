@@ -31,7 +31,6 @@ export const insertSchema = createInsertSchema(
   },
 ).required({
   uuid: true,
-  title: true,
   program_uuid: true,
   admission_fee: true,
   tuition_fee_per_credit: true,
@@ -41,6 +40,7 @@ export const insertSchema = createInsertSchema(
   science_lab_fee_per_semester: true,
   created_at: true,
 }).partial({
+  title: true,
   studio_lab_fee: true,
   updated_at: true,
   remarks: true,
