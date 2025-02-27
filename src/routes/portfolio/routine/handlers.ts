@@ -212,7 +212,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
 };
 
 export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
-  const { uuid } = c.req.valid('params');
+  const { uuid } = c.req.valid('param');
 
   const resultPromise = db.select({
     id: routine.id,
