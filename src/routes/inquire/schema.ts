@@ -28,7 +28,7 @@ export const visitor = inquire.table('visitor', {
   uuid: uuid_primary,
   category: visitor_category('category').notNull(),
   name: text('name').notNull(),
-  mobile: text('mobile').notNull(),
+  mobile: text('mobile').default(sql`null`),
   subject_preference: text('subject_preference').notNull(),
   prev_institution: text('prev_institution').notNull(),
   from_where: text('from_where').notNull(),

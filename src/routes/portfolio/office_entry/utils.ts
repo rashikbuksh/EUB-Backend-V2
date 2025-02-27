@@ -14,7 +14,7 @@ export const insertSchema = createInsertSchema(
     office_uuid: schema => schema.office_uuid.length(21),
     user_uuid: schema => schema.user_uuid.length(21),
     designation: schema => schema.designation.min(1),
-    user_phone: schema => schema.user_phone.min(1),
+    user_phone: schema => schema.user_phone.min(11),
     user_email: schema => schema.user_email.min(1),
     created_by: schema => schema.created_by.length(21),
     created_at: schema => schema.created_at.regex(dateTimePattern, {
@@ -31,9 +31,9 @@ export const insertSchema = createInsertSchema(
   created_at: true,
   created_by: true,
   designation: true,
-  user_phone: true,
   user_email: true,
 }).partial({
+  user_phone: true,
   updated_at: true,
   remarks: true,
 }).omit({

@@ -24,7 +24,6 @@ export const insertSchema = createInsertSchema(
 ).required({
   uuid: true,
   name: true,
-  mobile: true,
   created_at: true,
   created_by: true,
   category: true,
@@ -35,6 +34,7 @@ export const insertSchema = createInsertSchema(
   department: true,
   through: true,
 }).partial({
+  mobile: true,
   updated_at: true,
   remarks: true,
 }).omit({

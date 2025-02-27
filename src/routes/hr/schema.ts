@@ -1,4 +1,4 @@
-import { relations } from 'drizzle-orm';
+import { relations, sql } from 'drizzle-orm';
 import { boolean, pgSchema, text } from 'drizzle-orm/pg-core';
 
 import { DateTime, defaultUUID, uuid_primary } from '@/lib/variables';
@@ -31,7 +31,7 @@ export const users = hr.table('users', {
   department_uuid: defaultUUID('department_uuid').notNull().references(() => department.uuid, DEFAULT_OPERATION),
   designation_uuid: defaultUUID('designation_uuid').notNull().references(() => designation.uuid, DEFAULT_OPERATION),
   email: text('email').notNull().unique(),
-  phone: text('phone').notNull(),
+  phone: text('phone').default(sql`null`),
   office: text('office').notNull(),
   image: text('image'),
   pass: text('pass').notNull(),

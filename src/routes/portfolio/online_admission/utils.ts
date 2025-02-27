@@ -46,7 +46,6 @@ export const insertSchema = createInsertSchema(
   date_of_birth: true,
   nationality: true,
   blood_group: true,
-  phone_number: true,
   email: true,
   gender: true,
   marital_status: true,
@@ -70,6 +69,7 @@ export const insertSchema = createInsertSchema(
   created_at: true,
   bkash: true,
 }).partial({
+  phone_number: true,
   bsc_name: true,
   bsc_cgpa: true,
   bsc_passing_year: true,
