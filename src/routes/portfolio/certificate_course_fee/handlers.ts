@@ -63,7 +63,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   const resultPromise = db.select({
     id: certificate_course_fee.id,
     uuid: certificate_course_fee.uuid,
-    program_uuid: certificate_course_fee.programs_uuid,
+    programs_uuid: certificate_course_fee.programs_uuid,
     program_name: program.name,
     fee_per_course: PG_DECIMAL_TO_FLOAT(certificate_course_fee.fee_per_course),
     created_at: certificate_course_fee.created_at,
@@ -87,7 +87,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
   const resultPromise = db.select({
     id: certificate_course_fee.id,
     uuid: certificate_course_fee.uuid,
-    program_uuid: certificate_course_fee.programs_uuid,
+    programs_uuid: certificate_course_fee.programs_uuid,
     program_name: program.name,
     fee_per_course: PG_DECIMAL_TO_FLOAT(certificate_course_fee.fee_per_course),
     created_at: certificate_course_fee.created_at,
