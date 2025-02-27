@@ -144,6 +144,12 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
       baseQuery.having(inArray(info.page_name, accessArray));
     }
   }
+  else {
+    baseQuery.groupBy(info.uuid, hrSchema.users.name);
+    if (access) {
+      baseQuery.having(inArray(info.page_name, accessArray));
+    }
+  }
 
   const data = await baseQuery;
 
