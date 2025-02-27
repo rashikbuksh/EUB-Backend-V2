@@ -116,7 +116,7 @@ export const tuition_fee_id = portfolio.sequence(
 export const tuition_fee = portfolio.table('tuition_fee', {
   id: integer('id').default(sql`nextval('portfolio.tuition_fee_id')`),
   uuid: uuid_primary,
-  title: text('title').notNull(),
+  title: text('title').default(sql`null`),
   program_uuid: defaultUUID('program_uuid').notNull().unique().references(() => program.uuid, DEFAULT_OPERATION),
   admission_fee: PG_DECIMAL('admission_fee').notNull(),
   tuition_fee_per_credit: PG_DECIMAL('tuition_fee_per_credit').notNull(),
