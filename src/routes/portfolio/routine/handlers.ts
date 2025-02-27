@@ -185,7 +185,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     baseQuery.having(eq(routine.type, type));
   }
   if (accessArray.length > 0) {
-    baseQuery.groupBy(routine.uuid, department.name, hrSchema.users.name);
+    baseQuery.groupBy(routine.uuid, department.name, department.short_name, hrSchema.users.name);
     baseQuery.having(inArray(department.short_name, accessArray));
   }
 
