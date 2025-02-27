@@ -237,7 +237,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
 
   const data = await resultPromise;
 
-  return c.json(data || [], HSCode.OK);
+  return c.json(data[0] || [], HSCode.OK);
 };
 
 export const getOneDepartment: AppRouteHandler<GetOneDepartmentRoute> = async (c: any) => {
