@@ -185,7 +185,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     baseQuery.having(eq(routine.type, type));
   }
   if (accessArray.length > 0) {
-    baseQuery.groupBy(routine.uuid, department.name, hrSchema.users.name);
+    baseQuery.groupBy(routine.uuid, department.name, department.short_name, hrSchema.users.name);
     baseQuery.having(inArray(department.short_name, accessArray));
   }
 
@@ -212,7 +212,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
 };
 
 export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
-  const { uuid } = c.req.valid('params');
+  const { uuid } = c.req.valid('param');
 
   const resultPromise = db.select({
     id: routine.id,
@@ -237,7 +237,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
 
   const data = await resultPromise;
 
-  return c.json(data || [], HSCode.OK);
+  return c.json(data[0] || [], HSCode.OK);
 };
 
 export const getOneDepartment: AppRouteHandler<GetOneDepartmentRoute> = async (c: any) => {
