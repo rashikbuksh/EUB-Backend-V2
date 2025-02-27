@@ -7,7 +7,7 @@ import * as HSCode from 'stoker/http-status-codes';
 import db from '@/db';
 import * as hrSchema from '@/routes/hr/schema';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
-import { deleteFile } from '@/utils/upload_file';
+import { deleteFile, insertFile, updateFile } from '@/utils/upload_file';
 
 import type {
   CreateRoute,
@@ -22,27 +22,27 @@ import { offer } from '../schema';
 // const user_information = alias(hrSchema.users, 'user_information');
 
 export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
-  const value = c.req.valid('json');
-  // const formData = await c.req.parseBody();
-  // const file = formData.file;
+  // const value = c.req.valid('json');
+  const formData = await c.req.parseBody();
+  const file = formData.file;
 
-  // const filePath = await insertFile(file, 'public/offer');
+  const filePath = await insertFile(file, 'public/offer');
 
-  // const value = {
-  //   uuid: formData.uuid,
-  //   serial: formData.serial,
-  //   title: formData.title,
-  //   subtitle: formData.subtitle,
-  //   file: filePath,
-  //   deadline: formData.deadline,
-  //   created_at: formData.created_at,
-  //   updated_at: formData.updated_at,
-  //   created_by: formData.created_by,
-  //   remarks: formData.remarks,
-  // };
+  const value = {
+    uuid: formData.uuid,
+    serial: formData.serial,
+    title: formData.title,
+    subtitle: formData.subtitle,
+    file: filePath,
+    deadline: formData.deadline,
+    created_at: formData.created_at,
+    updated_at: formData.updated_at,
+    created_by: formData.created_by,
+    remarks: formData.remarks,
+  };
 
   const [data] = await db.insert(offer).values(value).returning({
-    name: offer.created_by,
+    name: offer.title,
   });
 
   return c.json(createToast('create', data.name ?? ''), HSCode.OK);
@@ -51,29 +51,30 @@ export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
 export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
 
-  const formData = c.req.valid('json');
-  // const formData = await c.req.parseBody();
+  // const formData = c.req.valid('json');
+  const formData = await c.req.parseBody();
 
-  // // updates includes file then do it else exclude it
+  // updates includes file then do it else exclude it
 
-  // if (formData.file) {
-  //   // get offer file name
+  if (formData.file) {
+    // get offer file name
 
-  //   const offerData = await db.query.offer.findFirst({
-  //     where(fields, operators) {
-  //       return operators.eq(fields.uuid, uuid);
-  //     },
-  //   });
+    const offerData = await db.query.offer.findFirst({
+      where(fields, operators) {
+        return operators.eq(fields.uuid, uuid);
+      },
+    });
 
-  //   if (offerData && offerData.file) {
-  //     const filePath = await updateFile(formData.file, offerData.file, 'public/offer');
-  //     formData.file = filePath;
-  //   }
-  //   else {
-  //     const filePath = await insertFile(formData.file, 'public/offer');
-  //     formData.file = filePath;
-  //   }
-  // }
+    if (offerData && offerData.file) {
+      const filePath = await updateFile(formData.file, offerData.file, 'public/offer');
+      formData.file = filePath;
+    }
+    else {
+      const filePath = await insertFile(formData.file, 'public/offer');
+      formData.file = filePath;
+    }
+  }
+
   if (Object.keys(formData).length === 0)
     return ObjectNotFound(c);
 
@@ -82,7 +83,7 @@ export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
     .set(formData)
     .where(eq(offer.uuid, uuid))
     .returning({
-      name: offer.created_by,
+      name: offer.title,
     });
 
   if (!data)
@@ -108,7 +109,7 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
     .delete(offer)
     .where(eq(offer.uuid, uuid))
     .returning({
-      name: offer.created_by,
+      name: offer.title,
     });
 
   if (!data)
