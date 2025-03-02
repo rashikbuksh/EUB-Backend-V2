@@ -131,6 +131,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     created_by_name: hrSchema.users.name,
     remarks: routine.remarks,
     is_global: routine.is_global,
+    page_link: department.page_link,
   })
     .from(routine)
     .leftJoin(department, eq(routine.department_uuid, department.uuid))
@@ -232,6 +233,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     created_by_name: hrSchema.users.name,
     remarks: routine.remarks,
     is_global: routine.is_global,
+    PageLink: department.page_link,
   })
     .from(routine)
     .leftJoin(department, eq(routine.department_uuid, department.uuid))
