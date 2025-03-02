@@ -90,6 +90,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     created_by: department_teachers.created_by,
     created_by_name: createdByUser.name,
     remarks: department_teachers.remarks,
+    page_link: department.page_link,
   })
     .from(department_teachers)
     .leftJoin(department, eq(department_teachers.department_uuid, department.uuid))

@@ -148,7 +148,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     : resultPromise;
 
   if (portfolio_department && program && type) {
-    baseQuery.groupBy(routine.uuid, department.name, hrSchema.users.name, department.faculty_uuid, faculty.name);
+    baseQuery.groupBy(routine.uuid, department.name, hrSchema.users.name, department.faculty_uuid, faculty.name, department.page_link);
     baseQuery.having(and(
       eq(department.name, portfolio_department),
       eq(routine.programs, program),
@@ -156,40 +156,40 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     ));
   }
   else if (portfolio_department && program) {
-    baseQuery.groupBy(routine.uuid, department.name, hrSchema.users.name, department.faculty_uuid, faculty.name);
+    baseQuery.groupBy(routine.uuid, department.name, hrSchema.users.name, department.faculty_uuid, faculty.name, department.page_link);
     baseQuery.having(and(
       eq(department.name, portfolio_department),
       eq(routine.programs, program),
     ));
   }
   else if (portfolio_department && type) {
-    baseQuery.groupBy(routine.uuid, department.name, hrSchema.users.name, department.faculty_uuid, faculty.name);
+    baseQuery.groupBy(routine.uuid, department.name, hrSchema.users.name, department.faculty_uuid, faculty.name, department.page_link);
     baseQuery.having(and(
       eq(department.name, portfolio_department),
       eq(routine.type, type),
     ));
   }
   else if (program && type) {
-    baseQuery.groupBy(routine.uuid, department.name, hrSchema.users.name, department.faculty_uuid, faculty.name);
+    baseQuery.groupBy(routine.uuid, department.name, hrSchema.users.name, department.faculty_uuid, faculty.name, department.page_link);
     baseQuery.having(and(
       eq(routine.programs, program),
       eq(routine.type, type),
     ));
   }
   else if (portfolio_department) {
-    baseQuery.groupBy(routine.uuid, department.name, hrSchema.users.name, department.faculty_uuid, faculty.name);
+    baseQuery.groupBy(routine.uuid, department.name, hrSchema.users.name, department.faculty_uuid, faculty.name, department.page_link);
     baseQuery.having(eq(department.name, portfolio_department));
   }
   else if (program) {
-    baseQuery.groupBy(routine.uuid, department.name, hrSchema.users.name, department.faculty_uuid, faculty.name);
+    baseQuery.groupBy(routine.uuid, department.name, hrSchema.users.name, department.faculty_uuid, faculty.name, department.page_link);
     baseQuery.having(eq(routine.programs, program));
   }
   else if (type) {
-    baseQuery.groupBy(routine.uuid, department.name, hrSchema.users.name, department.faculty_uuid, faculty.name);
+    baseQuery.groupBy(routine.uuid, department.name, hrSchema.users.name, department.faculty_uuid, faculty.name, department.page_link);
     baseQuery.having(eq(routine.type, type));
   }
   if (accessArray.length > 0) {
-    baseQuery.groupBy(routine.uuid, department.name, department.short_name, hrSchema.users.name, department.faculty_uuid, faculty.name);
+    baseQuery.groupBy(routine.uuid, department.name, department.short_name, hrSchema.users.name, department.faculty_uuid, faculty.name, department.page_link);
     baseQuery.having(inArray(department.short_name, accessArray));
   }
 
