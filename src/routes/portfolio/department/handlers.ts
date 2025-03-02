@@ -69,6 +69,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
       updated_at: department.updated_at,
       created_by: department.created_by,
       created_by_name: hrSchema.users.name,
+      page_link: department.page_link,
     },
   )
     .from(department)
@@ -95,6 +96,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
       updated_at: department.updated_at,
       created_by: department.created_by,
       created_by_name: hrSchema.users.name,
+      page_link: department.page_link,
     },
   )
     .from(department)

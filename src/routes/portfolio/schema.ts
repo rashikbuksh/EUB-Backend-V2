@@ -291,6 +291,7 @@ export const department = portfolio.table('department', {
   uuid: uuid_primary,
   name: text('name').notNull(),
   short_name: department_short_name('short_name').notNull(),
+  page_link: text('page_link').default(sql`null`),
   faculty_uuid: defaultUUID('faculty_uuid').notNull().references(() => faculty.uuid, DEFAULT_OPERATION),
   category: department_category('category').notNull(),
   created_at: DateTime('created_at').notNull(),

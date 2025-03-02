@@ -33,6 +33,7 @@ export const insertSchema = createInsertSchema(
   created_at: true,
   created_by: true,
 }).partial({
+  page_link: true,
   updated_at: true,
   remarks: true,
 }).omit({
