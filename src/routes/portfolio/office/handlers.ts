@@ -145,7 +145,7 @@ export const getOfficeAndOfficeEntryDetailsByOfficeUuid: AppRouteHandler<GetOffi
     },
     with: {
       office_entries: {
-        orderBy: (office_entries, { desc }) => [desc(office_entries.created_at)],
+        orderBy: (office_entries, { asc }) => [asc(office_entries.created_at)],
       },
     },
 
