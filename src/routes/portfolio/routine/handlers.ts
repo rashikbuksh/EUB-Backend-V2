@@ -11,7 +11,7 @@ import { deleteFile, insertFile, updateFile } from '@/utils/upload_file';
 
 import type { CreateRoute, GetOneDepartmentRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
 
-import { department, routine } from '../schema';
+import { department, faculty, routine } from '../schema';
 
 export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
   const formData = await c.req.parseBody();
@@ -119,6 +119,8 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     uuid: routine.uuid,
     department_uuid: routine.department_uuid,
     department_name: department.name,
+    faculty_uuid: department.faculty_uuid,
+    faculty_name: faculty.name,
     programs: routine.programs,
     type: routine.type,
     file: routine.file,
@@ -132,7 +134,8 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   })
     .from(routine)
     .leftJoin(department, eq(routine.department_uuid, department.uuid))
-    .leftJoin(hrSchema.users, eq(routine.created_by, hrSchema.users.uuid));
+    .leftJoin(hrSchema.users, eq(routine.created_by, hrSchema.users.uuid))
+    .leftJoin(faculty, eq(department.faculty_uuid, faculty.uuid));
 
   const resultPromiseForCount = await resultPromise;
 
@@ -144,7 +147,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     : resultPromise;
 
   if (portfolio_department && program && type) {
-    baseQuery.groupBy(routine.uuid, department.name, hrSchema.users.name);
+    baseQuery.groupBy(routine.uuid, department.name, hrSchema.users.name, department.faculty_uuid, faculty.name);
     baseQuery.having(and(
       eq(department.name, portfolio_department),
       eq(routine.programs, program),
@@ -152,40 +155,40 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     ));
   }
   else if (portfolio_department && program) {
-    baseQuery.groupBy(routine.uuid, department.name, hrSchema.users.name);
+    baseQuery.groupBy(routine.uuid, department.name, hrSchema.users.name, department.faculty_uuid, faculty.name);
     baseQuery.having(and(
       eq(department.name, portfolio_department),
       eq(routine.programs, program),
     ));
   }
   else if (portfolio_department && type) {
-    baseQuery.groupBy(routine.uuid, department.name, hrSchema.users.name);
+    baseQuery.groupBy(routine.uuid, department.name, hrSchema.users.name, department.faculty_uuid, faculty.name);
     baseQuery.having(and(
       eq(department.name, portfolio_department),
       eq(routine.type, type),
     ));
   }
   else if (program && type) {
-    baseQuery.groupBy(routine.uuid, department.name, hrSchema.users.name);
+    baseQuery.groupBy(routine.uuid, department.name, hrSchema.users.name, department.faculty_uuid, faculty.name);
     baseQuery.having(and(
       eq(routine.programs, program),
       eq(routine.type, type),
     ));
   }
   else if (portfolio_department) {
-    baseQuery.groupBy(routine.uuid, department.name, hrSchema.users.name);
+    baseQuery.groupBy(routine.uuid, department.name, hrSchema.users.name, department.faculty_uuid, faculty.name);
     baseQuery.having(eq(department.name, portfolio_department));
   }
   else if (program) {
-    baseQuery.groupBy(routine.uuid, department.name, hrSchema.users.name);
+    baseQuery.groupBy(routine.uuid, department.name, hrSchema.users.name, department.faculty_uuid, faculty.name);
     baseQuery.having(eq(routine.programs, program));
   }
   else if (type) {
-    baseQuery.groupBy(routine.uuid, department.name, hrSchema.users.name);
+    baseQuery.groupBy(routine.uuid, department.name, hrSchema.users.name, department.faculty_uuid, faculty.name);
     baseQuery.having(eq(routine.type, type));
   }
   if (accessArray.length > 0) {
-    baseQuery.groupBy(routine.uuid, department.name, department.short_name, hrSchema.users.name);
+    baseQuery.groupBy(routine.uuid, department.name, department.short_name, hrSchema.users.name, department.faculty_uuid, faculty.name);
     baseQuery.having(inArray(department.short_name, accessArray));
   }
 
