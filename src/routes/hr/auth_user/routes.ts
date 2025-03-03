@@ -187,7 +187,7 @@ export const patchStatus = createRoute({
 });
 
 export const signin = createRoute({
-  path: '/signin',
+  path: '/hr/signin',
   method: 'post',
   request: {
     body: jsonContentRequired(
