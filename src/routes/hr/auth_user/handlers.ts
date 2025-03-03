@@ -1,10 +1,11 @@
 import type { AppRouteHandler } from '@/lib/types';
+import type { JWTPayload } from 'hono/utils/jwt/types';
 
 import { eq } from 'drizzle-orm';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
-import { HashPass } from '@/middlewares/auth';
+import { ComparePass, CreateToken, HashPass } from '@/middlewares/auth';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 
 import type {
@@ -16,9 +17,80 @@ import type {
   PatchRoute,
   PatchStatusRoute,
   RemoveRoute,
+  SigninRoute,
+
 } from './routes';
 
 import { auth_user, department, designation, users } from '../schema';
+
+export const signin: AppRouteHandler<SigninRoute> = async (c: any) => {
+  const updates = c.req.valid('json');
+
+  if (Object.keys(updates).length === 0)
+    return ObjectNotFound(c);
+
+  const { user_uuid, pass } = await c.req.json();
+
+  const resultPromise = db.select({
+    user_uuid: auth_user.user_uuid,
+    pass: auth_user.pass,
+    can_access: auth_user.can_access,
+    status: auth_user.status,
+    created_at: auth_user.created_at,
+    updated_at: auth_user.updated_at,
+    remarks: auth_user.remarks,
+    name: users.name,
+    department_name: department.name,
+    designation_name: designation.name,
+  })
+    .from(auth_user)
+    .leftJoin(users, eq(auth_user.user_uuid, users.uuid))
+    .leftJoin(department, eq(users.department_uuid, department.uuid))
+    .leftJoin(designation, eq(users.designation_uuid, designation.uuid))
+    .where(eq(auth_user.user_uuid, user_uuid));
+
+  const [data] = await resultPromise;
+
+  if (!data)
+    return DataNotFound(c);
+
+  if (!data.status) {
+    return c.json(
+      { message: 'Account is disabled' },
+      HSCode.UNAUTHORIZED,
+    );
+  }
+
+  const match = await ComparePass(pass, data.pass);
+
+  if (!match) {
+    return c.json(
+      { message: 'Invalid password' },
+      HSCode.UNAUTHORIZED,
+    );
+  }
+
+  const now = Math.floor(Date.now() / 1000);
+  const payload: JWTPayload = {
+    uuid: data.user_uuid,
+    username: data.name,
+    can_access: data.can_access,
+    exp: now + 60 * 60 * 24,
+  };
+
+  const token = await CreateToken(payload);
+
+  const user = {
+    user_uuid: data.user_uuid,
+    name: data.name,
+    department_name: data.department_name,
+    designation_name: data.designation_name,
+  };
+
+  const can_access = data.can_access;
+
+  return c.json({ payload, token, can_access, user }, HSCode.OK);
+};
 
 export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
   const value = c.req.valid('json');
