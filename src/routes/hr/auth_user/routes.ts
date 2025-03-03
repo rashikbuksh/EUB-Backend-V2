@@ -140,7 +140,7 @@ export const signout = createRoute({
 });
 
 export const getCanAccess = createRoute({
-  path: '/hr/user/can-access/{uuid}',
+  path: '/hr/users/can-access/{uuid}',
   method: 'get',
   tags,
   request: {
@@ -157,7 +157,7 @@ export const getCanAccess = createRoute({
 });
 
 export const patchCanAccess = createRoute({
-  path: '/hr/user/can-access/{uuid}',
+  path: '/hr/users/can-access/{uuid}',
   method: 'patch',
   tags,
   request: {
@@ -172,7 +172,7 @@ export const patchCanAccess = createRoute({
 });
 
 export const patchStatus = createRoute({
-  path: '/hr/user/status/{uuid}',
+  path: '/hr/users/status/{uuid}',
   method: 'patch',
   tags,
   request: {
