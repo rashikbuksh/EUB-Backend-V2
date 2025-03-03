@@ -26,8 +26,6 @@ export const valueLabelForPublication: AppRouteHandler<ValueLabelRouteForPublica
     resultPromise.orderBy(sql`DATE(${department_teachers.created_at}) DESC`).limit(10);
   }
 
-  const resultPromiseForCount = await resultPromise;
-
   const limit = Number.parseInt(c.req.valid('query').limit);
   const page = Number.parseInt(c.req.valid('query').page);
   const baseQuery = is_pagination === 'false'
@@ -39,10 +37,10 @@ export const valueLabelForPublication: AppRouteHandler<ValueLabelRouteForPublica
   const pagination = is_pagination === 'false'
     ? null
     : {
-        total_record: resultPromiseForCount.length,
+        total_record: data.length,
         current_page: Number(page),
-        total_page: Math.ceil(resultPromiseForCount.length / limit),
-        next_page: page + 1 > Math.ceil(resultPromiseForCount.length / limit) ? null : page + 1,
+        total_page: Math.ceil(data.length / limit),
+        next_page: page + 1 > Math.ceil(data.length / limit) ? null : page + 1,
         prev_page: page - 1 <= 0 ? null : page - 1,
       };
 

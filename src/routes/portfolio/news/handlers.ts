@@ -125,6 +125,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     uuid: news.uuid,
     department_uuid: news.department_uuid,
     department_name: department.name,
+    department_short_name: department.short_name,
     title: news.title,
     subtitle: news.subtitle,
     description: news.description,
@@ -150,8 +151,8 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     : constructSelectAllQuery(resultPromise, c.req.valid('query'), 'created_at', [department.name.name]);
 
   if (department_name) {
-    baseQuery.groupBy(news.uuid, department.name);
-    baseQuery.having(eq(department.name, department_name));
+    baseQuery.groupBy(news.uuid, department.name, department.short_name);
+    baseQuery.having(eq(department.short_name, department_name));
   }
   if (accessArray.length > 0) {
     baseQuery.groupBy(news.uuid, department.name, department.short_name);
@@ -198,6 +199,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     uuid: news.uuid,
     department_uuid: news.department_uuid,
     department_name: department.name,
+    department_short_name: department.short_name,
     title: news.title,
     subtitle: news.subtitle,
     description: news.description,
