@@ -128,7 +128,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     .from(info)
     .leftJoin(hrSchema.users, eq(info.created_by, hrSchema.users.uuid));
 
-  const resultPromiseForCount = await resultPromise;
+  // const resultPromiseForCount = await resultPromise;
 
   const limit = Number.parseInt(c.req.valid('query').limit);
   const page = Number.parseInt(c.req.valid('query').page);
@@ -155,10 +155,10 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
 
   const pagination = is_pagination === 'true'
     ? {
-        total_record: resultPromiseForCount.length,
+        total_record: data.length,
         current_page: page,
-        total_page: Math.ceil(resultPromiseForCount.length / limit),
-        next_page: page + 1 > Math.ceil(resultPromiseForCount.length / limit) ? null : page + 1,
+        total_page: Math.ceil(data.length / limit),
+        next_page: page + 1 > Math.ceil(data.length / limit) ? null : page + 1,
         prev_page: page - 1 <= 0 ? null : page - 1,
       }
     : null;
