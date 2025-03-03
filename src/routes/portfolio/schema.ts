@@ -37,6 +37,8 @@ export const authorities = portfolio.table('authorities', {
     DEFAULT_OPERATION,
   ),
   remarks: text('remarks'),
+  email: text('email').default(sql`null`),
+  phone: text('phone').default(sql`null`),
 });
 
 //* Bot

@@ -29,9 +29,10 @@ export const insertSchema = createInsertSchema(
   created_at: true,
   created_by: true,
 }).partial({
-
   updated_at: true,
   remarks: true,
+  email: true,
+  phone: true,
 }).omit({
   id: true,
 });

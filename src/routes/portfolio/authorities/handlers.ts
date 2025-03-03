@@ -78,6 +78,8 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     created_by: authorities.created_by,
     created_by_name: created_user.name,
     remarks: authorities.remarks,
+    email: authorities.email,
+    phone: authorities.phone,
 
   })
     .from(authorities)
@@ -130,6 +132,8 @@ export const getOneByCategory: AppRouteHandler<GetOneByCategoryRoute> = async (c
     created_by: authorities.created_by,
     created_by_name: created_user.name,
     remarks: authorities.remarks,
+    email: authorities.email,
+    phone: authorities.phone,
   })
     .from(authorities)
     .leftJoin(hrSchema.users, eq(authorities.user_uuid, hrSchema.users.uuid))
