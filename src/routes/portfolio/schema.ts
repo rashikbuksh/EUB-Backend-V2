@@ -489,6 +489,7 @@ export const news = portfolio.table('news', {
   updated_at: DateTime('updated_at').$onUpdate(() => 'now()'),
   created_by: defaultUUID('created_by').references(() => users.uuid, DEFAULT_OPERATION),
   remarks: text('remarks'),
+  is_global: boolean('is_global').default(false),
 });
 
 //* News Entry
