@@ -2,16 +2,16 @@ import * as HSCode from 'stoker/http-status-codes';
 import { jsonContent, jsonContentRequired } from 'stoker/openapi/helpers';
 import { createErrorSchema } from 'stoker/openapi/schemas';
 
-import { notFoundSchema } from '@/lib/constants';
+import { notFoundSchema, unauthorizedSchema } from '@/lib/constants';
 import * as param from '@/lib/param';
 import { createRoute, z } from '@hono/zod-openapi';
 
-import { insertSchema, patchSchema, selectSchema } from '../users/utils';
+import { insertSchema, patchSchema, selectSchema, signinOutputSchema, signinSchema } from '../auth_user/utils';
 
 const tags = ['hr.user'];
 
 export const list = createRoute({
-  path: '/hr/users',
+  path: '/hr/auth-user',
   method: 'get',
   tags,
   responses: {
@@ -23,7 +23,7 @@ export const list = createRoute({
 });
 
 export const create = createRoute({
-  path: '/hr/users',
+  path: '/hr/auth-user',
   method: 'post',
   request: {
     body: jsonContentRequired(
@@ -45,7 +45,7 @@ export const create = createRoute({
 });
 
 export const getOne = createRoute({
-  path: '/hr/users/{uuid}',
+  path: '/hr/auth-user/{uuid}',
   method: 'get',
   request: {
     params: param.uuid,
@@ -68,7 +68,7 @@ export const getOne = createRoute({
 });
 
 export const patch = createRoute({
-  path: '/hr/users/{uuid}',
+  path: '/hr/auth-user/{uuid}',
   method: 'patch',
   request: {
     params: param.uuid,
@@ -96,7 +96,7 @@ export const patch = createRoute({
 });
 
 export const remove = createRoute({
-  path: '/hr/users/{uuid}',
+  path: '/hr/auth-user/{uuid}',
   method: 'delete',
   request: {
     params: param.uuid,
@@ -140,7 +140,7 @@ export const signout = createRoute({
 });
 
 export const getCanAccess = createRoute({
-  path: '/hr/users/can-access/{uuid}',
+  path: '/hr/auth-user/can-access/{uuid}',
   method: 'get',
   tags,
   request: {
@@ -157,7 +157,7 @@ export const getCanAccess = createRoute({
 });
 
 export const patchCanAccess = createRoute({
-  path: '/hr/users/can-access/{uuid}',
+  path: '/hr/auth-user/can-access/{uuid}',
   method: 'patch',
   tags,
   request: {
@@ -172,7 +172,7 @@ export const patchCanAccess = createRoute({
 });
 
 export const patchStatus = createRoute({
-  path: '/hr/users/status/{uuid}',
+  path: '/hr/auth-user/status/{uuid}',
   method: 'patch',
   tags,
   request: {
@@ -182,6 +182,37 @@ export const patchStatus = createRoute({
     [HSCode.OK]: jsonContent(
       z.array(selectSchema),
       'The valueLabel of user',
+    ),
+  },
+});
+
+export const signin = createRoute({
+  path: '/signin',
+  method: 'post',
+  request: {
+    body: jsonContentRequired(
+      signinSchema,
+      'The user login',
+    ),
+  },
+  tags,
+  responses: {
+    [HSCode.OK]: jsonContent(
+      signinOutputSchema,
+      'The logged user',
+    ),
+    [HSCode.NOT_FOUND]: jsonContent(
+      notFoundSchema,
+      'User not found',
+    ),
+    [HSCode.UNPROCESSABLE_ENTITY]: jsonContent(
+      createErrorSchema(patchSchema)
+        .or(createErrorSchema(param.uuid)),
+      'The validation error(s)',
+    ),
+    [HSCode.UNAUTHORIZED]: jsonContent(
+      unauthorizedSchema,
+      'Wrong password',
     ),
   },
 });

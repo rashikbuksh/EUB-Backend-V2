@@ -1,7 +1,4 @@
-import type { JWTPayload } from 'hono/utils/jwt/types';
-
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
-import { z } from 'zod';
 
 import { dateTimePattern } from '@/utils';
 
@@ -10,21 +7,21 @@ import { users } from '../schema';
 //* crud
 export const selectSchema = createSelectSchema(users);
 
-export const signinSchema = z.object({
-  email: z.string().email(),
-  pass: z.string().min(4).max(50),
-});
+// export const signinSchema = z.object({
+//   email: z.string().email(),
+//   pass: z.string().min(4).max(50),
+// });
 
-export const signinOutputSchema = z.object({
-  payload: z.object({
-    uuid: z.string(),
-    username: z.string(),
-    email: z.string(),
-    can_access: z.string(),
-    exp: z.number(),
-  }) as z.Schema<JWTPayload>,
-  token: z.string(),
-});
+// export const signinOutputSchema = z.object({
+//   payload: z.object({
+//     uuid: z.string(),
+//     username: z.string(),
+//     email: z.string(),
+//     can_access: z.string(),
+//     exp: z.number(),
+//   }) as z.Schema<JWTPayload>,
+//   token: z.string(),
+// });
 
 export const insertSchema = createInsertSchema(
   users,
