@@ -31,6 +31,7 @@ export const list = createRoute({
       orderby: z.string().optional(),
       is_pagination: z.string().optional(),
       access: z.string().optional(),
+      is_global: z.string().optional(),
     }),
   },
 });

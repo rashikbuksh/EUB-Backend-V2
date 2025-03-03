@@ -113,7 +113,7 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   // const data = await db.query.news.findMany();
-  const { department_name, latest, is_pagination, access } = c.req.valid('query');
+  const { department_name, latest, is_pagination, access, is_global } = c.req.valid('query');
 
   let accessArray = [];
   if (access) {
@@ -157,6 +157,9 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     if (accessArray.length > 0) {
       baseQuery.having(inArray(department.short_name, accessArray));
     }
+  }
+  if (is_global === 'true') {
+    baseQuery.where(eq(news.is_global, true));
   }
 
   const data = await baseQuery;
