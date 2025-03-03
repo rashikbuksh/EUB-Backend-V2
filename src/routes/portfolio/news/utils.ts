@@ -37,6 +37,7 @@ export const insertSchema = createInsertSchema(
   description: true,
   updated_at: true,
   remarks: true,
+  is_global: true,
 }).omit({
   id: true,
 });

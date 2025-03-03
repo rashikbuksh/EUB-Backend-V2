@@ -133,6 +133,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     published_date: news.published_date,
     remarks: news.remarks,
     carousel: sql`ARRAY(SELECT json_build_object('value', uuid, 'label', documents) FROM portfolio.news_entry WHERE news_uuid = portfolio.news.uuid)`,
+    is_global: news.is_global,
   })
     .from(news)
     .leftJoin(department, eq(news.department_uuid, department.uuid));
@@ -202,6 +203,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     published_date: news.published_date,
     remarks: news.remarks,
     carousel: sql`ARRAY(SELECT json_build_object('value', uuid, 'label', documents) FROM portfolio.news_entry WHERE news_uuid = portfolio.news.uuid)`,
+    is_global: news.is_global,
   })
     .from(news)
     .leftJoin(department, eq(news.department_uuid, department.uuid))
@@ -232,6 +234,7 @@ export async function getNewsAndNewsEntryDetailsByNewsUuid(c: any) {
     published_date: news.published_date,
     remarks: news.remarks,
     entry: sql`ARRAY(SELECT json_build_object('uuid', uuid, 'documents', documents,'created_at', created_at, 'updated_at',updated_at) FROM portfolio.news_entry WHERE news_uuid = portfolio.news.uuid)`,
+    is_global: news.is_global,
   })
     .from(news)
     .leftJoin(department, eq(news.department_uuid, department.uuid))
@@ -269,6 +272,7 @@ export const getLatestNews: AppRouteHandler<GetLatestNewsRoute> = async (c: any)
     cover_image: news.cover_image,
     published_date: news.published_date,
     remarks: news.remarks,
+    is_global: news.is_global,
   })
     .from(news)
     .leftJoin(department, eq(news.department_uuid, department.uuid))
