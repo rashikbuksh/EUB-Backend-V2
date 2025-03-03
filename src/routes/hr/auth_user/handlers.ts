@@ -29,7 +29,7 @@ export const signin: AppRouteHandler<SigninRoute> = async (c: any) => {
   if (Object.keys(updates).length === 0)
     return ObjectNotFound(c);
 
-  const { user_uuid, pass } = await c.req.json();
+  const { email, pass } = await c.req.json();
 
   const resultPromise = db.select({
     user_uuid: auth_user.user_uuid,
@@ -47,7 +47,7 @@ export const signin: AppRouteHandler<SigninRoute> = async (c: any) => {
     .leftJoin(users, eq(auth_user.user_uuid, users.uuid))
     .leftJoin(department, eq(users.department_uuid, department.uuid))
     .leftJoin(designation, eq(users.designation_uuid, designation.uuid))
-    .where(eq(auth_user.user_uuid, user_uuid));
+    .where(eq(users.email, email));
 
   const [data] = await resultPromise;
 

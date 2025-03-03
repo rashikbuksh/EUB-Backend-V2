@@ -8,7 +8,7 @@ import { createRoute, z } from '@hono/zod-openapi';
 
 import { insertSchema, patchSchema, selectSchema, signinOutputSchema, signinSchema } from '../auth_user/utils';
 
-const tags = ['hr.user'];
+const tags = ['hr.auth_user'];
 
 export const list = createRoute({
   path: '/hr/auth-user',
