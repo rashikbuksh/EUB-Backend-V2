@@ -1,6 +1,6 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { eq, inArray } from 'drizzle-orm';
+import { and, eq, inArray } from 'drizzle-orm';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
@@ -11,7 +11,7 @@ import { deleteFile, insertFile, updateFile } from '@/utils/upload_file';
 
 import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
 
-import { info } from '../schema';
+import { department, faculty, info, routine } from '../schema';
 
 export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
   // const value = c.req.valid('json');
@@ -150,8 +150,43 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
       baseQuery.having(inArray(info.page_name, accessArray));
     }
   }
+  let routineData;
 
-  const data = await baseQuery;
+  if (page_name) {
+    const routineResultPromise = db.select({
+      id: routine.id,
+      uuid: routine.uuid,
+      department_uuid: routine.department_uuid,
+      department_name: department.name,
+      faculty_uuid: department.faculty_uuid,
+      faculty_name: faculty.name,
+      programs: routine.programs,
+      type: routine.type,
+      file: routine.file,
+      description: routine.description,
+      created_at: routine.created_at,
+      updated_at: routine.updated_at,
+      created_by: routine.created_by,
+      created_by_name: hrSchema.users.name,
+      remarks: routine.remarks,
+      is_global: routine.is_global,
+      page_link: department.page_link,
+    })
+      .from(routine)
+      .leftJoin(department, eq(routine.department_uuid, department.uuid))
+      .leftJoin(hrSchema.users, eq(routine.created_by, hrSchema.users.uuid))
+      .leftJoin(faculty, eq(department.faculty_uuid, faculty.uuid))
+      .where(and(
+        eq(routine.type, page_name),
+        eq(routine.is_global, true),
+      ));
+
+    routineData = await routineResultPromise;
+  }
+
+  const infoData = await baseQuery;
+
+  const data = routineData ? [...infoData, ...routineData] : infoData;
 
   const pagination = is_pagination === 'true'
     ? {
