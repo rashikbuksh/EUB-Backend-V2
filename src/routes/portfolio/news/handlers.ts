@@ -142,8 +142,6 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   if (latest === 'true')
     resultPromise.orderBy(sql`DATE(${news.published_date}) DESC`).limit(10);
 
-  const resultPromiseForCount = await resultPromise;
-
   const limit = Number.parseInt(c.req.valid('query').limit);
   const page = Number.parseInt(c.req.valid('query').page);
 
@@ -154,9 +152,10 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   if (department_name) {
     baseQuery.groupBy(news.uuid, department.name);
     baseQuery.having(eq(department.name, department_name));
-    if (accessArray.length > 0) {
-      baseQuery.having(inArray(department.short_name, accessArray));
-    }
+  }
+  if (accessArray.length > 0) {
+    baseQuery.groupBy(news.uuid, department.name, department.short_name);
+    baseQuery.having(inArray(department.short_name, accessArray));
   }
   if (is_global === 'true') {
     baseQuery.groupBy(news.uuid, news.is_global, department.name);
@@ -168,10 +167,10 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   const pagination = is_pagination === 'false'
     ? null
     : {
-        total_record: resultPromiseForCount.length,
+        total_record: data.length,
         current_page: Number(page),
-        total_page: Math.ceil(resultPromiseForCount.length / limit),
-        next_page: page + 1 > Math.ceil(resultPromiseForCount.length / limit) ? null : page + 1,
+        total_page: Math.ceil(data.length / limit),
+        next_page: page + 1 > Math.ceil(data.length / limit) ? null : page + 1,
         prev_page: page - 1 <= 0 ? null : page - 1,
       };
 
