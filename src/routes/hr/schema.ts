@@ -34,6 +34,16 @@ export const users = hr.table('users', {
   phone: text('phone').default(sql`null`),
   office: text('office').notNull(),
   image: text('image'),
+  created_at: DateTime('created_at').notNull(),
+  updated_at: DateTime('updated_at'),
+  remarks: text('remarks'),
+});
+
+//* Auth User
+
+export const auth_user = hr.table('auth_user', {
+  uuid: uuid_primary,
+  user_uuid: defaultUUID('user_uuid').notNull().references(() => users.uuid, DEFAULT_OPERATION),
   pass: text('pass').notNull(),
   can_access: text('can_access'),
   status: boolean('status').default(false),
