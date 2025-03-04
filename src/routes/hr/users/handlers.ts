@@ -4,7 +4,6 @@ import { eq } from 'drizzle-orm';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
-import { HashPass } from '@/middlewares/auth';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 import { deleteFile, insertFile, updateFile } from '@/utils/upload_file';
 
@@ -94,7 +93,7 @@ export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
 
   const formData = await c.req.parseBody();
 
-  formData.pass = await HashPass(formData.pass);
+  // formData.pass = await HashPass(formData.pass);
 
   const image = formData.image;
   let imagePath = null;
@@ -118,8 +117,6 @@ export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
     // can_access: formData.can_access,
     remarks: formData.remarks,
   };
-
-  console.log(value);
 
   // value.pass = await HashPass(value.pass);
 
