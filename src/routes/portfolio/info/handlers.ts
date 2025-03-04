@@ -152,7 +152,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   }
   let routineData;
 
-  if (page_name) {
+  if (page_name === 'notices') {
     const routineResultPromise = db.select({
       id: routine.id,
       uuid: routine.uuid,
