@@ -213,7 +213,7 @@ export const getCanAccess: AppRouteHandler<GetCanAccessRoute> = async (c: any) =
   })
     .from(auth_user)
     .leftJoin(users, eq(auth_user.user_uuid, users.uuid))
-    .where(eq(users.uuid, uuid));
+    .where(eq(auth_user.uuid, uuid));
 
   const [data] = await resultPromise;
 
