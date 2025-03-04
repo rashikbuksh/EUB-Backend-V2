@@ -32,6 +32,7 @@ export const signin: AppRouteHandler<SigninRoute> = async (c: any) => {
   const { email, pass } = await c.req.json();
 
   const resultPromise = db.select({
+    uuid: auth_user.uuid,
     user_uuid: auth_user.user_uuid,
     pass: auth_user.pass,
     can_access: auth_user.can_access,
@@ -72,9 +73,9 @@ export const signin: AppRouteHandler<SigninRoute> = async (c: any) => {
 
   const now = Math.floor(Date.now() / 1000);
   const payload: JWTPayload = {
-    uuid: data.user_uuid,
+    uuid: data.uuid,
     username: data.name,
-    can_access: data.can_access,
+    // can_access: data.can_access,
     exp: now + 60 * 60 * 24,
   };
 
