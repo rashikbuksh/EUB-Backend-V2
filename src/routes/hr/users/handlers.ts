@@ -119,6 +119,8 @@ export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
     remarks: formData.remarks,
   };
 
+  console.log(value);
+
   // value.pass = await HashPass(value.pass);
 
   const [data] = await db.insert(users).values(value).returning({
