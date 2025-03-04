@@ -14,6 +14,7 @@ import type {
   GetOneRoute,
   ListRoute,
   PatchCanAccessRoute,
+  PatchChangePasswordRoute,
   PatchRoute,
   PatchStatusRoute,
   RemoveRoute,
@@ -101,7 +102,7 @@ export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
   value.pass = await HashPass(pass);
 
   const [data] = await db.insert(auth_user).values(value).returning({
-    name: users.name,
+    name: auth_user.user_uuid,
   });
 
   return c.json(createToast('create', data.name), HSCode.OK);
@@ -234,6 +235,30 @@ export const patchStatus: AppRouteHandler<PatchStatusRoute> = async (c: any) => 
     .where(eq(auth_user.user_uuid, uuid))
     .returning({
       name: auth_user.uuid,
+    });
+
+  if (!data)
+    return DataNotFound(c);
+
+  return c.json(createToast('update', data.name), HSCode.OK);
+};
+
+export const patchChangePassword: AppRouteHandler<PatchChangePasswordRoute> = async (c: any) => {
+  const { uuid } = c.req.valid('param');
+  const updates = c.req.valid('json');
+
+  if (Object.keys(updates).length === 0)
+    return ObjectNotFound(c);
+
+  const { pass } = updates;
+
+  updates.pass = await HashPass(pass);
+
+  const [data] = await db.update(auth_user)
+    .set(updates)
+    .where(eq(auth_user.user_uuid, uuid))
+    .returning({
+      name: auth_user.user_uuid,
     });
 
   if (!data)
