@@ -229,7 +229,7 @@ export const patchCanAccess: AppRouteHandler<PatchCanAccessRoute> = async (c: an
 
   const [data] = await db.update(auth_user)
     .set({ can_access })
-    .where(eq(auth_user.user_uuid, uuid))
+    .where(eq(auth_user.uuid, uuid))
     .returning({
       name: auth_user.uuid,
     });
