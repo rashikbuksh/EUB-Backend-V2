@@ -35,6 +35,7 @@ export const signin: AppRouteHandler<SigninRoute> = async (c: any) => {
   const resultPromise = db.select({
     uuid: auth_user.uuid,
     user_uuid: auth_user.user_uuid,
+    email: users.email,
     pass: auth_user.pass,
     can_access: auth_user.can_access,
     status: auth_user.status,
@@ -84,6 +85,8 @@ export const signin: AppRouteHandler<SigninRoute> = async (c: any) => {
 
   const user = {
     user_uuid: data.user_uuid,
+    uuid: data.uuid,
+    email: data.email,
     name: data.name,
     department_name: data.department_name,
     designation_name: data.designation_name,
