@@ -232,7 +232,7 @@ export const patchStatus: AppRouteHandler<PatchStatusRoute> = async (c: any) => 
 
   const [data] = await db.update(auth_user)
     .set({ status })
-    .where(eq(auth_user.user_uuid, uuid))
+    .where(eq(auth_user.uuid, uuid))
     .returning({
       name: auth_user.uuid,
     });
@@ -245,18 +245,19 @@ export const patchStatus: AppRouteHandler<PatchStatusRoute> = async (c: any) => 
 
 export const patchChangePassword: AppRouteHandler<PatchChangePasswordRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
-  const updates = c.req.valid('json');
+  const { pass, updated_at } = await c.req.json();
 
-  if (Object.keys(updates).length === 0)
-    return ObjectNotFound(c);
+  // if (Object.keys(updates).length === 0)
+  //   return ObjectNotFound(c);
 
-  const { pass } = updates;
-
-  updates.pass = await HashPass(pass);
+  const pass2 = await HashPass(pass);
 
   const [data] = await db.update(auth_user)
-    .set(updates)
-    .where(eq(auth_user.user_uuid, uuid))
+    .set({
+      pass: pass2,
+      updated_at,
+    })
+    .where(eq(auth_user.uuid, uuid))
     .returning({
       name: auth_user.user_uuid,
     });
