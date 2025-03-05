@@ -5,6 +5,7 @@ import { eq } from 'drizzle-orm';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
+import { PG_DECIMAL_TO_FLOAT } from '@/lib/variables';
 import * as hrSchema from '@/routes/hr/schema';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 
@@ -68,7 +69,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     purchase_cost_center_uuid: item.purchase_cost_center_uuid,
     purchase_cost_center_name: purchase_cost_center.name,
     name: item.name,
-    vendor_price: item.vendor_price,
+    vendor_price: PG_DECIMAL_TO_FLOAT(item.vendor_price),
     price_validity: item.price_validity,
     created_at: item.created_at,
     updated_at: item.updated_at,
@@ -88,14 +89,29 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
 export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
 
-  const data = await db.query.item.findFirst({
-    where(fields, operators) {
-      return operators.eq(fields.uuid, uuid);
-    },
-  });
+  const resultPromise = db.select({
+    index: item.index,
+    uuid: item.uuid,
+    purchase_cost_center_uuid: item.purchase_cost_center_uuid,
+    purchase_cost_center_name: purchase_cost_center.name,
+    name: item.name,
+    vendor_price: PG_DECIMAL_TO_FLOAT(item.vendor_price),
+    price_validity: item.price_validity,
+    created_at: item.created_at,
+    updated_at: item.updated_at,
+    created_by: item.created_by,
+    created_by_name: hrSchema.users.name,
+    remarks: item.remarks,
+  })
+    .from(item)
+    .leftJoin(hrSchema.users, eq(item.created_by, hrSchema.users.uuid))
+    .leftJoin(purchase_cost_center, eq(item.purchase_cost_center_uuid, purchase_cost_center.uuid))
+    .where(eq(item.uuid, uuid));
+
+  const data = await resultPromise;
 
   if (!data)
     return DataNotFound(c);
 
-  return c.json(data || {}, HSCode.OK);
+  return c.json(data[0] || {}, HSCode.OK);
 };
