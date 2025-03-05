@@ -1,5 +1,6 @@
 import category from './category';
+import item_vendor from './item_vendor';
 import purchase_cost_center from './purchase_cost_center';
 import sub_category from './sub_category';
 
-export default [category, sub_category, purchase_cost_center];
+export default [category, sub_category, purchase_cost_center, item_vendor];
