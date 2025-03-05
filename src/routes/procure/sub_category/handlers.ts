@@ -92,11 +92,29 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
 export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
 
-  const data = await db.query.sub_category.findFirst({
-    where(fields, operators) {
-      return operators.eq(fields.uuid, uuid);
-    },
-  });
+  const resultPromise = db.select({
+    index: sub_category.index,
+    uuid: sub_category.uuid,
+    category_uuid: sub_category.category_uuid,
+    category_name: category.name,
+    category_index: category.index,
+    name: sub_category.name,
+    type: sub_category.type,
+    min_amount: PG_DECIMAL_TO_FLOAT(sub_category.min_amount),
+    min_quotation: PG_DECIMAL_TO_FLOAT(sub_category.min_quotation),
+    created_at: sub_category.created_at,
+    updated_at: sub_category.updated_at,
+    created_by: sub_category.created_by,
+    created_by_name: hrSchema.users.name,
+    remarks: sub_category.remarks,
+
+  })
+    .from(sub_category)
+    .leftJoin(hrSchema.users, eq(sub_category.created_by, hrSchema.users.uuid))
+    .leftJoin(category, eq(sub_category.category_uuid, category.uuid))
+    .where(eq(sub_category.uuid, uuid));
+
+  const data = await resultPromise;
 
   if (!data)
     return DataNotFound(c);
