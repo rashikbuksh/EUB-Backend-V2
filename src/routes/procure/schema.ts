@@ -287,7 +287,8 @@ export const procure_service_vendor_rel = relations (service_vendor, ({ one }) =
   }),
 }));
 
-export const procure_item_work_order_rel = relations (item_work_order, ({ one }) => ({
+export const procure_item_work_order_rel = relations (item_work_order, ({ one, many }) => ({
+  item_work_order_entry: many(item_work_order_entry),
   created_by: one(users, {
     fields: [item_work_order.created_by],
     references: [users.uuid],
