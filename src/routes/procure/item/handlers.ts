@@ -119,6 +119,9 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
 export const getItemDetailsByItemUuid: AppRouteHandler<GetItemDetailsByItemUuidRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
   const data = await db.query.item.findFirst({
+    extras: {
+      vendor_price: PG_DECIMAL_TO_FLOAT(item.vendor_price).as('vendor_price'),
+    },
     where(fields, operators) {
       return operators.eq(fields.uuid, uuid);
     },
