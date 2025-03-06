@@ -14,11 +14,11 @@ export const list = createRoute({
   path: '/procure/item',
   method: 'get',
   tags,
-  request: {
-    query: z.object({
-      vendor_uuid: z.string().optional(),
-    }),
-  },
+  // request: {
+  //   query: z.object({
+  //     vendor_uuid: z.string().optional(),
+  //   }),
+  // },
   responses: {
     [HSCode.OK]: jsonContent(
       z.array(selectSchema),
@@ -157,9 +157,33 @@ export const getItemDetailsByItemUuid = createRoute({
   },
 });
 
+export const getItemByVendorUuid = createRoute({
+  path: '/procure/item/by/vendor-uuid/{uuid}',
+  method: 'get',
+  request: {
+    params: param.uuid,
+  },
+  tags,
+  responses: {
+    [HSCode.OK]: jsonContent(
+      z.array(selectSchema),
+      'The requested item',
+    ),
+    [HSCode.NOT_FOUND]: jsonContent(
+      notFoundSchema,
+      'item not found',
+    ),
+    [HSCode.UNPROCESSABLE_ENTITY]: jsonContent(
+      createErrorSchema(param.uuid),
+      'Invalid id error',
+    ),
+  },
+});
+
 export type ListRoute = typeof list;
 export type CreateRoute = typeof create;
 export type GetOneRoute = typeof getOne;
 export type PatchRoute = typeof patch;
 export type RemoveRoute = typeof remove;
 export type GetItemDetailsByItemUuidRoute = typeof getItemDetailsByItemUuid;
+export type GetItemByVendorUuidRoute = typeof getItemByVendorUuid;
