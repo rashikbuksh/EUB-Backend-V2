@@ -97,6 +97,7 @@ export const item = procure.table('item', {
   index: integer('index').notNull().unique(),
   purchase_cost_center_uuid: defaultUUID('purchase_cost_center_uuid').references(() => purchase_cost_center.uuid, DEFAULT_OPERATION),
   name: text('name').notNull(),
+  quantity: PG_DECIMAL('quantity').default(sql`0`),
   vendor_price: PG_DECIMAL('vendor_price').default(sql`0`),
   price_validity: DateTime('price_validity').notNull(),
   created_by: defaultUUID('created_by').references(() => users.uuid, DEFAULT_OPERATION),

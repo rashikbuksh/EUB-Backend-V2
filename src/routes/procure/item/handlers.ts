@@ -69,6 +69,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     purchase_cost_center_uuid: item.purchase_cost_center_uuid,
     purchase_cost_center_name: purchase_cost_center.name,
     name: item.name,
+    quantity: PG_DECIMAL_TO_FLOAT(item.quantity),
     vendor_price: PG_DECIMAL_TO_FLOAT(item.vendor_price),
     price_validity: item.price_validity,
     created_at: item.created_at,
@@ -95,6 +96,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     purchase_cost_center_uuid: item.purchase_cost_center_uuid,
     purchase_cost_center_name: purchase_cost_center.name,
     name: item.name,
+    quantity: PG_DECIMAL_TO_FLOAT(item.quantity),
     vendor_price: PG_DECIMAL_TO_FLOAT(item.vendor_price),
     price_validity: item.price_validity,
     created_at: item.created_at,
@@ -120,6 +122,7 @@ export const getItemDetailsByItemUuid: AppRouteHandler<GetItemDetailsByItemUuidR
   const { uuid } = c.req.valid('param');
   const data = await db.query.item.findFirst({
     extras: {
+      quantity: PG_DECIMAL_TO_FLOAT(item.quantity).as('quantity'),
       vendor_price: PG_DECIMAL_TO_FLOAT(item.vendor_price).as('vendor_price'),
     },
     where(fields, operators) {
