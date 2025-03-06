@@ -9,9 +9,9 @@ import { PG_DECIMAL_TO_FLOAT } from '@/lib/variables';
 import * as hrSchema from '@/routes/hr/schema';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 
-import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
+import type { CreateRoute, GetItemDetailsByItemUuidRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
 
-import { item, purchase_cost_center } from '../schema';
+import { item, item_vendor, purchase_cost_center } from '../schema';
 
 // const created_user = alias(hrSchema.users, 'created_user');
 
@@ -61,7 +61,7 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 };
 
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
-  // const { sub_category } = c.req.valid('query');
+  const { vendor_uuid } = c.req.valid('query');
 
   const resultPromise = db.select({
     index: item.index,
@@ -69,6 +69,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     purchase_cost_center_uuid: item.purchase_cost_center_uuid,
     purchase_cost_center_name: purchase_cost_center.name,
     name: item.name,
+    quantity: PG_DECIMAL_TO_FLOAT(item.quantity),
     vendor_price: PG_DECIMAL_TO_FLOAT(item.vendor_price),
     price_validity: item.price_validity,
     created_at: item.created_at,
@@ -79,7 +80,11 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   })
     .from(item)
     .leftJoin(hrSchema.users, eq(item.created_by, hrSchema.users.uuid))
-    .leftJoin(purchase_cost_center, eq(item.purchase_cost_center_uuid, purchase_cost_center.uuid));
+    .leftJoin(purchase_cost_center, eq(item.purchase_cost_center_uuid, purchase_cost_center.uuid))
+    .leftJoin(item_vendor, eq(item.uuid, item_vendor.item_uuid));
+
+  if (vendor_uuid)
+    resultPromise.where(eq(item_vendor.vendor_uuid, vendor_uuid));
 
   const data = await resultPromise;
 
@@ -95,6 +100,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     purchase_cost_center_uuid: item.purchase_cost_center_uuid,
     purchase_cost_center_name: purchase_cost_center.name,
     name: item.name,
+    quantity: PG_DECIMAL_TO_FLOAT(item.quantity),
     vendor_price: PG_DECIMAL_TO_FLOAT(item.vendor_price),
     price_validity: item.price_validity,
     created_at: item.created_at,
@@ -114,4 +120,28 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     return DataNotFound(c);
 
   return c.json(data[0] || {}, HSCode.OK);
+};
+
+export const getItemDetailsByItemUuid: AppRouteHandler<GetItemDetailsByItemUuidRoute> = async (c: any) => {
+  const { uuid } = c.req.valid('param');
+  const data = await db.query.item.findFirst({
+    extras: {
+      quantity: PG_DECIMAL_TO_FLOAT(item.quantity).as('quantity'),
+      vendor_price: PG_DECIMAL_TO_FLOAT(item.vendor_price).as('vendor_price'),
+    },
+    where(fields, operators) {
+      return operators.eq(fields.uuid, uuid);
+    },
+    with: {
+      vendors: {
+        orderBy: (vendors, { asc }) => [asc(vendors.created_at)],
+      },
+    },
+
+  });
+
+  if (!data)
+    return DataNotFound(c);
+
+  return c.json(data || {}, HSCode.OK);
 };

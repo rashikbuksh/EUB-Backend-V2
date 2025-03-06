@@ -8,39 +8,39 @@ import { createRoute, z } from '@hono/zod-openapi';
 
 import { insertSchema, patchSchema, selectSchema } from './utils';
 
-const tags = ['procure.item'];
+const tags = ['procure.item_work_order_entry'];
 
 export const list = createRoute({
-  path: '/procure/item',
+  path: '/procure/item-work-order-entry',
   method: 'get',
   tags,
-  request: {
-    query: z.object({
-      vendor_uuid: z.string().optional(),
-    }),
-  },
+  // request: {
+  //   query: z.object({
+  //     category: z.string().optional(),
+  //   }),
+  // },
   responses: {
     [HSCode.OK]: jsonContent(
       z.array(selectSchema),
-      'The list of item',
+      'The list of item_work_order_entry',
     ),
   },
 });
 
 export const create = createRoute({
-  path: '/procure/item',
+  path: '/procure/item-work-order-entry',
   method: 'post',
   request: {
     body: jsonContentRequired(
       insertSchema,
-      'The item to create',
+      'The item_work_order_entry to create',
     ),
   },
   tags,
   responses: {
     [HSCode.OK]: jsonContent(
       selectSchema,
-      'The created item',
+      'The created item_work_order_entry',
     ),
     [HSCode.UNPROCESSABLE_ENTITY]: jsonContent(
       createErrorSchema(insertSchema),
@@ -50,7 +50,7 @@ export const create = createRoute({
 });
 
 export const getOne = createRoute({
-  path: '/procure/item/{uuid}',
+  path: '/procure/item-work-order-entry/{uuid}',
   method: 'get',
   request: {
     params: param.uuid,
@@ -59,11 +59,11 @@ export const getOne = createRoute({
   responses: {
     [HSCode.OK]: jsonContent(
       selectSchema,
-      'The requested item',
+      'The requested item_work_order_entry',
     ),
     [HSCode.NOT_FOUND]: jsonContent(
       notFoundSchema,
-      'item not found',
+      'item_work_order_entry not found',
     ),
     [HSCode.UNPROCESSABLE_ENTITY]: jsonContent(
       createErrorSchema(param.uuid),
@@ -73,24 +73,24 @@ export const getOne = createRoute({
 });
 
 export const patch = createRoute({
-  path: '/procure/item/{uuid}',
+  path: '/procure/item-work-order-entry/{uuid}',
   method: 'patch',
   request: {
     params: param.uuid,
     body: jsonContentRequired(
       patchSchema,
-      'The item updates',
+      'The item_work_order_entry updates',
     ),
   },
   tags,
   responses: {
     [HSCode.OK]: jsonContent(
       selectSchema,
-      'The updated item',
+      'The updated item_work_order_entry',
     ),
     [HSCode.NOT_FOUND]: jsonContent(
       notFoundSchema,
-      'item not found',
+      'item_work_order_entry not found',
     ),
     [HSCode.UNPROCESSABLE_ENTITY]: jsonContent(
       createErrorSchema(patchSchema)
@@ -101,7 +101,7 @@ export const patch = createRoute({
 });
 
 export const remove = createRoute({
-  path: '/procure/item/{uuid}',
+  path: '/procure/item-work-order-entry/{uuid}',
   method: 'delete',
   request: {
     params: param.uuid,
@@ -109,46 +109,11 @@ export const remove = createRoute({
   tags,
   responses: {
     [HSCode.NO_CONTENT]: {
-      description: 'item deleted',
+      description: 'item_work_order_entry deleted',
     },
     [HSCode.NOT_FOUND]: jsonContent(
       notFoundSchema,
-      'item not found',
-    ),
-    [HSCode.UNPROCESSABLE_ENTITY]: jsonContent(
-      createErrorSchema(param.uuid),
-      'Invalid id error',
-    ),
-  },
-});
-
-export const getItemDetailsByItemUuid = createRoute({
-  path: '/procure/item-details/by/item-uuid/{uuid}',
-  method: 'get',
-  request: {
-    params: param.uuid,
-  },
-  tags,
-  responses: {
-    [HSCode.OK]: jsonContent(
-      z.object({
-        item: selectSchema,
-        item_details: z.array(z.object({
-          uuid: z.string(),
-          item_uuid: z.string(),
-          item_detail_type_uuid: z.string(),
-          value: z.string(),
-          created_at: z.string(),
-          created_by: z.string(),
-          updated_at: z.string(),
-          updated_by: z.string(),
-        })),
-      }),
-      'The requested item details',
-    ),
-    [HSCode.NOT_FOUND]: jsonContent(
-      notFoundSchema,
-      'item not found',
+      'item_work_order_entry not found',
     ),
     [HSCode.UNPROCESSABLE_ENTITY]: jsonContent(
       createErrorSchema(param.uuid),
@@ -162,4 +127,3 @@ export type CreateRoute = typeof create;
 export type GetOneRoute = typeof getOne;
 export type PatchRoute = typeof patch;
 export type RemoveRoute = typeof remove;
-export type GetItemDetailsByItemUuidRoute = typeof getItemDetailsByItemUuid;
