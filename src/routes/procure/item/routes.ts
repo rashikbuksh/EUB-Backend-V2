@@ -123,7 +123,7 @@ export const remove = createRoute({
 });
 
 export const getItemDetailsByItemUuid = createRoute({
-  path: '/procure/item-details/by/item-uuid/{uuid}/details',
+  path: '/procure/item-details/by/item-uuid/{uuid}',
   method: 'get',
   request: {
     params: param.uuid,
