@@ -153,6 +153,31 @@ export const service_vendor = procure.table('service_vendor', {
   remarks: text('remarks'),
 });
 
+export const item_work_order_status = procure.enum('item_work_order_status', ['pending', 'accept', 'rejected']);
+
+export const item_work_order = procure.table('item_work_order', {
+  uuid: uuid_primary,
+  vendor_uuid: defaultUUID('vendor_uuid').references(() => vendor.uuid, DEFAULT_OPERATION),
+  status: item_work_order_status('status').default('pending'),
+  created_by: defaultUUID('created_by').references(() => users.uuid, DEFAULT_OPERATION),
+  created_at: DateTime('created_at').notNull(),
+  updated_at: DateTime('updated_at'),
+  remarks: text('remarks'),
+});
+
+export const item_work_order_entry = procure.table('item_work_order_entry', {
+  uuid: uuid_primary,
+  item_work_order_uuid: defaultUUID('item_work_order_uuid').references(() => item_work_order.uuid, DEFAULT_OPERATION),
+  item_uuid: defaultUUID('item_uuid').references(() => item.uuid, DEFAULT_OPERATION),
+  quantity: PG_DECIMAL('quantity').default(sql`0`),
+  unit_price: PG_DECIMAL('unit_price').default(sql`0`),
+  is_received: boolean('is_received').notNull().default(false),
+  created_by: defaultUUID('created_by').references(() => users.uuid, DEFAULT_OPERATION),
+  created_at: DateTime('created_at').notNull(),
+  updated_at: DateTime('updated_at'),
+  remarks: text('remarks'),
+});
+
 //* Relations *//
 
 export const procure_category_rel = relations (category, ({ one }) => ({
@@ -259,6 +284,32 @@ export const procure_service_vendor_rel = relations (service_vendor, ({ one }) =
   vendor: one(vendor, {
     fields: [service_vendor.vendor_uuid],
     references: [vendor.uuid],
+  }),
+}));
+
+export const procure_item_work_order_rel = relations (item_work_order, ({ one }) => ({
+  created_by: one(users, {
+    fields: [item_work_order.created_by],
+    references: [users.uuid],
+  }),
+  vendor: one(vendor, {
+    fields: [item_work_order.vendor_uuid],
+    references: [vendor.uuid],
+  }),
+}));
+
+export const procure_item_work_order_entry_rel = relations (item_work_order_entry, ({ one }) => ({
+  created_by: one(users, {
+    fields: [item_work_order_entry.created_by],
+    references: [users.uuid],
+  }),
+  item: one(item, {
+    fields: [item_work_order_entry.item_uuid],
+    references: [item.uuid],
+  }),
+  item_work_order: one(item_work_order, {
+    fields: [item_work_order_entry.item_work_order_uuid],
+    references: [item_work_order.uuid],
   }),
 }));
 
