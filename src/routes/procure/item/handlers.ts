@@ -150,7 +150,7 @@ export const getItemByVendorUuid: AppRouteHandler<GetItemByVendorUuidRoute> = as
   const { uuid } = c.req.valid('param');
   const resultPromise = db.select({
     index: item.index,
-    uuid: item.uuid,
+    item_uuid: item.uuid,
     purchase_cost_center_uuid: item.purchase_cost_center_uuid,
     purchase_cost_center_name: purchase_cost_center.name,
     name: item.name,
