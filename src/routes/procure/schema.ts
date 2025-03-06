@@ -201,7 +201,8 @@ export const procure_service_rel = relations (service, ({ one }) => ({
   }),
 }));
 
-export const procure_item_rel = relations (item, ({ one }) => ({
+export const procure_item_rel = relations (item, ({ one, many }) => ({
+  vendors: many(item_vendor),
   created_by: one(users, {
     fields: [item.created_by],
     references: [users.uuid],

@@ -122,8 +122,44 @@ export const remove = createRoute({
   },
 });
 
+export const getItemDetailsByItemUuid = createRoute({
+  path: '/procure/item-details/by/item-uuid/{uuid}/details',
+  method: 'get',
+  request: {
+    params: param.uuid,
+  },
+  tags,
+  responses: {
+    [HSCode.OK]: jsonContent(
+      z.object({
+        item: selectSchema,
+        item_details: z.array(z.object({
+          uuid: z.string(),
+          item_uuid: z.string(),
+          item_detail_type_uuid: z.string(),
+          value: z.string(),
+          created_at: z.string(),
+          created_by: z.string(),
+          updated_at: z.string(),
+          updated_by: z.string(),
+        })),
+      }),
+      'The requested item details',
+    ),
+    [HSCode.NOT_FOUND]: jsonContent(
+      notFoundSchema,
+      'item not found',
+    ),
+    [HSCode.UNPROCESSABLE_ENTITY]: jsonContent(
+      createErrorSchema(param.uuid),
+      'Invalid id error',
+    ),
+  },
+});
+
 export type ListRoute = typeof list;
 export type CreateRoute = typeof create;
 export type GetOneRoute = typeof getOne;
 export type PatchRoute = typeof patch;
 export type RemoveRoute = typeof remove;
+export type GetItemDetailsByItemUuidRoute = typeof getItemDetailsByItemUuid;
