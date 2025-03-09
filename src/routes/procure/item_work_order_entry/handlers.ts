@@ -9,7 +9,7 @@ import { PG_DECIMAL_TO_FLOAT } from '@/lib/variables';
 import * as hrSchema from '@/routes/hr/schema';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 
-import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
+import type { CreateRoute, GetAllByUuidRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
 
 import { item, item_work_order_entry } from '../schema';
 
@@ -107,6 +107,36 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     .leftJoin(hrSchema.users, eq(item_work_order_entry.created_by, hrSchema.users.uuid))
     .leftJoin(item, eq(item_work_order_entry.item_uuid, item.uuid))
     .where(eq(item_work_order_entry.uuid, uuid));
+
+  const data = await resultPromise;
+
+  if (!data)
+    return DataNotFound(c);
+
+  return c.json(data[0] || {}, HSCode.OK);
+};
+
+export const getAllByUuid: AppRouteHandler<GetAllByUuidRoute> = async (c: any) => {
+  const { item_work_order_uuid } = c.req.valid('param');
+
+  const resultPromise = db.select({
+    uuid: item_work_order_entry.uuid,
+    item_work_order_uuid: item_work_order_entry.item_work_order_uuid,
+    item_uuid: item_work_order_entry.item_uuid,
+    item_name: item.name,
+    quantity: PG_DECIMAL_TO_FLOAT(item_work_order_entry.quantity),
+    unit_price: PG_DECIMAL_TO_FLOAT(item_work_order_entry.unit_price),
+    is_received: item_work_order_entry.is_received,
+    created_at: item_work_order_entry.created_at,
+    updated_at: item_work_order_entry.updated_at,
+    created_by: item_work_order_entry.created_by,
+    created_by_name: hrSchema.users.name,
+    remarks: item_work_order_entry.remarks,
+  })
+    .from(item_work_order_entry)
+    .leftJoin(hrSchema.users, eq(item_work_order_entry.created_by, hrSchema.users.uuid))
+    .leftJoin(item, eq(item_work_order_entry.item_uuid, item.uuid))
+    .where(eq(item_work_order_entry.item_work_order_uuid, item_work_order_uuid));
 
   const data = await resultPromise;
 

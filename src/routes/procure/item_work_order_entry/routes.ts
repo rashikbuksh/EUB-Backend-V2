@@ -122,8 +122,31 @@ export const remove = createRoute({
   },
 });
 
+export const getAllByUuidRoute = createRoute({
+  path: '/procure/item-work-order-entry/{item_work_order_uuid}',
+  method: 'delete',
+  request: {
+    params: param.uuid,
+  },
+  tags,
+  responses: {
+    [HSCode.NO_CONTENT]: {
+      description: 'item_work_order_entry deleted',
+    },
+    [HSCode.NOT_FOUND]: jsonContent(
+      notFoundSchema,
+      'item_work_order_entry not found',
+    ),
+    [HSCode.UNPROCESSABLE_ENTITY]: jsonContent(
+      createErrorSchema(param.uuid),
+      'Invalid id error',
+    ),
+  },
+});
+
 export type ListRoute = typeof list;
 export type CreateRoute = typeof create;
 export type GetOneRoute = typeof getOne;
 export type PatchRoute = typeof patch;
 export type RemoveRoute = typeof remove;
+export type GetAllByUuidRoute = typeof getAllByUuidRoute;
