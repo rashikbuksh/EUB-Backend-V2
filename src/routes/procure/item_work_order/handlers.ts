@@ -124,6 +124,9 @@ export const getWorkOrderDEtailsByWorkOrderUuid: AppRouteHandler<GetWorkOrderDEt
           unit_price: PG_DECIMAL_TO_FLOAT(item_work_order_entry.unit_price).as('unit_price'),
         },
         orderBy: (item_work_order_entry, { asc }) => [asc(item_work_order_entry.created_at)],
+        with: {
+          item: true,
+        },
       },
     },
 
