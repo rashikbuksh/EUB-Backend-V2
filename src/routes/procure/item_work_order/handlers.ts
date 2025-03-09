@@ -122,16 +122,15 @@ export const getWorkOrderDEtailsByWorkOrderUuid: AppRouteHandler<GetWorkOrderDEt
         extras: {
           quantity: PG_DECIMAL_TO_FLOAT(item_work_order_entry.quantity).as('quantity'),
           unit_price: PG_DECIMAL_TO_FLOAT(item_work_order_entry.unit_price).as('unit_price'),
-          item_name: sql.raw(`(
+          item_name: sql`(
             SELECT item.name
             FROM procure.item
             WHERE item.uuid = item_work_order_entry.item_uuid
-          )`).as('item_name'),
+          )`.as('item_name'),
         },
         orderBy: (item_work_order_entry, { asc }) => [asc(item_work_order_entry.created_at)],
       },
     },
-
   });
 
   if (!data)
