@@ -222,6 +222,12 @@ export const patchChangePassword = createRoute({
   tags,
   request: {
     params: param.uuid,
+    body: jsonContentRequired(
+      z.object({
+        pass: z.string(),
+      }),
+      'The valueLabel of user',
+    ),
   },
   responses: {
     [HSCode.OK]: jsonContent(
