@@ -262,25 +262,7 @@ export const patchStatus: AppRouteHandler<PatchStatusRoute> = async (c: any) => 
 
 export const patchChangePassword: AppRouteHandler<PatchChangePasswordRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
-  const { current_pass, pass, updated_at } = await c.req.json();
-
-  const [check_data] = await db.select({
-    pass: auth_user.pass,
-  })
-    .from(auth_user)
-    .where(eq(auth_user.uuid, uuid));
-
-  if (!check_data)
-    return DataNotFound(c);
-
-  const match = await ComparePass(current_pass, check_data.pass);
-
-  if (!match) {
-    return c.json(
-      { message: 'Invalid password' },
-      HSCode.UNAUTHORIZED,
-    );
-  }
+  const { pass, updated_at } = await c.req.json();
 
   const pass2 = await HashPass(pass);
 
