@@ -41,7 +41,7 @@ export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
   };
 
   const [data] = await db.insert(office).values(value).returning({
-    name: office.created_by,
+    name: office.title,
   });
 
   return c.json(createToast('create', data.name ?? ''), HSCode.OK);
@@ -79,7 +79,7 @@ export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
     .set(formData)
     .where(eq(office.uuid, uuid))
     .returning({
-      name: office.created_by,
+      name: office.title,
     });
 
   if (!data)
@@ -105,7 +105,7 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
     .delete(office)
     .where(eq(office.uuid, uuid))
     .returning({
-      name: office.created_by,
+      name: office.title,
     });
 
   if (!data)
@@ -116,7 +116,7 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   const data = await db.query.office.findMany({
-    orderBy: (office, { desc }) => [desc(office.created_at)],
+    orderBy: (office, { desc, asc }) => [desc(office.created_at) || asc(office.index)],
   });
 
   return c.json(data || [], HSCode.OK);
@@ -145,7 +145,7 @@ export const getOfficeAndOfficeEntryDetailsByOfficeUuid: AppRouteHandler<GetOffi
     },
     with: {
       office_entries: {
-        orderBy: (office_entries, { asc }) => [asc(office_entries.created_at)],
+        orderBy: (office_entries, { asc }) => [asc(office_entries.created_at) || asc(office_entries.index)],
       },
     },
 

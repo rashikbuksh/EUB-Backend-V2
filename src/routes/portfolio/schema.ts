@@ -463,6 +463,7 @@ export const office = portfolio.table('office', {
   updated_at: DateTime('updated_at'),
   created_by: defaultUUID('created_by').references(() => users.uuid, DEFAULT_OPERATION),
   remarks: text('remarks'),
+  index: integer('index').default(sql`0`),
 });
 //* office entry
 
@@ -489,6 +490,7 @@ export const office_entry = portfolio.table('office_entry', {
     DEFAULT_OPERATION,
   ),
   remarks: text('remarks'),
+  index: integer('index').default(sql`0`),
 });
 
 // ? News & Entry

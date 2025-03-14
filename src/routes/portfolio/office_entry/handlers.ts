@@ -88,6 +88,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     created_by_name: hrSchema.users.name,
     updated_at: office_entry.updated_at,
     remarks: office_entry.remarks,
+    index: office_entry.index,
   })
     .from(office_entry)
     .leftJoin(office, eq(office_entry.office_uuid, office.uuid))
@@ -140,6 +141,7 @@ export const getByOfficeUuid: AppRouteHandler<GetByOfficeUuidRoute> = async (c: 
     created_by_name: hrSchema.users.name,
     updated_at: office_entry.updated_at,
     remarks: office_entry.remarks,
+    index: office_entry.index,
   })
     .from(office_entry)
     .leftJoin(office, eq(office_entry.office_uuid, office.uuid))
