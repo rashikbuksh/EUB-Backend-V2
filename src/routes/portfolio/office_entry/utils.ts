@@ -30,8 +30,8 @@ export const insertSchema = createInsertSchema(
   created_at: true,
   created_by: true,
   designation: true,
-  user_email: true,
 }).partial({
+  user_email: true,
   user_phone: true,
   updated_at: true,
   remarks: true,
