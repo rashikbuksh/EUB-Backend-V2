@@ -481,7 +481,7 @@ export const office_entry = portfolio.table('office_entry', {
   ),
   designation: text('designation').notNull().default('teacher'),
   user_phone: text('user_phone').default(sql`null`),
-  user_email: text('user_email').notNull().default('eub@eub.com'),
+  user_email: text('user_email').default(sql`null`),
   created_at: DateTime('created_at').notNull(),
   updated_at: DateTime('updated_at'),
   created_by: defaultUUID('created_by').references(
