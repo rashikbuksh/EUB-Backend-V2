@@ -84,8 +84,8 @@ export const signin: AppRouteHandler<SigninRoute> = async (c: any) => {
   const token = await CreateToken(payload);
 
   const user = {
-    user_uuid: data.user_uuid,
-    uuid: data.uuid,
+    uuid: data.user_uuid,
+    auth_user_uuid: data.uuid,
     email: data.email,
     name: data.name,
     department_name: data.department_name,
