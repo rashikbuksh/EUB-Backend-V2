@@ -20,7 +20,11 @@ export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
 
   const file = formData.file;
 
-  const filePath = await insertFile(file, 'public/job-circular');
+  let filePath = null;
+
+  if (file && typeof file === 'object') {
+    filePath = await insertFile(file, 'public/job-circular');
+  }
 
   const value = {
     uuid: formData.uuid,

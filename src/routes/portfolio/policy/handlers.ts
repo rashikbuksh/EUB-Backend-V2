@@ -24,7 +24,11 @@ export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
 
   const file = formData.file;
 
-  const filePath = await insertFile(file, 'public/policy');
+  let filePath = null;
+
+  if (file && typeof file === 'object') {
+    filePath = await insertFile(file, 'public/policy');
+  }
 
   const value = {
     uuid: formData.uuid,
