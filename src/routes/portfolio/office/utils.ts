@@ -20,6 +20,7 @@ export const insertSchema = createInsertSchema(
     }),
   },
 ).required({
+  index: true,
   uuid: true,
   category: true,
   created_at: true,

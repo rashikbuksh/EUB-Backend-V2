@@ -463,8 +463,10 @@ export const office = portfolio.table('office', {
   updated_at: DateTime('updated_at'),
   created_by: defaultUUID('created_by').references(() => users.uuid, DEFAULT_OPERATION),
   remarks: text('remarks'),
-  index: integer('index').default(sql`0`),
-});
+  index: integer('index').notNull(),
+}, table => [
+  unique().on(table.index),
+]);
 //* office entry
 
 export const office_entry_id = portfolio.sequence('office_entry_id', DEFAULT_SEQUENCE);
