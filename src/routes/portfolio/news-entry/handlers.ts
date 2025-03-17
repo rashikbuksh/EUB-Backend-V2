@@ -42,7 +42,7 @@ export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
   const formData = await c.req.parseBody();
 
   // updates includes documents then do it else exclude it
-  if (formData.documents) {
+  if (formData.documents && typeof formData.documents === 'object') {
     // get newsEntry documents name
     const newsEntryData = await db.query.news_entry.findFirst({
       where(fields, operators) {

@@ -56,7 +56,7 @@ export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
 
   // updates includes image then do it else exclude it
 
-  if (formData.image) {
+  if (formData.image && typeof formData.image === 'object') {
     // get tender image name
 
     const tenderData = await db.query.tender.findFirst({

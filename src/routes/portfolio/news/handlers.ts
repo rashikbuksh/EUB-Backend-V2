@@ -50,7 +50,7 @@ export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
 
   // cover_image
   // updates includes coverImage then do it else exclude it
-  if (formData.cover_image) {
+  if (formData.cover_image && typeof formData.cover_image === 'object') {
     // get news cover_image name
     const newsData = await db.query.news.findFirst({
       where(fields, operators) {

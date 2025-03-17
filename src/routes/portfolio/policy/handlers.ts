@@ -52,7 +52,7 @@ export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
 
   // file
   // updates includes file then do it else exclude it
-  if (formData.file) {
+  if (formData.file && typeof formData.file === 'object') {
     // get policy file name
     const policyData = await db.query.policy.findFirst({
       where(fields, operators) {

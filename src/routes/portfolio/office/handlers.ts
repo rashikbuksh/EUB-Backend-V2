@@ -53,7 +53,7 @@ export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
 
   // updates includes image then do it else exclude it
 
-  if (formData.image) {
+  if (formData.image && typeof formData.image === 'object') {
     // get office image name
 
     const officeData = await db.query.office.findFirst({

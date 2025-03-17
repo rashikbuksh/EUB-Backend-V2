@@ -132,7 +132,7 @@ export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
   const formData = await c.req.parseBody();
 
   // updates includes image then do it else exclude it
-  if (formData.image) {
+  if (formData.image && typeof formData.image === 'object') {
     // get user image name
     const userData = await db.query.users.findFirst({
       where(fields, operators) {

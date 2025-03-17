@@ -48,7 +48,7 @@ export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
   const formData = await c.req.parseBody();
 
   // updates includes image then do it else exclude it
-  if (formData.file) {
+  if (formData.file && typeof formData.file === 'object') {
     // get jobCircular image name
     const jobCircularData = await db.query.job_circular.findFirst({
       where(fields, operators) {

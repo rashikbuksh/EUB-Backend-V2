@@ -45,7 +45,7 @@ export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
   const formData = await c.req.parseBody();
 
   // updates includes file then do it else exclude it
-  if (formData.file) {
+  if (formData.file && typeof formData.file === 'object') {
     // get info file name
     const infoData = await db.query.info.findFirst({
       where(fields, operators) {
