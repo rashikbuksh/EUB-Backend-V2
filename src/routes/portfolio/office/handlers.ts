@@ -117,7 +117,7 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   const data = await db.query.office.findMany({
-    orderBy: (office, { desc, asc }) => [desc(office.created_at) || asc(office.index)],
+    orderBy: (office, { asc }) => [asc(office.index)],
   });
 
   return c.json(data || [], HSCode.OK);
