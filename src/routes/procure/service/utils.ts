@@ -22,11 +22,11 @@ export const insertSchema = createInsertSchema(
   },
 ).required({
   uuid: true,
-  index: true,
   name: true,
   created_at: true,
   created_by: true,
 }).partial({
+  index: true,
   is_quotation: true,
   is_cs: true,
   cs_remarks: true,
