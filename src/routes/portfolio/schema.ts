@@ -465,7 +465,7 @@ export const office = portfolio.table('office', {
   remarks: text('remarks'),
   index: integer('index').notNull(),
 }, table => [
-  unique().on(table.index),
+  unique().on(table.id),
 ]);
 //* office entry
 
