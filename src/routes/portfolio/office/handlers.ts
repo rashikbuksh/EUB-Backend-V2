@@ -38,6 +38,7 @@ export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
     updated_at: formData.updated_at,
     created_by: formData.created_by,
     remarks: formData.remarks,
+    index: formData.index,
   };
 
   const [data] = await db.insert(office).values(value).returning({
@@ -116,7 +117,7 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   const data = await db.query.office.findMany({
-    orderBy: (office, { desc, asc }) => [desc(office.created_at) || asc(office.index)],
+    orderBy: (office, { asc }) => [asc(office.index)],
   });
 
   return c.json(data || [], HSCode.OK);
@@ -145,7 +146,7 @@ export const getOfficeAndOfficeEntryDetailsByOfficeUuid: AppRouteHandler<GetOffi
     },
     with: {
       office_entries: {
-        orderBy: (office_entries, { asc }) => [asc(office_entries.created_at) || asc(office_entries.index)],
+        orderBy: (office_entries, { asc }) => [asc(office_entries.index)],
       },
     },
 
