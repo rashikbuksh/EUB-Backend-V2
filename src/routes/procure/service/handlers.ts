@@ -121,35 +121,35 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     created_by_name: hrSchema.users.name,
     remarks: service.remarks,
     quotations: sql`
-      jsonb_agg(
-        CASE 
-          WHEN service_vendor.uuid IS NULL THEN NULL 
-          ELSE jsonb_build_object(
-            'uuid', service_vendor.uuid,
-            'service_uuid', service_vendor.service_uuid,
-            'service_name', service.name,
-            'vendor_uuid', service_vendor.vendor_uuid,
-            'vendor_name', vendor.name,
-            'amount', service_vendor.amount,
-            'is_selected', service_vendor.is_selected
-          )
-        END
-      ) FILTER (WHERE service_vendor.uuid IS NOT NULL)`,
+    COALESCE(
+        jsonb_agg(
+            jsonb_build_object(
+              'uuid', service_vendor.uuid,
+              'service_uuid', service_vendor.service_uuid,
+              'service_name', service.name,
+              'vendor_uuid', service_vendor.vendor_uuid,
+              'vendor_name', vendor.name,
+              'amount', service_vendor.amount,
+              'is_selected', service_vendor.is_selected
+            )
+        ) FILTER (WHERE service_vendor.uuid IS NOT NULL),
+      '[]'::jsonb      
+    )`,
     general_notes: sql`
-      jsonb_agg(
-        CASE 
-          WHEN general_note.uuid IS NULL THEN NULL 
-          ELSE jsonb_build_object(
-            'uuid', general_note.uuid,
-            'service_uuid', general_note.service_uuid,
-            'service_name', service.name,
-            'description', general_note.description,
-            'amount', general_note.amount,
-            'created_at', general_note.created_at,
-            'updated_at', general_note.updated_at
-          )
-        END
-      ) FILTER (WHERE general_note.uuid IS NOT NULL)
+      COALESCE(
+        jsonb_agg(
+          jsonb_build_object(
+              'uuid', general_note.uuid,
+              'service_uuid', general_note.service_uuid,
+              'service_name', service.name,
+              'description', general_note.description,
+              'amount', general_note.amount,
+              'created_at', general_note.created_at,
+              'updated_at', general_note.updated_at
+            )
+        ) FILTER (WHERE general_note.uuid IS NOT NULL),
+        '[]'::jsonb      
+        )
       `,
   })
     .from(service)
