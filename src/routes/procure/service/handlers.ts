@@ -129,7 +129,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
           'vendor_uuid', service_vendor.vendor_uuid,
           'vendor_name', vendor.name,
           'amount', service_vendor.amount,
-          'is_selected', service_vendor.is_selected,
+          'is_selected', service_vendor.is_selected
         )
       )`,
     general_notes: sql`
@@ -141,7 +141,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
           'description', general_note.description,
           'amount', general_note.amount,
           'created_at', general_note.created_at,
-          'updated_at', general_note.updated_at,
+          'updated_at', general_note.updated_at
         )
       )`,
   })
