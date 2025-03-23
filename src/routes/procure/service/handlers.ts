@@ -1,7 +1,7 @@
 import type { AppRouteHandler } from '@/lib/types';
 
 import { eq, sql } from 'drizzle-orm';
-// import { alias } from 'drizzle-orm/pg-core';
+import { alias } from 'drizzle-orm/pg-core';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
@@ -12,7 +12,7 @@ import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } fro
 
 import { general_note, service, service_vendor, sub_category, vendor } from '../schema';
 
-// const created_user = alias(hrSchema.users, 'created_user');
+const sv_vendor = alias(vendor, 'sv_vendor');
 
 export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
   const value = c.req.valid('json');
@@ -101,6 +101,8 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
   const resultPromise = db.select({
     index: service.index,
     uuid: service.uuid,
+    vendor_uuid: service.vendor_uuid,
+    vendor_name: vendor.name,
     sub_category_uuid: service.sub_category_uuid,
     sub_category_name: sub_category.name,
     sub_category_type: sub_category.type,
@@ -128,7 +130,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
               'service_uuid', service_vendor.service_uuid,
               'service_name', service.name,
               'vendor_uuid', service_vendor.vendor_uuid,
-              'vendor_name', vendor.name,
+              'vendor_name', sv_vendor.name,
               'amount', service_vendor.amount,
               'is_selected', service_vendor.is_selected
             )
@@ -156,7 +158,8 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     .leftJoin(hrSchema.users, eq(service.created_by, hrSchema.users.uuid))
     .leftJoin(sub_category, eq(service.sub_category_uuid, sub_category.uuid))
     .leftJoin(service_vendor, eq(service_vendor.service_uuid, service.uuid))
-    .leftJoin(vendor, eq(service_vendor.vendor_uuid, vendor.uuid))
+    .leftJoin(vendor, eq(service.vendor_uuid, vendor.uuid))
+    .leftJoin(sv_vendor, eq(service_vendor.vendor_uuid, sv_vendor.uuid))
     .leftJoin(general_note, eq(general_note.service_uuid, service.uuid))
     .where(eq(service.uuid, uuid))
     .groupBy(

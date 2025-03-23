@@ -71,10 +71,24 @@ export const purchase_cost_center = procure.table('purchase_cost_center', {
   remarks: text('remarks'),
 });
 
+export const vendor_id = procure.sequence('vendor_id', DEFAULT_SEQUENCE);
+
+export const vendor = procure.table('vendor', {
+  uuid: uuid_primary,
+  id: integer('id').default(sql`nextval('procure.vendor_id')`),
+  name: text('name').notNull(),
+  phone: text('phone').notNull(),
+  created_by: defaultUUID('created_by').references(() => users.uuid, DEFAULT_OPERATION),
+  created_at: DateTime('created_at').notNull(),
+  updated_at: DateTime('updated_at'),
+  remarks: text('remarks'),
+});
+
 export const service = procure.table('service', {
   uuid: uuid_primary,
   index: integer('index').default(0),
   sub_category_uuid: defaultUUID('sub_category_uuid').references(() => sub_category.uuid, DEFAULT_OPERATION),
+  vendor_uuid: defaultUUID('vendor_uuid').references(() => vendor.uuid, DEFAULT_OPERATION).default(sql`null`),
   name: text('name').notNull(),
   is_quotation: boolean('is_quotation').notNull().default(false),
   is_cs: boolean('is_cs').notNull().default(false),
@@ -100,19 +114,6 @@ export const item = procure.table('item', {
   quantity: PG_DECIMAL('quantity').default(sql`0`),
   vendor_price: PG_DECIMAL('vendor_price').default(sql`0`),
   price_validity: DateTime('price_validity').notNull(),
-  created_by: defaultUUID('created_by').references(() => users.uuid, DEFAULT_OPERATION),
-  created_at: DateTime('created_at').notNull(),
-  updated_at: DateTime('updated_at'),
-  remarks: text('remarks'),
-});
-
-export const vendor_id = procure.sequence('vendor_id', DEFAULT_SEQUENCE);
-
-export const vendor = procure.table('vendor', {
-  uuid: uuid_primary,
-  id: integer('id').default(sql`nextval('procure.vendor_id')`),
-  name: text('name').notNull(),
-  phone: text('phone').notNull(),
   created_by: defaultUUID('created_by').references(() => users.uuid, DEFAULT_OPERATION),
   created_at: DateTime('created_at').notNull(),
   updated_at: DateTime('updated_at'),
