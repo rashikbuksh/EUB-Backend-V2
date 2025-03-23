@@ -165,6 +165,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     .groupBy(
       service.index,
       service.uuid,
+      vendor.uuid,
       sub_category.index,
       sub_category.uuid,
       service.name,
