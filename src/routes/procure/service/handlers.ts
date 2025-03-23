@@ -1,6 +1,6 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 // import { alias } from 'drizzle-orm/pg-core';
 import * as HSCode from 'stoker/http-status-codes';
 
@@ -10,7 +10,7 @@ import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 
 import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
 
-import { service, sub_category } from '../schema';
+import { general_note, service, service_vendor, sub_category, vendor } from '../schema';
 
 // const created_user = alias(hrSchema.users, 'created_user');
 
@@ -98,11 +98,84 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
 export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
 
-  const data = await db.query.service.findFirst({
-    where(fields, operators) {
-      return operators.eq(fields.uuid, uuid);
-    },
-  });
+  const resultPromise = db.select({
+    index: service.index,
+    uuid: service.uuid,
+    sub_category_uuid: service.sub_category_uuid,
+    sub_category_name: sub_category.name,
+    sub_category_type: sub_category.type,
+    name: service.name,
+    is_quotation: service.is_quotation,
+    is_cs: service.is_cs,
+    cs_remarks: service.cs_remarks,
+    is_monthly_meeting: service.is_monthly_meeting,
+    monthly_meeting_remarks: service.monthly_meeting_remarks,
+    is_work_order: service.is_work_order,
+    work_order_remarks: service.work_order_remarks,
+    is_delivery_statement: service.is_delivery_statement,
+    delivery_statement_remarks: service.delivery_statement_remarks,
+    done: service.done,
+    created_at: service.created_at,
+    updated_at: service.updated_at,
+    created_by: service.created_by,
+    created_by_name: hrSchema.users.name,
+    remarks: service.remarks,
+    quotation: sql`
+      jsonb_agg(
+        jsonb_build_object(
+          'uuid', service_vendor.uuid,
+          'service_uuid', service_vendor.service_uuid,
+          'service_name', service.name,
+          'vendor_uuid', service_vendor.vendor_uuid,
+          'vendor_name', vendor.name,
+          'amount', service_vendor.amount',
+          'is_selected', service_vendor.is_selected,
+        )
+      )`,
+    general_notes: sql`
+      jsonb_agg(
+        jsonb_build_object(
+          'uuid', general_note.uuid,
+          'service_uuid', general_note.service_uuid,
+          'service_name', service.name,
+          'description', general_note.description,
+          'amount', general_note.amount,
+          'created_at', general_note.created_at,
+          'updated_at', general_note.updated_at,
+        )
+      )`,
+  })
+    .from(service)
+    .leftJoin(hrSchema.users, eq(service.created_by, hrSchema.users.uuid))
+    .leftJoin(sub_category, eq(service.sub_category_uuid, sub_category.uuid))
+    .leftJoin(service_vendor, eq(service_vendor.service_uuid, service.uuid))
+    .leftJoin(vendor, eq(service_vendor.vendor_uuid, vendor.uuid))
+    .leftJoin(general_note, eq(general_note.service_uuid, service.uuid))
+    .where(eq(service.uuid, uuid))
+    .groupBy(
+      service.index,
+      service.uuid,
+      sub_category.index,
+      sub_category.uuid,
+      service.name,
+      service.is_quotation,
+      service.is_cs,
+      service.cs_remarks,
+      service.is_monthly_meeting,
+      service.monthly_meeting_remarks,
+      service.is_work_order,
+      service.work_order_remarks,
+      service.is_delivery_statement,
+      service.delivery_statement_remarks,
+      service.done,
+      service.created_at,
+      service.updated_at,
+      service.created_by,
+      hrSchema.users.name,
+      service.remarks,
+    );
+
+  const [data] = await resultPromise;
 
   if (!data)
     return DataNotFound(c);
