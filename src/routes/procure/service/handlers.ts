@@ -120,8 +120,9 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     created_by: service.created_by,
     created_by_name: hrSchema.users.name,
     remarks: service.remarks,
-    quotation: sql`
+    quotations: sql`
       jsonb_agg(
+        CASE WHEN service_vendor.uuid IS NULL THEN NULL ELSE
         jsonb_build_object(
           'uuid', service_vendor.uuid,
           'service_uuid', service_vendor.service_uuid,
@@ -134,6 +135,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
       )`,
     general_notes: sql`
       jsonb_agg(
+        CASE WHEN general_note.uuid IS NULL THEN NULL ELSE
         jsonb_build_object(
           'uuid', general_note.uuid,
           'service_uuid', general_note.service_uuid,
@@ -142,7 +144,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
           'amount', general_note.amount,
           'created_at', general_note.created_at,
           'updated_at', general_note.updated_at
-        )
+        ) END
       )`,
   })
     .from(service)
