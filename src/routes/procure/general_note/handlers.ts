@@ -5,6 +5,7 @@ import { eq } from 'drizzle-orm';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
+import { PG_DECIMAL_TO_FLOAT } from '@/lib/variables';
 import * as hrSchema from '@/routes/hr/schema';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 
@@ -67,7 +68,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     service_uuid: general_note.service_uuid,
     service_name: service.name,
     description: general_note.description,
-    amount: general_note.amount,
+    amount: PG_DECIMAL_TO_FLOAT(general_note.amount),
     created_at: general_note.created_at,
     updated_at: general_note.updated_at,
     created_by: general_note.created_by,
