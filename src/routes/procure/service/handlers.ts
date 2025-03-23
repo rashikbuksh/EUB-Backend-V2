@@ -128,7 +128,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
           'service_name', service.name,
           'vendor_uuid', service_vendor.vendor_uuid,
           'vendor_name', vendor.name,
-          'amount', service_vendor.amount',
+          'amount', service_vendor.amount,
           'is_selected', service_vendor.is_selected,
         )
       )`,
