@@ -264,6 +264,7 @@ export const department_category = portfolio.enum('department_category', [
   'undergraduate',
   'graduate',
   'certificate',
+  'none',
 ]);
 
 export const department_short_name = portfolio.enum('department_short_name', [
