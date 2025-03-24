@@ -1,6 +1,6 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { eq, inArray } from 'drizzle-orm';
+import { desc, eq, inArray } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import * as HSCode from 'stoker/http-status-codes';
 
@@ -103,6 +103,8 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
 
   if (accessArray.length > 0)
     resultPromise.where(inArray(department.short_name, accessArray));
+
+  resultPromise.orderBy(desc(department_teachers.created_at));
 
   const data = await resultPromise;
 
