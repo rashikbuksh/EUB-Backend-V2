@@ -163,6 +163,8 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     baseQuery.having(eq(news.is_global, true));
   }
 
+  baseQuery.orderBy(desc(news.created_at));
+
   const data = await baseQuery;
 
   const pagination = is_pagination === 'false'
