@@ -91,6 +91,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     created_by_name: createdByUser.name,
     remarks: department_teachers.remarks,
     page_link: department.page_link,
+    department_head_message: department_teachers.department_head_message,
   })
     .from(department_teachers)
     .leftJoin(department, eq(department_teachers.department_uuid, department.uuid))
@@ -138,6 +139,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     created_by_name: createdByUser.name,
     remarks: department_teachers.remarks,
     page_link: department.page_link,
+    department_head_message: department_teachers.department_head_message,
   })
     .from(department_teachers)
     .leftJoin(department, eq(department_teachers.department_uuid, department.uuid))
@@ -182,6 +184,7 @@ export const getTeacherDetails: AppRouteHandler<GetTeacherDetailsRoute> = async 
     created_by_name: createdByUser.name,
     remarks: department_teachers.remarks,
     page_link: department.page_link,
+    department_head_message: department_teachers.department_head_message,
 
   })
     .from(department_teachers)
