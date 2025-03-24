@@ -358,6 +358,7 @@ export const department_teachers = portfolio.table('department_teachers', {
   updated_at: DateTime('updated_at'),
   created_by: defaultUUID('created_by').references(() => users.uuid, DEFAULT_OPERATION),
   remarks: text('remarks'),
+  department_head_message: text('department_head_message').default(sql`null`),
 });
 
 //* routine
@@ -370,6 +371,7 @@ export const routine_id = portfolio.sequence(
 export const routine_programs = portfolio.enum('routine_programs', [
   'evening',
   'regular',
+  'none',
 ]);
 
 export const routine_type = portfolio.enum('routine_type', [

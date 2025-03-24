@@ -42,6 +42,8 @@ export const insertSchema = createInsertSchema(
   appointment_date: true,
   resign_date: true,
   about: true,
+  department_head_message: true,
+
 }).omit({
   id: true,
 });
