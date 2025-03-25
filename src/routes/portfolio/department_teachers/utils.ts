@@ -32,6 +32,7 @@ export const insertSchema = createInsertSchema(
   created_by: true,
   teacher_designation: true,
   teacher_email: true,
+  index: true,
 }).partial({
   teacher_phone: true,
   department_head: true,
@@ -43,6 +44,7 @@ export const insertSchema = createInsertSchema(
   resign_date: true,
   about: true,
   department_head_message: true,
+  teacher_initial: true,
 
 }).omit({
   id: true,
