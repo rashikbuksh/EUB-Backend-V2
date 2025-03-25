@@ -149,11 +149,11 @@ export const getItemDetailsByItemUuid: AppRouteHandler<GetItemDetailsByItemUuidR
 export const getItemByVendorUuid: AppRouteHandler<GetItemByVendorUuidRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
   const resultPromise = db.select({
+    value: item.uuid,
+    label: item.name,
     index: item.index,
-    item_uuid: item.uuid,
     purchase_cost_center_uuid: item.purchase_cost_center_uuid,
     purchase_cost_center_name: purchase_cost_center.name,
-    name: item.name,
     quantity: PG_DECIMAL_TO_FLOAT(item.quantity),
     vendor_price: PG_DECIMAL_TO_FLOAT(item.vendor_price),
     price_validity: item.price_validity,
