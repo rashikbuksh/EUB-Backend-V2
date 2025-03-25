@@ -155,7 +155,7 @@ export const getItemByVendorUuid: AppRouteHandler<GetItemByVendorUuidRoute> = as
     purchase_cost_center_uuid: item.purchase_cost_center_uuid,
     purchase_cost_center_name: purchase_cost_center.name,
     quantity: PG_DECIMAL_TO_FLOAT(item.quantity),
-    vendor_price: PG_DECIMAL_TO_FLOAT(item.vendor_price),
+    unit_price: PG_DECIMAL_TO_FLOAT(item.vendor_price),
     price_validity: item.price_validity,
     created_at: item.created_at,
     updated_at: item.updated_at,
