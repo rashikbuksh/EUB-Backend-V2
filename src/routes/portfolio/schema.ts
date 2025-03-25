@@ -359,6 +359,8 @@ export const department_teachers = portfolio.table('department_teachers', {
   created_by: defaultUUID('created_by').references(() => users.uuid, DEFAULT_OPERATION),
   remarks: text('remarks'),
   department_head_message: text('department_head_message').default(sql`null`),
+  teacher_initial: text('teacher_initial').default(sql`null`),
+  index: integer('index').default(sql`0`),
 });
 
 //* routine
