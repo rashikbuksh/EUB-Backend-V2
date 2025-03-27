@@ -179,6 +179,44 @@ export const item_work_order_entry = procure.table('item_work_order_entry', {
   remarks: text('remarks'),
 });
 
+export const service_id = procure.sequence('service_id', DEFAULT_SEQUENCE);
+
+export const service_frequency = procure.enum('service_frequency', ['monthly', 'quarterly', 'yearly']);
+export const service_payment_terms = procure.enum('service_payment_terms', ['prepaid', 'postpaid', 'upon_completion']);
+export const service_status = procure.enum('service_status', ['active', 'pending', 'expired', 'suspended']);
+
+export const service = procure.table('service', {
+  id: integer('id').default(sql`nextval('procure.service_id')`),
+  uuid: uuid_primary,
+  sub_category_uuid: defaultUUID('sub_category_uuid').references(() => sub_category.uuid, DEFAULT_OPERATION).notNull(),
+  vendor_uuid: defaultUUID('vendor_uuid').references(() => vendor.uuid, DEFAULT_OPERATION).notNull(),
+  name: text('name').notNull(),
+  description: text('description').notNull(),
+  frequency: service_frequency('frequency'),
+  start_date: DateTime('start_date'),
+  end_date: DateTime('end_date'),
+  next_due_date: DateTime('next_due_date'),
+  cost_per_service: PG_DECIMAL('cost_per_service').default(sql`0`),
+  payment_terms: service_payment_terms('payment_terms'),
+  status: service_status('status').notNull().default('active'),
+  approval_required: boolean('approval_required').notNull().default(false),
+  created_by: defaultUUID('created_by').references(() => users.uuid, DEFAULT_OPERATION),
+  created_at: DateTime('created_at').notNull(),
+  updated_at: DateTime('updated_at'),
+  remarks: text('remarks'),
+});
+
+export const service_payment = procure.table('service_payment', {
+  uuid: uuid_primary,
+  service_uuid: defaultUUID('service_uuid').references(() => service.uuid, DEFAULT_OPERATION).notNull(),
+  amount: PG_DECIMAL('amount').default(sql`0`),
+  payment_date: DateTime('payment_date'),
+  created_by: defaultUUID('created_by').references(() => users.uuid, DEFAULT_OPERATION),
+  created_at: DateTime('created_at').notNull(),
+  updated_at: DateTime('updated_at'),
+  remarks: text('remarks'),
+});
+
 //* Relations *//
 
 export const procure_category_rel = relations (category, ({ one }) => ({
@@ -312,6 +350,32 @@ export const procure_item_work_order_entry_rel = relations (item_work_order_entr
   item_work_order: one(item_work_order, {
     fields: [item_work_order_entry.item_work_order_uuid],
     references: [item_work_order.uuid],
+  }),
+}));
+
+export const procure_service_rel = relations (service, ({ one }) => ({
+  created_by: one(users, {
+    fields: [service.created_by],
+    references: [users.uuid],
+  }),
+  sub_category: one(sub_category, {
+    fields: [service.sub_category_uuid],
+    references: [sub_category.uuid],
+  }),
+  vendor: one(vendor, {
+    fields: [service.vendor_uuid],
+    references: [vendor.uuid],
+  }),
+}));
+
+export const procure_service_payment_rel = relations (service_payment, ({ one }) => ({
+  created_by: one(users, {
+    fields: [service_payment.created_by],
+    references: [users.uuid],
+  }),
+  service: one(service, {
+    fields: [service_payment.service_uuid],
+    references: [service.uuid],
   }),
 }));
 
