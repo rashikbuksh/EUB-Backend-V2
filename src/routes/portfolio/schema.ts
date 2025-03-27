@@ -757,7 +757,8 @@ export const portfolio_job_circular_rel = relations(job_circular, ({ one }) => (
   }),
 }));
 
-export const portfolio_department_rel = relations(department, ({ one }) => ({
+export const portfolio_department_rel = relations(department, ({ one, many }) => ({
+  department_teachers: many(department_teachers),
   faculty: one(faculty, {
     fields: [department.faculty_uuid],
     references: [faculty.uuid],
