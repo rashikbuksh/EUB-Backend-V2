@@ -302,6 +302,7 @@ export const department = portfolio.table('department', {
   updated_at: DateTime('updated_at'),
   created_by: defaultUUID('created_by').references(() => users.uuid, DEFAULT_OPERATION),
   remarks: text('remarks'),
+  index: integer('index').notNull().default(sql`0`),
 });
 
 //* Info
