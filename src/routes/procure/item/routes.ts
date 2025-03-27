@@ -127,6 +127,9 @@ export const getItemDetailsByItemUuid = createRoute({
   method: 'get',
   request: {
     params: param.uuid,
+    query: z.object({
+      is_active: z.boolean().optional(),
+    }),
   },
   tags,
   responses: {

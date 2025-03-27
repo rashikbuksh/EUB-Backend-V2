@@ -1,6 +1,6 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { eq } from 'drizzle-orm';
+import { and, eq, sql } from 'drizzle-orm';
 // import { alias } from 'drizzle-orm/pg-core';
 import * as HSCode from 'stoker/http-status-codes';
 
@@ -148,6 +148,9 @@ export const getItemDetailsByItemUuid: AppRouteHandler<GetItemDetailsByItemUuidR
 
 export const getItemByVendorUuid: AppRouteHandler<GetItemByVendorUuidRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
+
+  const { is_active } = c.req.valid('query');
+
   const resultPromise = db.select({
     value: item.uuid,
     label: item.name,
@@ -167,7 +170,7 @@ export const getItemByVendorUuid: AppRouteHandler<GetItemByVendorUuidRoute> = as
     .leftJoin(hrSchema.users, eq(item.created_by, hrSchema.users.uuid))
     .leftJoin(purchase_cost_center, eq(item.purchase_cost_center_uuid, purchase_cost_center.uuid))
     .leftJoin(item_vendor, eq(item.uuid, item_vendor.item_uuid))
-    .where(eq(item_vendor.vendor_uuid, uuid));
+    .where(and(eq(item_vendor.vendor_uuid, uuid), is_active === 'true' ? eq(item_vendor.is_active, true) : sql`true`));
 
   const data = await resultPromise;
   if (!data)
