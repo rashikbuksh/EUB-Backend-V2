@@ -80,8 +80,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   })
     .from(item)
     .leftJoin(hrSchema.users, eq(item.created_by, hrSchema.users.uuid))
-    .leftJoin(purchase_cost_center, eq(item.purchase_cost_center_uuid, purchase_cost_center.uuid))
-    .leftJoin(item_vendor, eq(item.uuid, item_vendor.item_uuid));
+    .leftJoin(purchase_cost_center, eq(item.purchase_cost_center_uuid, purchase_cost_center.uuid));
 
   const data = await resultPromise;
 
@@ -150,10 +149,6 @@ export const getItemByVendorUuid: AppRouteHandler<GetItemByVendorUuidRoute> = as
   const { uuid } = c.req.valid('param');
 
   const { is_active } = c.req.valid('query') || 'false';
-
-  console.log('is_active', is_active);
-
-  console.log('uuid', uuid);
 
   const resultPromise = db.select({
     value: item.uuid,
