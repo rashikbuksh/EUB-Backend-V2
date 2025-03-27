@@ -8,10 +8,10 @@ import { createRoute, z } from '@hono/zod-openapi';
 
 import { insertSchema, patchSchema, selectSchema } from './utils';
 
-const tags = ['procure.service'];
+const tags = ['procure.capital_vendor'];
 
 export const list = createRoute({
-  path: '/procure/service',
+  path: '/procure/capital-vendor',
   method: 'get',
   tags,
   // request: {
@@ -22,25 +22,25 @@ export const list = createRoute({
   responses: {
     [HSCode.OK]: jsonContent(
       z.array(selectSchema),
-      'The list of service',
+      'The list of capital_vendor',
     ),
   },
 });
 
 export const create = createRoute({
-  path: '/procure/service',
+  path: '/procure/capital-vendor',
   method: 'post',
   request: {
     body: jsonContentRequired(
       insertSchema,
-      'The service to create',
+      'The capital_vendor to create',
     ),
   },
   tags,
   responses: {
     [HSCode.OK]: jsonContent(
       selectSchema,
-      'The created service',
+      'The created capital_vendor',
     ),
     [HSCode.UNPROCESSABLE_ENTITY]: jsonContent(
       createErrorSchema(insertSchema),
@@ -50,7 +50,7 @@ export const create = createRoute({
 });
 
 export const getOne = createRoute({
-  path: '/procure/service/{uuid}',
+  path: '/procure/capital-vendor/{uuid}',
   method: 'get',
   request: {
     params: param.uuid,
@@ -59,11 +59,11 @@ export const getOne = createRoute({
   responses: {
     [HSCode.OK]: jsonContent(
       selectSchema,
-      'The requested service',
+      'The requested capital_vendor',
     ),
     [HSCode.NOT_FOUND]: jsonContent(
       notFoundSchema,
-      'service not found',
+      'capital_vendor not found',
     ),
     [HSCode.UNPROCESSABLE_ENTITY]: jsonContent(
       createErrorSchema(param.uuid),
@@ -73,24 +73,24 @@ export const getOne = createRoute({
 });
 
 export const patch = createRoute({
-  path: '/procure/service/{uuid}',
+  path: '/procure/capital-vendor/{uuid}',
   method: 'patch',
   request: {
     params: param.uuid,
     body: jsonContentRequired(
       patchSchema,
-      'The service updates',
+      'The capital_vendor updates',
     ),
   },
   tags,
   responses: {
     [HSCode.OK]: jsonContent(
       selectSchema,
-      'The updated service',
+      'The updated capital_vendor',
     ),
     [HSCode.NOT_FOUND]: jsonContent(
       notFoundSchema,
-      'service not found',
+      'capital_vendor not found',
     ),
     [HSCode.UNPROCESSABLE_ENTITY]: jsonContent(
       createErrorSchema(patchSchema)
@@ -101,7 +101,7 @@ export const patch = createRoute({
 });
 
 export const remove = createRoute({
-  path: '/procure/service/{uuid}',
+  path: '/procure/capital-vendor/{uuid}',
   method: 'delete',
   request: {
     params: param.uuid,
@@ -109,11 +109,11 @@ export const remove = createRoute({
   tags,
   responses: {
     [HSCode.NO_CONTENT]: {
-      description: 'service deleted',
+      description: 'capital_vendor deleted',
     },
     [HSCode.NOT_FOUND]: jsonContent(
       notFoundSchema,
-      'service not found',
+      'capital_vendor not found',
     ),
     [HSCode.UNPROCESSABLE_ENTITY]: jsonContent(
       createErrorSchema(param.uuid),

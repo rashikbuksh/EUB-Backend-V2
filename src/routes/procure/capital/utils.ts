@@ -1,20 +1,17 @@
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
-import { z } from 'zod';
 
 import { dateTimePattern } from '@/utils';
 
-import { service_vendor } from '../schema';
+import { capital } from '../schema';
 
 //* crud
-export const selectSchema = createSelectSchema(service_vendor);
+export const selectSchema = createSelectSchema(capital);
 
 export const insertSchema = createInsertSchema(
-  service_vendor,
+  capital,
   {
     uuid: schema => schema.uuid.length(21),
-    service_uuid: schema => schema.service_uuid.length(21),
-    vendor_uuid: schema => schema.vendor_uuid.length(21),
-    amount: z.number().optional(),
+    sub_category_uuid: schema => schema.sub_category_uuid.length(21),
     created_by: schema => schema.created_by.length(21),
     created_at: schema => schema.created_at.regex(dateTimePattern, {
       message: 'created_at must be in the format "YYYY-MM-DD HH:MM:SS"',
@@ -25,13 +22,21 @@ export const insertSchema = createInsertSchema(
   },
 ).required({
   uuid: true,
-  service_uuid: true,
-  vendor_uuid: true,
+  name: true,
   created_at: true,
   created_by: true,
 }).partial({
-  amount: true,
-  is_selected: true,
+  index: true,
+  is_quotation: true,
+  is_cs: true,
+  cs_remarks: true,
+  is_monthly_meeting: true,
+  monthly_meeting_remarks: true,
+  is_work_order: true,
+  work_order_remarks: true,
+  is_delivery_statement: true,
+  delivery_statement_remarks: true,
+  done: true,
   updated_at: true,
   remarks: true,
 });

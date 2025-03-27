@@ -11,15 +11,15 @@ import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 
 import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
 
-import { service, service_vendor, vendor } from '../schema';
+import { capital, capital_vendor, vendor } from '../schema';
 
 // const created_user = alias(hrSchema.users, 'created_user');
 
 export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
   const value = c.req.valid('json');
 
-  const [data] = await db.insert(service_vendor).values(value).returning({
-    name: service_vendor.uuid,
+  const [data] = await db.insert(capital_vendor).values(value).returning({
+    name: capital_vendor.uuid,
   });
 
   return c.json(createToast('create', data.name), HSCode.OK);
@@ -32,11 +32,11 @@ export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
   if (Object.keys(updates).length === 0)
     return ObjectNotFound(c);
 
-  const [data] = await db.update(service_vendor)
+  const [data] = await db.update(capital_vendor)
     .set(updates)
-    .where(eq(service_vendor.uuid, uuid))
+    .where(eq(capital_vendor.uuid, uuid))
     .returning({
-      name: service_vendor.uuid,
+      name: capital_vendor.uuid,
     });
 
   if (!data)
@@ -48,10 +48,10 @@ export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
 export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
 
-  const [data] = await db.delete(service_vendor)
-    .where(eq(service_vendor.uuid, uuid))
+  const [data] = await db.delete(capital_vendor)
+    .where(eq(capital_vendor.uuid, uuid))
     .returning({
-      name: service_vendor.uuid,
+      name: capital_vendor.uuid,
     });
 
   if (!data)
@@ -64,23 +64,23 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   // const { sub_category } = c.req.valid('query');
 
   const resultPromise = db.select({
-    uuid: service_vendor.uuid,
-    service_uuid: service_vendor.service_uuid,
-    service_name: service.name,
-    vendor_uuid: service_vendor.vendor_uuid,
+    uuid: capital_vendor.uuid,
+    capital_uuid: capital_vendor.capital_uuid,
+    capital_name: capital.name,
+    vendor_uuid: capital_vendor.vendor_uuid,
     vendor_name: vendor.name,
-    amount: PG_DECIMAL_TO_FLOAT(service_vendor.amount),
-    is_selected: service_vendor.is_selected,
-    created_at: service_vendor.created_at,
-    updated_at: service_vendor.updated_at,
-    created_by: service_vendor.created_by,
+    amount: PG_DECIMAL_TO_FLOAT(capital_vendor.amount),
+    is_selected: capital_vendor.is_selected,
+    created_at: capital_vendor.created_at,
+    updated_at: capital_vendor.updated_at,
+    created_by: capital_vendor.created_by,
     created_by_name: hrSchema.users.name,
-    remarks: service_vendor.remarks,
+    remarks: capital_vendor.remarks,
   })
-    .from(service_vendor)
-    .leftJoin(hrSchema.users, eq(service_vendor.created_by, hrSchema.users.uuid))
-    .leftJoin(service, eq(service_vendor.service_uuid, service.uuid))
-    .leftJoin(vendor, eq(service_vendor.vendor_uuid, vendor.uuid));
+    .from(capital_vendor)
+    .leftJoin(hrSchema.users, eq(capital_vendor.created_by, hrSchema.users.uuid))
+    .leftJoin(capital, eq(capital_vendor.capital_uuid, capital.uuid))
+    .leftJoin(vendor, eq(capital_vendor.vendor_uuid, vendor.uuid));
 
   const data = await resultPromise;
 
@@ -90,7 +90,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
 export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
 
-  const data = await db.query.service_vendor.findFirst({
+  const data = await db.query.capital_vendor.findFirst({
     where(fields, operators) {
       return operators.eq(fields.uuid, uuid);
     },

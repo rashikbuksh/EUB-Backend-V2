@@ -84,7 +84,7 @@ export const vendor = procure.table('vendor', {
   remarks: text('remarks'),
 });
 
-export const service = procure.table('service', {
+export const capital = procure.table('capital', {
   uuid: uuid_primary,
   index: integer('index').default(0),
   sub_category_uuid: defaultUUID('sub_category_uuid').references(() => sub_category.uuid, DEFAULT_OPERATION),
@@ -122,7 +122,7 @@ export const item = procure.table('item', {
 
 export const general_note = procure.table('general_note', {
   uuid: uuid_primary,
-  service_uuid: defaultUUID('service_uuid').references(() => service.uuid, DEFAULT_OPERATION),
+  capital_uuid: defaultUUID('capital_uuid').references(() => capital.uuid, DEFAULT_OPERATION),
   description: text('description').notNull(),
   amount: PG_DECIMAL('amount').default(sql`0`),
   created_by: defaultUUID('created_by').references(() => users.uuid, DEFAULT_OPERATION),
@@ -142,9 +142,9 @@ export const item_vendor = procure.table('item_vendor', {
   remarks: text('remarks'),
 });
 
-export const service_vendor = procure.table('service_vendor', {
+export const capital_vendor = procure.table('capital_vendor', {
   uuid: uuid_primary,
-  service_uuid: defaultUUID('service_uuid').references(() => service.uuid, DEFAULT_OPERATION),
+  capital_uuid: defaultUUID('capital_uuid').references(() => capital.uuid, DEFAULT_OPERATION),
   vendor_uuid: defaultUUID('vendor_uuid').references(() => vendor.uuid, DEFAULT_OPERATION),
   amount: PG_DECIMAL('amount').default(sql`0`),
   is_selected: boolean('is_selected').notNull().default(false),
@@ -217,13 +217,13 @@ export const procure_purchase_cost_center_rel = relations (purchase_cost_center,
   }),
 }));
 
-export const procure_service_rel = relations (service, ({ one }) => ({
+export const procure_capital_rel = relations (capital, ({ one }) => ({
   created_by: one(users, {
-    fields: [service.created_by],
+    fields: [capital.created_by],
     references: [users.uuid],
   }),
   sub_category: one(sub_category, {
-    fields: [service.sub_category_uuid],
+    fields: [capital.sub_category_uuid],
     references: [sub_category.uuid],
   }),
 }));
@@ -252,9 +252,9 @@ export const procure_general_note_rel = relations (general_note, ({ one }) => ({
     fields: [general_note.created_by],
     references: [users.uuid],
   }),
-  service: one(service, {
-    fields: [general_note.service_uuid],
-    references: [service.uuid],
+  capital: one(capital, {
+    fields: [general_note.capital_uuid],
+    references: [capital.uuid],
   }),
 }));
 
@@ -273,17 +273,17 @@ export const procure_item_vendor_rel = relations (item_vendor, ({ one }) => ({
   }),
 }));
 
-export const procure_service_vendor_rel = relations (service_vendor, ({ one }) => ({
+export const procure_capital_vendor_rel = relations (capital_vendor, ({ one }) => ({
   created_by: one(users, {
-    fields: [service_vendor.created_by],
+    fields: [capital_vendor.created_by],
     references: [users.uuid],
   }),
-  service: one(service, {
-    fields: [service_vendor.service_uuid],
-    references: [service.uuid],
+  capital: one(capital, {
+    fields: [capital_vendor.capital_uuid],
+    references: [capital.uuid],
   }),
   vendor: one(vendor, {
-    fields: [service_vendor.vendor_uuid],
+    fields: [capital_vendor.vendor_uuid],
     references: [vendor.uuid],
   }),
 }));
