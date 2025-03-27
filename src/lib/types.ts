@@ -13,7 +13,7 @@ export type AppRouteHandler<R extends RouteConfig> = RouteHandler<R, AppBindings
 
 export interface ColumnProps {
   default: string;
-  datetime: 'created_at' | 'updated_at' | 'deadline' | 'start_date' | 'end_date' | 'date' | 'date_of_birth' | 'appointment_date' | 'resign_date' | 'published_date' | 'from' | 'to' | 'price_validity';
+  datetime: 'created_at' | 'updated_at' | 'deadline' | 'start_date' | 'end_date' | 'date' | 'date_of_birth' | 'appointment_date' | 'resign_date' | 'published_date' | 'from' | 'to' | 'price_validity' | 'next_due_date' | 'payment_date';
 }
 
 export interface PublicUrlProps { url: string; method: string }
