@@ -11,7 +11,7 @@ import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 
 import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
 
-import { general_note, service } from '../schema';
+import { capital, general_note } from '../schema';
 
 // const created_user = alias(hrSchema.users, 'created_user');
 
@@ -65,8 +65,8 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
 
   const resultPromise = db.select({
     uuid: general_note.uuid,
-    service_uuid: general_note.service_uuid,
-    service_name: service.name,
+    capital_uuid: general_note.capital_uuid,
+    capital_name: capital.name,
     description: general_note.description,
     amount: PG_DECIMAL_TO_FLOAT(general_note.amount),
     created_at: general_note.created_at,
@@ -77,7 +77,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   })
     .from(general_note)
     .leftJoin(hrSchema.users, eq(general_note.created_by, hrSchema.users.uuid))
-    .leftJoin(service, eq(general_note.service_uuid, service.uuid));
+    .leftJoin(capital, eq(general_note.capital_uuid, capital.uuid));
 
   const data = await resultPromise;
 
