@@ -149,7 +149,9 @@ export const getItemDetailsByItemUuid: AppRouteHandler<GetItemDetailsByItemUuidR
 export const getItemByVendorUuid: AppRouteHandler<GetItemByVendorUuidRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
 
-  const { is_active = 'false' } = c.req.valid('query');
+  const { is_active } = c.req.valid('query') || 'false';
+
+  console.log('is_active', is_active);
 
   const resultPromise = db.select({
     value: item.uuid,
