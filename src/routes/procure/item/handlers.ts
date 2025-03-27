@@ -151,6 +151,9 @@ export const getItemByVendorUuid: AppRouteHandler<GetItemByVendorUuidRoute> = as
 
   const { is_active } = c.req.valid('query');
 
+  console.log(c.req.valid('param'), 'param');
+  console.log(c.req.valid('query'), 'query');
+
   const resultPromise = db.select({
     value: item.uuid,
     label: item.name,
