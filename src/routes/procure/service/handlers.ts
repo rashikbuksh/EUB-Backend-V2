@@ -143,6 +143,9 @@ export const getOneDetails: AppRouteHandler<GetOneDetailsRoute> = async (c: any)
   const { uuid } = c.req.valid('param');
 
   const data = await db.query.service.findFirst({
+    extras: fields => ({
+      cost_per_service: PG_DECIMAL_TO_FLOAT(fields.cost_per_service).as('cost_per_service'),
+    }),
     where(fields, operators) {
       return operators.eq(fields.uuid, uuid);
     },
