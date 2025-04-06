@@ -361,7 +361,8 @@ export const department_teachers = portfolio.table('department_teachers', {
   remarks: text('remarks'),
   department_head_message: text('department_head_message').default(sql`null`),
   teacher_initial: text('teacher_initial').default(sql`null`),
-  index: integer('index').default(sql`0`),
+  index: integer('index').unique(),
+  status: boolean('status').default(false),
 });
 
 //* routine

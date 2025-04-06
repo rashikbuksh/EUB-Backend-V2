@@ -1,6 +1,6 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { desc, eq, inArray } from 'drizzle-orm';
+import { asc, eq, inArray } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import * as HSCode from 'stoker/http-status-codes';
 
@@ -94,6 +94,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     department_head_message: department_teachers.department_head_message,
     teacher_initial: department_teachers.teacher_initial,
     index: department_teachers.index,
+    status: department_teachers.status,
   })
     .from(department_teachers)
     .leftJoin(department, eq(department_teachers.department_uuid, department.uuid))
@@ -107,7 +108,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   if (accessArray.length > 0)
     resultPromise.where(inArray(department.short_name, accessArray));
 
-  resultPromise.orderBy(desc(department_teachers.created_at));
+  resultPromise.orderBy(asc(department_teachers.index));
 
   const data = await resultPromise;
 
@@ -144,6 +145,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     department_head_message: department_teachers.department_head_message,
     teacher_initial: department_teachers.teacher_initial,
     index: department_teachers.index,
+    status: department_teachers.status,
   })
     .from(department_teachers)
     .leftJoin(department, eq(department_teachers.department_uuid, department.uuid))
@@ -191,6 +193,7 @@ export const getTeacherDetails: AppRouteHandler<GetTeacherDetailsRoute> = async 
     department_head_message: department_teachers.department_head_message,
     teacher_initial: department_teachers.teacher_initial,
     index: department_teachers.index,
+    status: department_teachers.status,
 
   })
     .from(department_teachers)
