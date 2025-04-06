@@ -26,8 +26,8 @@ export const userAccess: AppRouteHandler<UserAccessRoute> = async (c: any) => {
     label: users.name,
     can_access: auth_user.can_access,
   })
-    .from(users)
-    .leftJoin(auth_user, eq(users.uuid, auth_user.user_uuid));
+    .from(auth_user)
+    .leftJoin(users, eq(users.uuid, auth_user.user_uuid));
 
   const data = await resultPromise;
 
