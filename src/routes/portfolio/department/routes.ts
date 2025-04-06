@@ -20,6 +20,11 @@ export const list = createRoute({
       'The list of department',
     ),
   },
+  request: {
+    query: z.object({
+      access: z.string().optional(),
+    }),
+  },
 });
 
 export const create = createRoute({
