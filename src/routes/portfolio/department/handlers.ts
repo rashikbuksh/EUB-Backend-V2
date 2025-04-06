@@ -176,7 +176,8 @@ export const getDepartmentAndDepartmentTeachersDetailsByDepartmentUuid: AppRoute
         'remarks', department_teachers.remarks,
         'department_head_message', department_teachers.department_head_message,
         'teacher_initial', department_teachers.teacher_initial,
-        'index', department_teachers.index
+        'index', department_teachers.index,
+        'status', department_teachers.status
       ) 
       FROM portfolio.department_teachers
       LEFT JOIN hr.users createdByUser ON department_teachers.created_by = createdByUser.uuid
