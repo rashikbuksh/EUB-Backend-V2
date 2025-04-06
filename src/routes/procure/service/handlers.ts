@@ -8,7 +8,7 @@ import db from '@/db';
 import * as hrSchema from '@/routes/hr/schema';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 
-import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
+import type { CreateRoute, GetOneDetailsRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
 
 import { service, sub_category, vendor } from '../schema';
 
@@ -131,6 +131,35 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     .where(eq(service.uuid, uuid));
 
   const [data] = await resultPromise;
+
+  if (!data)
+    return DataNotFound(c);
+
+  return c.json(data || {}, HSCode.OK);
+};
+
+export const getOneDetails: AppRouteHandler<GetOneDetailsRoute> = async (c: any) => {
+  const { uuid } = c.req.valid('param');
+
+  const data = await db.query.service.findFirst({
+    where(fields, operators) {
+      return operators.eq(fields.uuid, uuid);
+    },
+    with: {
+      service_payment: {
+        columns: {
+          uuid: true,
+          amount: true,
+          payment_date: true,
+          created_by: true,
+          created_at: true,
+          updated_at: true,
+          remarks: true,
+        },
+        orderBy: (service_payment, { asc }) => [asc(service_payment.created_at)],
+      },
+    },
+  });
 
   if (!data)
     return DataNotFound(c);

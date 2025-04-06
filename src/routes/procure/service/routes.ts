@@ -72,6 +72,29 @@ export const getOne = createRoute({
   },
 });
 
+export const getOneDetails = createRoute({
+  path: '/procure/service-details/{uuid}',
+  method: 'get',
+  request: {
+    params: param.uuid,
+  },
+  tags,
+  responses: {
+    [HSCode.OK]: jsonContent(
+      selectSchema,
+      'The requested service',
+    ),
+    [HSCode.NOT_FOUND]: jsonContent(
+      notFoundSchema,
+      'service not found',
+    ),
+    [HSCode.UNPROCESSABLE_ENTITY]: jsonContent(
+      createErrorSchema(param.uuid),
+      'Invalid id error',
+    ),
+  },
+});
+
 export const patch = createRoute({
   path: '/procure/service/{uuid}',
   method: 'patch',
@@ -125,5 +148,6 @@ export const remove = createRoute({
 export type ListRoute = typeof list;
 export type CreateRoute = typeof create;
 export type GetOneRoute = typeof getOne;
+export type GetOneDetailsRoute = typeof getOneDetails;
 export type PatchRoute = typeof patch;
 export type RemoveRoute = typeof remove;
