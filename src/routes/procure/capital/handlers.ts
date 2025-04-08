@@ -10,7 +10,7 @@ import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 
 import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
 
-import { capital, capital_vendor, general_note, sub_category, vendor } from '../schema';
+import { capital, capital_vendor, sub_category, vendor } from '../schema';
 
 const sv_vendor = alias(vendor, 'sv_vendor');
 
@@ -138,21 +138,25 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
       '[]'::jsonb      
     )`,
     general_notes: sql`
-      COALESCE(
-        jsonb_agg(
+    COALESCE(
+      (
+        SELECT jsonb_agg(
           jsonb_build_object(
-              'uuid', general_note.uuid,
-              'capital_uuid', general_note.capital_uuid,
-              'capital_name', capital.name,
-              'description', general_note.description,
-              'amount', general_note.amount,
-              'created_at', general_note.created_at,
-              'updated_at', general_note.updated_at
-            )
-        ) FILTER (WHERE general_note.uuid IS NOT NULL),
-        '[]'::jsonb      
+            'uuid', gn.uuid,
+            'capital_uuid', gn.capital_uuid,
+            'capital_name', capital.name,
+            'description', gn.description,
+            'amount', gn.amount,
+            'created_at', gn.created_at,
+            'updated_at', gn.updated_at
+          )
         )
-      `,
+        FROM procure.general_note gn
+        WHERE gn.capital_uuid = capital.uuid
+      ),
+      '[]'::jsonb
+    )
+  `,
   })
     .from(capital)
     .leftJoin(hrSchema.users, eq(capital.created_by, hrSchema.users.uuid))
@@ -160,7 +164,6 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     .leftJoin(capital_vendor, eq(capital_vendor.capital_uuid, capital.uuid))
     .leftJoin(vendor, eq(capital.vendor_uuid, vendor.uuid))
     .leftJoin(sv_vendor, eq(capital_vendor.vendor_uuid, sv_vendor.uuid))
-    .leftJoin(general_note, eq(general_note.capital_uuid, capital.uuid))
     .where(eq(capital.uuid, uuid))
     .groupBy(
       capital.index,
