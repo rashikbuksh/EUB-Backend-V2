@@ -1,6 +1,7 @@
 import capital from './capital';
 import capital_vendor from './capital_vendor';
 import category from './category';
+import form from './form';
 import general_note from './general_note';
 import item from './item';
 import item_vendor from './item_vendor';
@@ -28,4 +29,5 @@ export default [
   item_work_order_entry,
   service,
   service_payment,
+  form,
 ];
