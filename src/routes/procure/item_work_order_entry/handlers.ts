@@ -76,6 +76,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     created_by: item_work_order_entry.created_by,
     created_by_name: hrSchema.users.name,
     remarks: item_work_order_entry.remarks,
+    received_date: item_work_order_entry.received_date,
   })
     .from(item_work_order_entry)
     .leftJoin(hrSchema.users, eq(item_work_order_entry.created_by, hrSchema.users.uuid))
@@ -102,6 +103,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     created_by: item_work_order_entry.created_by,
     created_by_name: hrSchema.users.name,
     remarks: item_work_order_entry.remarks,
+    received_date: item_work_order_entry.received_date,
   })
     .from(item_work_order_entry)
     .leftJoin(hrSchema.users, eq(item_work_order_entry.created_by, hrSchema.users.uuid))
@@ -132,6 +134,7 @@ export const getAllByUuid: AppRouteHandler<GetAllByUuidRoute> = async (c: any) =
     created_by: item_work_order_entry.created_by,
     created_by_name: hrSchema.users.name,
     remarks: item_work_order_entry.remarks,
+    received_date: item_work_order_entry.received_date,
   })
     .from(item_work_order_entry)
     .leftJoin(hrSchema.users, eq(item_work_order_entry.created_by, hrSchema.users.uuid))
