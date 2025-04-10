@@ -23,6 +23,9 @@ export const insertSchema = createInsertSchema(
     updated_at: schema => schema.updated_at.regex(dateTimePattern, {
       message: 'updated_at must be in the format "YYYY-MM-DD HH:MM:SS"',
     }),
+    received_date: schema => schema.received_date.regex(dateTimePattern, {
+      message: 'received_date must be in the format "YYYY-MM-DD HH:MM:SS"',
+    }),
   },
 ).required({
   uuid: true,
@@ -36,6 +39,7 @@ export const insertSchema = createInsertSchema(
   is_received: true,
   updated_at: true,
   remarks: true,
+  received_date: true,
 });
 
 export const patchSchema = insertSchema.partial();
