@@ -26,7 +26,8 @@ export function PG_DECIMAL(column: ColumnProps['default']) {
 }
 
 export function PG_DECIMAL_TO_FLOAT(column: any) {
-  return sql`coalesce(${sql.raw(column.name)}, 0)::float8`;
+  const tableName = column.table[Symbol.for('drizzle:Name')];
+  return sql`coalesce(${sql.raw(tableName)}.${sql.raw(column.name)}, 0)::float8`;
 }
 
 export function constructSelectAllQuery(
