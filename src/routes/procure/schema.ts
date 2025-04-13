@@ -235,6 +235,50 @@ export const form = procure.table('form', {
   remarks: text('remarks'),
 });
 
+export const internal_cost_center_type = procure.enum('internal_cost_center_type', ['proctor', 'admission', 'exam_control', 'fed', 'purchase_committee']);
+
+export const internal_cost_center = procure.table('internal_cost_center', {
+  uuid: uuid_primary,
+  type: internal_cost_center_type('type').notNull(),
+  authorized_person_uuid: defaultUUID('authorized_person_uuid').references(() => users.uuid, DEFAULT_OPERATION),
+  name: text('name').notNull(),
+  from: DateTime('from').notNull(),
+  to: DateTime('to').notNull(),
+  budget: PG_DECIMAL('budget').default(sql`0`),
+  created_by: defaultUUID('created_by').references(() => users.uuid, DEFAULT_OPERATION),
+  created_at: DateTime('created_at').notNull(),
+  updated_at: DateTime('updated_at'),
+  remarks: text('remarks'),
+});
+
+export const requisition_id = procure.sequence('requisition_id', DEFAULT_SEQUENCE);
+export const requisition_department = procure.enum('requisition_department', ['chairman_bot', 'vice_chancellor', 'treasurer', 'pni', 'pnd', 'civil_engineering', 'admission_office', 'controller_office', 'exam_c_01', 'exam_c_02', 'account_c_01', 'account_c_02', 'cse', 'registrar(hod)', 'additional_registrar', 'additional_registrar_c_01', 'additional_registrar_c_02', 'english', 'business_administration', 'library ', 'ipe_&_iqac', 'textile_engineering', 'proctor_office', 'eee', 'fde', 'medical_centre', 'economics', 'mdgs', 'thm', 'mathematics ', 'pcu', 'program_coordination_manager', 'program_coordination_asst_manager', 'sr_program_coordination_incharge', 'physics', 'chemistry', 'security_director', 'logistics', 'reception_gate', 'ict', 'law']);
+
+export const requisition = procure.table('requisition', {
+  id: integer('id').default(sql`nextval('procure.requisition_id')`),
+  uuid: uuid_primary,
+  purchase_cost_center_uuid: defaultUUID('purchase_cost_center_uuid').references(() => purchase_cost_center.uuid, DEFAULT_OPERATION),
+  is_received: boolean('is_received').default(false),
+  received_date: DateTime('received_date').default(sql`null`),
+  department: requisition_department('department').notNull(),
+  created_by: defaultUUID('created_by').references(() => users.uuid, DEFAULT_OPERATION),
+  created_at: DateTime('created_at').notNull(),
+  updated_at: DateTime('updated_at'),
+  remarks: text('remarks'),
+});
+
+export const item_requisition = procure.table('item_requisition', {
+  uuid: uuid_primary,
+  requisition_uuid: defaultUUID('requisition_uuid').references(() => requisition.uuid, DEFAULT_OPERATION),
+  item_uuid: defaultUUID('item_uuid').references(() => item.uuid, DEFAULT_OPERATION),
+  req_quantity: PG_DECIMAL('req_quantity').default(sql`0`),
+  provided_quantity: PG_DECIMAL('provided_quantity').default(sql`0`),
+  created_by: defaultUUID('created_by').references(() => users.uuid, DEFAULT_OPERATION),
+  created_at: DateTime('created_at').notNull(),
+  updated_at: DateTime('updated_at'),
+  remarks: text('remarks'),
+});
+
 //* Relations *//
 
 export const procure_category_rel = relations (category, ({ one }) => ({
