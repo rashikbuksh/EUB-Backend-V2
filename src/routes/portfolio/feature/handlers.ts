@@ -1,6 +1,6 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { eq } from 'drizzle-orm';
+import { asc, eq } from 'drizzle-orm';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
@@ -146,7 +146,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   const page = Number.parseInt(c.req.valid('query').page);
 
   const baseQuery = is_pagination === 'false'
-    ? resultPromise
+    ? resultPromise.orderBy(asc(feature.index))
     : constructSelectAllQuery(resultPromise, c.req.valid('query'), 'created_at', [hrSchema.users.name.name]);
 
   const data = await baseQuery;
