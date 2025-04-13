@@ -10,6 +10,7 @@ import item_work_order from './item_work_order';
 import item_work_order_entry from './item_work_order_entry';
 import process from './process';
 import purchase_cost_center from './purchase_cost_center';
+import requisition from './requisition';
 import service from './service';
 import service_payment from './service_payment';
 import sub_category from './sub_category';
@@ -32,4 +33,5 @@ export default [
   service_payment,
   form,
   internal_cost_center,
+  requisition,
 ];

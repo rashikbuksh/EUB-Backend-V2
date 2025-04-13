@@ -257,7 +257,7 @@ export const requisition_department = procure.enum('requisition_department', ['c
 export const requisition = procure.table('requisition', {
   id: integer('id').default(sql`nextval('procure.requisition_id')`),
   uuid: uuid_primary,
-  purchase_cost_center_uuid: defaultUUID('purchase_cost_center_uuid').references(() => purchase_cost_center.uuid, DEFAULT_OPERATION),
+  internal_cost_center_uuid: defaultUUID('internal_cost_center_uuid').references(() => internal_cost_center.uuid, DEFAULT_OPERATION),
   is_received: boolean('is_received').default(false),
   received_date: DateTime('received_date').default(sql`null`),
   department: requisition_department('department').notNull(),
