@@ -1,4 +1,5 @@
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
+import z from 'zod';
 
 import { dateTimePattern } from '@/utils';
 
@@ -25,6 +26,7 @@ export const insertSchema = createInsertSchema(
     to: schema => schema.to.regex(dateTimePattern, {
       message: 'to must be in the format "YYYY-MM-DD HH:MM:SS"',
     }),
+    budget: z.number().optional().default(0),
   },
 ).required({
   uuid: true,
