@@ -66,7 +66,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   const resultPromise = db.select({
     uuid: internal_cost_center.uuid,
     type: internal_cost_center.type,
-    authorized_person: internal_cost_center.authorized_person_uuid,
+    authorized_person_uuid: internal_cost_center.authorized_person_uuid,
     name: internal_cost_center.name,
     authorized_person_name: authorized_person.name,
     from: internal_cost_center.from,
@@ -100,7 +100,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
   const resultPromise = db.select({
     uuid: internal_cost_center.uuid,
     type: internal_cost_center.type,
-    authorized_person: internal_cost_center.authorized_person_uuid,
+    authorized_person_uuid: internal_cost_center.authorized_person_uuid,
     name: internal_cost_center.name,
     authorized_person_name: authorized_person.name,
     from: internal_cost_center.from,
