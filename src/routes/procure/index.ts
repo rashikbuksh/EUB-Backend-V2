@@ -3,6 +3,7 @@ import capital_vendor from './capital_vendor';
 import category from './category';
 import form from './form';
 import general_note from './general_note';
+import internal_cost_center from './internal_cost_center';
 import item from './item';
 import item_vendor from './item_vendor';
 import item_work_order from './item_work_order';
@@ -30,4 +31,5 @@ export default [
   service,
   service_payment,
   form,
+  internal_cost_center,
 ];
