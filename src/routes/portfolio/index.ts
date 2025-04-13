@@ -6,6 +6,7 @@ import contact_us from './contact_us';
 import department from './department';
 import department_teachers from './department_teachers';
 import faculty from './faculty';
+import feature from './feature';
 import financial_info from './financial_info';
 import info from './info';
 import job_circular from './job_circular';
@@ -44,4 +45,5 @@ export default [
   offer,
   policy,
   tender,
+  feature,
 ];
