@@ -111,9 +111,11 @@ export const capital = procure.table('capital', {
   remarks: text('remarks'),
 });
 
+export const item_index = procure.sequence('item_index', DEFAULT_SEQUENCE);
+
 export const item = procure.table('item', {
   uuid: uuid_primary,
-  index: integer('index').notNull().unique(),
+  index: integer('index').default(sql`nextval('procure.item_index')`),
   purchase_cost_center_uuid: defaultUUID('purchase_cost_center_uuid').references(() => purchase_cost_center.uuid, DEFAULT_OPERATION),
   name: text('name').notNull(),
   quantity: PG_DECIMAL('quantity').default(sql`0`),

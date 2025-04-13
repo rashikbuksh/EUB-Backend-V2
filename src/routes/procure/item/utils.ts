@@ -25,12 +25,12 @@ export const insertSchema = createInsertSchema(
 ).required({
   uuid: true,
   purchase_cost_center_uuid: true,
-  index: true,
   name: true,
   price_validity: true,
   created_at: true,
   created_by: true,
 }).partial({
+  index: true,
   quantity: true,
   vendor_price: true,
   updated_at: true,
