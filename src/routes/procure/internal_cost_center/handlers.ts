@@ -91,11 +91,34 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
 export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
 
-  const data = await db.query.internal_cost_center.findFirst({
-    where(fields, operators) {
-      return operators.eq(fields.uuid, uuid);
-    },
-  });
+  // const data = await db.query.internal_cost_center.findFirst({
+  //   where(fields, operators) {
+  //     return operators.eq(fields.uuid, uuid);
+  //   },
+  // });
+
+  const resultPromise = db.select({
+    uuid: internal_cost_center.uuid,
+    type: internal_cost_center.type,
+    authorized_person: internal_cost_center.authorized_person_uuid,
+    name: internal_cost_center.name,
+    authorized_person_name: authorized_person.name,
+    from: internal_cost_center.from,
+    to: internal_cost_center.to,
+    budget: PG_DECIMAL_TO_FLOAT(internal_cost_center.budget),
+    created_at: internal_cost_center.created_at,
+    updated_at: internal_cost_center.updated_at,
+    created_by: internal_cost_center.created_by,
+    created_by_name: hrSchema.users.name,
+    remarks: internal_cost_center.remarks,
+
+  })
+    .from(internal_cost_center)
+    .leftJoin(hrSchema.users, eq(internal_cost_center.created_by, hrSchema.users.uuid))
+    .leftJoin(authorized_person, eq(internal_cost_center.authorized_person_uuid, authorized_person.uuid))
+    .where(eq(internal_cost_center.uuid, uuid));
+
+  const data = await resultPromise;
 
   if (!data)
     return DataNotFound(c);
