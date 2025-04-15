@@ -60,7 +60,7 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 };
 
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
-  // const { requisition } = c.req.valid('query');
+  const { user_uuid } = c.req.valid('query');
 
   const resultPromise = db.select({
     uuid: requisition.uuid,
@@ -80,6 +80,10 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     .from(requisition)
     .leftJoin(hrSchema.users, eq(requisition.created_by, hrSchema.users.uuid))
     .leftJoin(internal_cost_center, eq(requisition.internal_cost_center_uuid, internal_cost_center.uuid));
+
+  if (user_uuid) {
+    resultPromise.where(eq(requisition.created_by, user_uuid));
+  }
 
   const data = await resultPromise;
 
