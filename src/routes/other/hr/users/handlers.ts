@@ -23,7 +23,7 @@ export const valueLabel: AppRouteHandler<ValueLabelRoute> = async (c: any) => {
 export const userAccess: AppRouteHandler<UserAccessRoute> = async (c: any) => {
   const resultPromise = db.select({
     value: users.uuid,
-    label: users.name,
+    label: sql`${users.name} || '-' || ${users.email}`,
     can_access: auth_user.can_access,
   })
     .from(auth_user)
