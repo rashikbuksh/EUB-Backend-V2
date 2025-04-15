@@ -77,6 +77,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     created_by: item.created_by,
     created_by_name: hrSchema.users.name,
     remarks: item.remarks,
+    unit: item.unit,
   })
     .from(item)
     .leftJoin(hrSchema.users, eq(item.created_by, hrSchema.users.uuid))
@@ -107,6 +108,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     created_by: item.created_by,
     created_by_name: hrSchema.users.name,
     remarks: item.remarks,
+    unit: item.unit,
   })
     .from(item)
     .leftJoin(hrSchema.users, eq(item.created_by, hrSchema.users.uuid))
@@ -164,6 +166,7 @@ export const getItemByVendorUuid: AppRouteHandler<GetItemByVendorUuidRoute> = as
     created_by: item.created_by,
     created_by_name: hrSchema.users.name,
     remarks: item.remarks,
+    unit: item.unit,
   })
     .from(item)
     .leftJoin(hrSchema.users, eq(item.created_by, hrSchema.users.uuid))

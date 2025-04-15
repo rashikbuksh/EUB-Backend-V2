@@ -35,6 +35,7 @@ export const insertSchema = createInsertSchema(
   vendor_price: true,
   updated_at: true,
   remarks: true,
+  unit: true,
 });
 
 export const patchSchema = insertSchema.partial();
