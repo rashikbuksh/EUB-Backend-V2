@@ -125,6 +125,7 @@ export const item = procure.table('item', {
   created_at: DateTime('created_at').notNull(),
   updated_at: DateTime('updated_at'),
   remarks: text('remarks'),
+  unit: text('unit').default(sql`null`),
 });
 
 export const general_note = procure.table('general_note', {
