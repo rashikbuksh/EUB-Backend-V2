@@ -167,5 +167,5 @@ export const getWorkOrderDEtailsByWorkOrderUuid: AppRouteHandler<GetWorkOrderDEt
   if (!data)
     return DataNotFound(c);
 
-  return c.json(data || {}, HSCode.OK);
+  return c.json(data[0] || {}, HSCode.OK);
 };
