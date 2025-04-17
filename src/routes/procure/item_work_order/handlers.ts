@@ -10,7 +10,7 @@ import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 
 import type { CreateRoute, GetOneRoute, GetWorkOrderDEtailsByWorkOrderUuidRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
 
-import { item, item_work_order, item_work_order_entry, vendor } from '../schema';
+import { item_work_order, vendor } from '../schema';
 
 // const created_user = alias(hrSchema.users, 'created_user');
 
@@ -139,28 +139,29 @@ export const getWorkOrderDEtailsByWorkOrderUuid: AppRouteHandler<GetWorkOrderDEt
     created_by: item_work_order.created_by,
     created_by_name: hrSchema.users.name,
     remarks: item_work_order.remarks,
-    item_work_order_entry: sql`COALESCE(json_agg(json_build_object(
-      'uuid', item_work_order_entry.uuid,
-      'item_work_uuid', item_work_order_entry.item_work_order_uuid,
-      'item_uuid', item_work_order_entry.item_uuid,
-      'quantity', item_work_order_entry.quantity::float8,
-      'unit_price', item_work_order_entry.unit_price::float8,
-      'is_received', item_work_order_entry.is_received,
-      'received_date', item_work_order_entry.received_date,
-      'crated_by', item_work_order_entry.created_by,
-      'created_at', item_work_order_entry.created_at,
-      'updated_at', item_work_order_entry.updated_at,
-      'remarks', item_work_order_entry.remarks,
-      'name', item.name
-    )), '[]')`,
+    item_work_order_entry: sql`COALESCE(ARRAY(SELECT json_build_object(
+        'uuid', item_work_order_entry.uuid,
+        'item_work_uuid', item_work_order_entry.item_work_order_uuid,
+        'item_uuid', item_work_order_entry.item_uuid,
+        'item_name', item.name,
+        'quantity', item_work_order_entry.quantity::float8,
+        'unit_price', item_work_order_entry.unit_price::float8,
+        'is_received', item_work_order_entry.is_received,
+        'received_date', item_work_order_entry.received_date,
+        'created_by', item_work_order_entry.created_by,
+        'created_at', item_work_order_entry.created_at,
+        'updated_at', item_work_order_entry.updated_at,
+        'remarks', item_work_order_entry.remarks
+      )
+      FROM procure.item_work_order_entry
+      LEFT JOIN procure.item ON item_work_order_entry.item_uuid = item.uuid
+      WHERE item_work_order_entry.item_work_order_uuid = ${item_work_order.uuid}
+      ORDER BY item_work_order_entry.created_at ASC), '{}')`,
   })
     .from(item_work_order)
     .leftJoin(hrSchema.users, eq(item_work_order.created_by, hrSchema.users.uuid))
     .leftJoin(vendor, eq(item_work_order.vendor_uuid, vendor.uuid))
-    .leftJoin(item_work_order_entry, eq(item_work_order.uuid, item_work_order_entry.item_work_order_uuid))
-    .leftJoin(item, eq(item_work_order_entry.item_uuid, item.uuid))
-    .where(eq(item_work_order.uuid, uuid))
-    .groupBy(item_work_order.uuid, vendor.name, item_work_order.created_by, hrSchema.users.name, item_work_order.status, item_work_order.created_at, item_work_order.updated_at, item_work_order.remarks);
+    .where(eq(item_work_order.uuid, uuid));
 
   const data = await resultPromise;
 
