@@ -1,6 +1,6 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { desc, eq } from 'drizzle-orm';
+import { desc, eq, sql } from 'drizzle-orm';
 // import { alias } from 'drizzle-orm/pg-core';
 import * as HSCode from 'stoker/http-status-codes';
 
@@ -75,6 +75,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     created_by: item_transfer.created_by,
     created_by_name: hrSchema.users.name,
     remarks: item_transfer.remarks,
+    max_quantity: sql`${PG_DECIMAL_TO_FLOAT(item.quantity)} + ${PG_DECIMAL_TO_FLOAT(item_transfer.quantity)}`,
 
   })
     .from(item_transfer)
@@ -90,14 +91,36 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
 export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
 
-  const data = await db.query.item_transfer.findFirst({
-    where(fields, operators) {
-      return operators.eq(fields.uuid, uuid);
-    },
-  });
+  // const data = await db.query.item_transfer.findFirst({
+  //   where(fields, operators) {
+  //     return operators.eq(fields.uuid, uuid);
+  //   },
+  // });
+
+  const resultPromise = db.select({
+    uuid: item_transfer.uuid,
+    item_uuid: item_transfer.item_uuid,
+    item_name: item.name,
+    quantity: PG_DECIMAL_TO_FLOAT(item_transfer.quantity),
+    reason: item_transfer.reason,
+    is_requisition_received: item_transfer.is_requisition_received,
+    created_at: item_transfer.created_at,
+    updated_at: item_transfer.updated_at,
+    created_by: item_transfer.created_by,
+    created_by_name: hrSchema.users.name,
+    remarks: item_transfer.remarks,
+    max_quantity: sql`${PG_DECIMAL_TO_FLOAT(item.quantity)} + ${PG_DECIMAL_TO_FLOAT(item_transfer.quantity)}`,
+
+  })
+    .from(item_transfer)
+    .leftJoin(hrSchema.users, eq(item_transfer.created_by, hrSchema.users.uuid))
+    .leftJoin(item, eq(item_transfer.item_uuid, item.uuid))
+    .where(eq(item_transfer.uuid, uuid));
+
+  const data = await resultPromise;
 
   if (!data)
     return DataNotFound(c);
 
-  return c.json(data || {}, HSCode.OK);
+  return c.json(data[0] || {}, HSCode.OK);
 };
