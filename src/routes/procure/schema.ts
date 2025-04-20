@@ -281,6 +281,22 @@ export const item_requisition = procure.table('item_requisition', {
   remarks: text('remarks'),
 });
 
+export const item_transfer_id = procure.sequence('item_transfer_id', DEFAULT_SEQUENCE);
+export const item_transfer_reason = procure.enum('item_transfer_reason', ['emergency']);
+
+export const item_transfer = procure.table('item_transfer', {
+  uuid: uuid_primary,
+  id: integer('id').default(sql`nextval('procure.item_transfer_id')`),
+  item_uuid: defaultUUID('item_uuid').references(() => item.uuid, DEFAULT_OPERATION),
+  quantity: PG_DECIMAL('quantity').default(sql`0`),
+  reason: item_transfer_reason('reason').notNull().default('emergency'),
+  is_requisition_received: boolean('is_requisition_received').default(false),
+  created_by: defaultUUID('created_by').references(() => users.uuid, DEFAULT_OPERATION),
+  created_at: DateTime('created_at').notNull(),
+  updated_at: DateTime('updated_at'),
+  remarks: text('remarks'),
+});
+
 //* Relations *//
 
 export const procure_category_rel = relations (category, ({ one }) => ({
@@ -441,6 +457,65 @@ export const procure_service_payment_rel = relations (service_payment, ({ one })
   service: one(service, {
     fields: [service_payment.service_uuid],
     references: [service.uuid],
+  }),
+}));
+
+export const procure_form_rel = relations (form, ({ one }) => ({
+  created_by: one(users, {
+    fields: [form.created_by],
+    references: [users.uuid],
+  }),
+}));
+
+export const procure_internal_cost_center_rel = relations (internal_cost_center, ({ one }) => ({
+  created_by: one(users, {
+    fields: [internal_cost_center.created_by],
+    references: [users.uuid],
+  }),
+  authorized_person: one(users, {
+    fields: [internal_cost_center.authorized_person_uuid],
+    references: [users.uuid],
+  }),
+  can_submitted_person: one(users, {
+    fields: [internal_cost_center.can_submitted_person_uuid],
+    references: [users.uuid],
+  }),
+}));
+
+export const procure_requisition_rel = relations (requisition, ({ one }) => ({
+  created_by: one(users, {
+    fields: [requisition.created_by],
+    references: [users.uuid],
+  }),
+  internal_cost_center: one(internal_cost_center, {
+    fields: [requisition.internal_cost_center_uuid],
+    references: [internal_cost_center.uuid],
+  }),
+}));
+
+export const procure_item_requisition_rel = relations (item_requisition, ({ one }) => ({
+  created_by: one(users, {
+    fields: [item_requisition.created_by],
+    references: [users.uuid],
+  }),
+  requisition: one(requisition, {
+    fields: [item_requisition.requisition_uuid],
+    references: [requisition.uuid],
+  }),
+  item: one(item, {
+    fields: [item_requisition.item_uuid],
+    references: [item.uuid],
+  }),
+}));
+
+export const procure_item_transfer_rel = relations (item_transfer, ({ one }) => ({
+  created_by: one(users, {
+    fields: [item_transfer.created_by],
+    references: [users.uuid],
+  }),
+  item: one(item, {
+    fields: [item_transfer.item_uuid],
+    references: [item.uuid],
   }),
 }));
 

@@ -6,6 +6,7 @@ import general_note from './general_note';
 import internal_cost_center from './internal_cost_center';
 import item from './item';
 import item_requisition from './item_requisition';
+import item_transfer from './item_transfer';
 import item_vendor from './item_vendor';
 import item_work_order from './item_work_order';
 import item_work_order_entry from './item_work_order_entry';
@@ -36,4 +37,5 @@ export default [
   internal_cost_center,
   requisition,
   item_requisition,
+  item_transfer,
 ];
