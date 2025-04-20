@@ -73,7 +73,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     vendor_name: vendor.name,
     name: service.name,
     description: service.description,
-    frequency: PG_DECIMAL_TO_FLOAT(service.frequency),
+    frequency: service.frequency,
     start_date: service.start_date,
     end_date: service.end_date,
     next_due_date: service.next_due_date,
@@ -111,7 +111,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     vendor_name: vendor.name,
     name: service.name,
     description: service.description,
-    frequency: PG_DECIMAL_TO_FLOAT(service.frequency),
+    frequency: service.frequency,
     start_date: service.start_date,
     end_date: service.end_date,
     next_due_date: service.next_due_date,
@@ -144,7 +144,6 @@ export const getOneDetails: AppRouteHandler<GetOneDetailsRoute> = async (c: any)
 
   const data = await db.query.service.findFirst({
     extras: fields => ({
-      frequency: PG_DECIMAL_TO_FLOAT(fields.frequency).as('frequency'),
       cost_per_service: PG_DECIMAL_TO_FLOAT(fields.cost_per_service).as('cost_per_service'),
     }),
     where(fields, operators) {
