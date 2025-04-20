@@ -14,6 +14,7 @@ import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } fro
 import { internal_cost_center } from '../schema';
 
 const authorized_person = alias(hrSchema.users, 'authorized_person');
+const can_submitted_person = alias(hrSchema.users, 'can_submitted_person');
 
 export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
   const value = c.req.valid('json');
@@ -78,11 +79,13 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     created_by_name: hrSchema.users.name,
     remarks: internal_cost_center.remarks,
     can_submitted_person_uuid: internal_cost_center.can_submitted_person_uuid,
+    can_submitted_person_name: can_submitted_person.name,
 
   })
     .from(internal_cost_center)
     .leftJoin(hrSchema.users, eq(internal_cost_center.created_by, hrSchema.users.uuid))
-    .leftJoin(authorized_person, eq(internal_cost_center.authorized_person_uuid, authorized_person.uuid));
+    .leftJoin(authorized_person, eq(internal_cost_center.authorized_person_uuid, authorized_person.uuid))
+    .leftJoin(can_submitted_person, eq(internal_cost_center.can_submitted_person_uuid, can_submitted_person.uuid));
 
   const data = await resultPromise;
 
