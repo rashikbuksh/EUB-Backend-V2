@@ -77,6 +77,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     created_by: internal_cost_center.created_by,
     created_by_name: hrSchema.users.name,
     remarks: internal_cost_center.remarks,
+    can_submitted_person_uuid: internal_cost_center.can_submitted_person_uuid,
 
   })
     .from(internal_cost_center)
@@ -111,6 +112,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     created_by: internal_cost_center.created_by,
     created_by_name: hrSchema.users.name,
     remarks: internal_cost_center.remarks,
+    can_submitted_person_uuid: internal_cost_center.can_submitted_person_uuid,
 
   })
     .from(internal_cost_center)

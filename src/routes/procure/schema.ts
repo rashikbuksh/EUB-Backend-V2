@@ -190,7 +190,7 @@ export const item_work_order_entry = procure.table('item_work_order_entry', {
 
 export const service_id = procure.sequence('service_id', DEFAULT_SEQUENCE);
 
-export const service_frequency = procure.enum('service_frequency', ['monthly', 'quarterly', 'yearly']);
+export const service_frequency = procure.enum('service_frequency', ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12']);
 export const service_payment_terms = procure.enum('service_payment_terms', ['prepaid', 'postpaid', 'upon_completion']);
 export const service_status = procure.enum('service_status', ['active', 'pending', 'expired', 'suspended']);
 
@@ -250,6 +250,7 @@ export const internal_cost_center = procure.table('internal_cost_center', {
   created_at: DateTime('created_at').notNull(),
   updated_at: DateTime('updated_at'),
   remarks: text('remarks'),
+  can_submitted_person_uuid: defaultUUID('can_submitted_person_uuid').references(() => users.uuid, DEFAULT_OPERATION),
 });
 
 export const requisition_id = procure.sequence('requisition_id', DEFAULT_SEQUENCE);
