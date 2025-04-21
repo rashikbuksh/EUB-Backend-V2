@@ -11,7 +11,7 @@ import { department, department_teachers, faculty } from '@/routes/portfolio/sch
 import type { ValueLabelRouteForPublication } from './routes';
 
 export const valueLabelForPublication: AppRouteHandler<ValueLabelRouteForPublication> = async (c: any) => {
-  const { latest, is_pagination } = c.req.valid('query');
+  const { latest, is_pagination, field_name, field_value } = c.req.valid('query');
 
   const resultPromise = db.select({
     value: department_teachers.publication,
@@ -30,7 +30,7 @@ export const valueLabelForPublication: AppRouteHandler<ValueLabelRouteForPublica
   const page = Number.parseInt(c.req.valid('query').page);
   const baseQuery = is_pagination === 'false'
     ? resultPromise
-    : constructSelectAllQuery(resultPromise, c.req.valid('query'), 'created_at', [hrSchema.users.name.name, faculty.name.name]);
+    : constructSelectAllQuery(resultPromise, c.req.valid('query'), 'created_at', [hrSchema.users.name.name, faculty.name.name], field_name, field_value);
 
   const data = await baseQuery;
 

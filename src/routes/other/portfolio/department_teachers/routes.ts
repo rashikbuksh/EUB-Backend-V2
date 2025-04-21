@@ -27,6 +27,8 @@ export const valueLabelForPublication = createRoute({
       sort: z.string().optional(),
       orderby: z.string().optional(),
       is_pagination: z.string().optional(),
+      field_name: z.string().optional(),
+      field_value: z.string().optional(),
     }),
   },
 });

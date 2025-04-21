@@ -122,7 +122,7 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   // const data = await db.query.feature.findMany();
 
-  const { is_pagination } = c.req.valid('query');
+  const { is_pagination, field_name, field_value } = c.req.valid('query');
 
   const resultPromise = db.select({
     uuid: feature.uuid,
@@ -147,7 +147,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
 
   const baseQuery = is_pagination === 'false'
     ? resultPromise.orderBy(asc(feature.index))
-    : constructSelectAllQuery(resultPromise, c.req.valid('query'), 'created_at', [hrSchema.users.name.name]);
+    : constructSelectAllQuery(resultPromise, c.req.valid('query'), 'created_at', [hrSchema.users.name.name], field_name, field_value);
 
   const data = await baseQuery;
 

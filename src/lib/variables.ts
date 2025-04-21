@@ -35,30 +35,37 @@ export function constructSelectAllQuery(
   params: any,
   defaultSortField = 'created_at',
   additionalSearchFields: string[] = [],
+  searchFieldNames: string,
+  field_value: string,
 ) {
   const { q, page, limit, sort, orderby } = params;
+
+  const avoidFields = [
+    'uuid',
+    'id',
+    'created_at',
+    'updated_at',
+    'department_head',
+    'appointment_date',
+    'resign_date',
+    'deadline',
+    'published_date',
+    'file',
+    'cover_image',
+    'documents',
+    'image',
+    'table_name',
+    'page_name',
+    'programs',
+    'type',
+    'is_global',
+  ];
 
   // Get search fields from the main table
   const searchFields = Object.keys(baseQuery.config.table[Symbol.for('drizzle:Columns')]).filter(
     field =>
-      field !== 'uuid'
-      && field !== 'id'
-      && field !== 'created_at'
-      && field !== 'updated_at'
-      && field !== 'department_head'
-      && field !== 'appointment_date'
-      && field !== 'resign_date'
-      && field !== 'deadline'
-      && field !== 'published_date'
-      && field !== 'file'
-      && field !== 'cover_image'
-      && field !== 'documents'
-      && field !== 'image'
-      && field !== 'table_name'
-      && field !== 'page_name'
-      && field !== 'programs'
-      && field !== 'type'
-      && field !== 'is_global',
+      avoidFields.includes(field) === false
+      && additionalSearchFields.includes(field) === false,
   );
 
   // Get table name from baseQuery
@@ -81,14 +88,8 @@ export function constructSelectAllQuery(
 
     const joinTableFields = Object.keys(join.table[Symbol.for('drizzle:Columns')]).filter(
       field =>
-        field !== 'uuid'
-        && field !== 'id'
-        && field !== 'created_at'
-        && field !== 'updated_at'
-        && field !== 'department_head'
-        && field !== 'appointment_date'
-        && field !== 'resign_date'
-        && field !== 'deadline',
+        avoidFields.includes(field) === false
+        && additionalSearchFields.includes(field) === false,
     ).filter(field => additionalSearchFields.includes(field));
 
     const joinFieldsWithTable = joinTableFields.map(field => joinTableName ? `"${joinTableName}"."${field}"` : `"${field}"`);
@@ -100,13 +101,26 @@ export function constructSelectAllQuery(
   const allSearchFields = [...searchFieldsWithTable];
 
   // Apply search filter
-  if (q) {
-    const searchConditions = allSearchFields.map((field) => {
-      return sql`LOWER(CAST(${sql.raw(field)} AS TEXT)) LIKE LOWER(${`%${q}%`})`;
-    });
+  if (searchFieldNames !== undefined && field_value !== undefined) {
+    const matchedSearchFields = allSearchFields.filter(field => field.includes(searchFieldNames));
 
-    if (searchConditions.length > 0) {
-      baseQuery = baseQuery.where(sql`${or(...searchConditions)}`);
+    const searchConditions = matchedSearchFields
+      ? sql`LOWER(CAST(${sql.raw(matchedSearchFields[0])} AS TEXT)) LIKE LOWER(${`%${field_value}%`})`
+      : sql``;
+
+    if (searchConditions) {
+      baseQuery = baseQuery.where(sql`${or(searchConditions)}`);
+    }
+  }
+  else {
+    if (q) {
+      const searchConditions = allSearchFields.map((field) => {
+        return sql`LOWER(CAST(${sql.raw(field)} AS TEXT)) LIKE LOWER(${`%${q}%`})`;
+      });
+
+      if (searchConditions.length > 0) {
+        baseQuery = baseQuery.where(sql`${or(...searchConditions)}`);
+      }
     }
   }
 

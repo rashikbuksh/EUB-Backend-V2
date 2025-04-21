@@ -107,7 +107,7 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 };
 
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
-  const { portfolio_department, program, type, access, is_pagination } = c.req.valid('query');
+  const { portfolio_department, program, type, access, is_pagination, field_name, field_value } = c.req.valid('query');
 
   let accessArray = [];
   if (access) {
@@ -144,7 +144,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   const page = Number.parseInt(c.req.valid('query').page);
 
   const baseQuery = is_pagination === 'true'
-    ? constructSelectAllQuery(resultPromise, c.req.valid('query'), 'created_at', [department.name.name, hrSchema.users.name.name])
+    ? constructSelectAllQuery(resultPromise, c.req.valid('query'), 'created_at', [department.name.name, hrSchema.users.name.name], field_name, field_value)
     : resultPromise;
 
   if (portfolio_department && program && type) {

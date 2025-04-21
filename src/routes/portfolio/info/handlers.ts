@@ -107,7 +107,7 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 };
 
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
-  const { page_name, access, is_pagination } = c.req.valid('query');
+  const { page_name, access, is_pagination, field_name, field_value } = c.req.valid('query');
 
   let accessArray = [];
   if (access) {
@@ -134,7 +134,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   const page = Number.parseInt(c.req.valid('query').page);
 
   const baseQuery = is_pagination === 'true'
-    ? constructSelectAllQuery(resultPromise, c.req.valid('query'), 'created_at', [hrSchema.users.name.name])
+    ? constructSelectAllQuery(resultPromise, c.req.valid('query'), 'created_at', [hrSchema.users.name.name], field_name, field_value)
     : resultPromise;
 
   if (page_name) {
@@ -186,14 +186,14 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
 
   const infoData = await baseQuery;
 
-  const data = routineData ? [...infoData, ...routineData] : infoData;
+  const data = page_name === 'notices' && routineData ? [...infoData, ...routineData] : infoData;
 
   const pagination = is_pagination === 'true'
     ? {
         total_record: data.length,
         current_page: page,
         total_page: Math.ceil(data.length / limit),
-        next_page: page + 1 > Math.ceil(data.length / limit) ? null : page + 1,
+        next_page: page > Math.ceil(data.length / limit) ? null : page + 1,
         prev_page: page - 1 <= 0 ? null : page - 1,
       }
     : null;

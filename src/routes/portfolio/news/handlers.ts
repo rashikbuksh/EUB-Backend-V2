@@ -113,7 +113,7 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   // const data = await db.query.news.findMany();
-  const { department_name, latest, is_pagination, access, is_global } = c.req.valid('query');
+  const { department_name, latest, is_pagination, access, is_global, field_name, field_value } = c.req.valid('query');
 
   let accessArray = [];
   if (access) {
@@ -148,7 +148,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
 
   const baseQuery = is_pagination === 'false'
     ? resultPromise
-    : constructSelectAllQuery(resultPromise, c.req.valid('query'), 'created_at', [department.name.name]);
+    : constructSelectAllQuery(resultPromise, c.req.valid('query'), 'created_at', [department.name.name], field_name, field_value);
 
   if (department_name) {
     baseQuery.groupBy(news.uuid, department.name, department.short_name);
