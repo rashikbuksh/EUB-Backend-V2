@@ -64,8 +64,7 @@ export function constructSelectAllQuery(
   // Get search fields from the main table
   const searchFields = Object.keys(baseQuery.config.table[Symbol.for('drizzle:Columns')]).filter(
     field =>
-      avoidFields.includes(field) === false
-      && additionalSearchFields.includes(field) === false,
+      avoidFields.includes(field) === false,
   );
 
   // Get table name from baseQuery
@@ -88,8 +87,7 @@ export function constructSelectAllQuery(
 
     const joinTableFields = Object.keys(join.table[Symbol.for('drizzle:Columns')]).filter(
       field =>
-        avoidFields.includes(field) === false
-        && additionalSearchFields.includes(field) === false,
+        avoidFields.includes(field) === false,
     ).filter(field => additionalSearchFields.includes(field));
 
     const joinFieldsWithTable = joinTableFields.map(field => joinTableName ? `"${joinTableName}"."${field}"` : `"${field}"`);
