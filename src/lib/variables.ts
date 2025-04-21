@@ -102,7 +102,7 @@ export function constructSelectAllQuery(
   // Apply search filter
   if (q) {
     const searchConditions = allSearchFields.map((field) => {
-      return sql`LOWER(${sql.raw(field)}) LIKE LOWER(${`%${q}%`})`;
+      return sql`LOWER(CAST(${sql.raw(field)} AS TEXT)) LIKE LOWER(${`%${q}%`})`;
     });
 
     if (searchConditions.length > 0) {
