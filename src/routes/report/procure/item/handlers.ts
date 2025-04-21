@@ -14,6 +14,7 @@ export const itemOpeningClosingStock: AppRouteHandler<itemOpeningClosingStockRou
                     SELECT
                         uuid AS item_uuid,
                         item.name AS item_name,
+                        unit,
                         COALESCE(opening_purchase.total_purchase_quantity, 0) - COALESCE(item_requisition_opening_consumption.total_item_requisition_consumption_quantity, 0) - COALESCE(item_transfer_opening_consumption.total_item_transfer_consumption_quantity, 0) AS item_opening_quantity,
                         COALESCE(purchase.total_purchase_quantity, 0) AS item_purchased_quantity,
                         COALESCE(item_requisition_consumption.total_item_requisition_consumption_quantity, 0) + COALESCE(item_transfer_consumption.total_item_transfer_consumption_quantity, 0) AS item_consumption_quantity,
@@ -40,7 +41,7 @@ export const itemOpeningClosingStock: AppRouteHandler<itemOpeningClosingStockRou
                         WHERE 
                             created_at::date >= ${from_date} AND created_at::date <= ${to_date} AND is_received = true
                         GROUP BY item_uuid
-                    )purchase ON item.uuid = opening_purchase.item_uuid
+                    )purchase ON item.uuid = purchase.item_uuid
                     LEFT JOIN(
                         SELECT
                             item_uuid,
