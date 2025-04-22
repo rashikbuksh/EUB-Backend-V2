@@ -288,6 +288,9 @@ export const department_short_name = portfolio.enum('department_short_name', [
   'mss-economics',
   'd-eee',
   'extra-curricular-club',
+  'physics',
+  'chemistry',
+  'mathematics',
 ]);
 
 export const department = portfolio.table('department', {

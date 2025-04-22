@@ -34,6 +34,8 @@ export const valueLabelForPublication: AppRouteHandler<ValueLabelRouteForPublica
 
   const data = await baseQuery;
 
+  console.log('data', data.length);
+
   const pagination = is_pagination === 'false'
     ? null
     : {
