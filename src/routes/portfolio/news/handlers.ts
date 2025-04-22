@@ -173,7 +173,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
         total_record: data.length,
         current_page: Number(page),
         total_page: Math.ceil(data.length / limit),
-        next_page: page + 1 > Math.ceil(data.length / limit) ? null : page + 1,
+        next_page: page > Math.ceil(data.length / limit) ? null : page + 1,
         prev_page: page - 1 <= 0 ? null : page - 1,
       };
 
