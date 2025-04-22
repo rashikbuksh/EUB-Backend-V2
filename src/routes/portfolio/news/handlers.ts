@@ -140,6 +140,8 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     .from(news)
     .leftJoin(department, eq(news.department_uuid, department.uuid));
 
+  const resultPromiseForCount = await resultPromise;
+
   if (latest === 'true')
     resultPromise.orderBy(sql`DATE(${news.published_date}) DESC`).limit(10);
 
@@ -170,10 +172,10 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   const pagination = is_pagination === 'false'
     ? null
     : {
-        total_record: data.length,
+        total_record: resultPromiseForCount.length,
         current_page: Number(page),
-        total_page: Math.ceil(data.length / limit),
-        next_page: page > Math.ceil(data.length / limit) ? null : page + 1,
+        total_page: Math.ceil(resultPromiseForCount.length / limit),
+        next_page: page > Math.ceil(resultPromiseForCount.length / limit) ? null : page + 1,
         prev_page: page - 1 <= 0 ? null : page - 1,
       };
 

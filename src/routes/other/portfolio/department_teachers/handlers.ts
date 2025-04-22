@@ -11,7 +11,7 @@ import { department, department_teachers, faculty } from '@/routes/portfolio/sch
 import type { ValueLabelRouteForPublication } from './routes';
 
 export const valueLabelForPublication: AppRouteHandler<ValueLabelRouteForPublication> = async (c: any) => {
-  const { latest, is_pagination, field_name, field_value } = c.req.valid('query');
+  const { is_pagination, field_name, field_value } = c.req.valid('query');
 
   const resultPromise = db.select({
     value: department_teachers.publication,
@@ -22,9 +22,7 @@ export const valueLabelForPublication: AppRouteHandler<ValueLabelRouteForPublica
     .leftJoin(department, eq(department_teachers.department_uuid, department.uuid))
     .leftJoin(faculty, eq(department.faculty_uuid, faculty.uuid));
 
-  if (latest === 'true') {
-    resultPromise.orderBy(sql`DATE(${department_teachers.created_at}) DESC`).limit(10);
-  }
+  const resultPromiseForCount = await resultPromise;
 
   const limit = Number.parseInt(c.req.valid('query').limit);
   const page = Number.parseInt(c.req.valid('query').page);
@@ -34,15 +32,13 @@ export const valueLabelForPublication: AppRouteHandler<ValueLabelRouteForPublica
 
   const data = await baseQuery;
 
-  console.log('data', data.length);
-
   const pagination = is_pagination === 'false'
     ? null
     : {
-        total_record: data.length,
+        total_record: resultPromiseForCount.length,
         current_page: Number(page),
-        total_page: Math.ceil(data.length / limit),
-        next_page: page > Math.ceil(data.length / limit) ? null : page + 1,
+        total_page: Math.ceil(resultPromiseForCount.length / limit),
+        next_page: page > Math.ceil(resultPromiseForCount.length / limit) ? null : page + 1,
         prev_page: page - 1 <= 0 ? null : page - 1,
       };
 
