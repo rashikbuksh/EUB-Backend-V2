@@ -13,6 +13,7 @@ export const valueLabel: AppRouteHandler<ValueLabelRoute> = async (c: any) => {
     label: item.name,
     quantity: item.quantity,
     vendor_price: item.vendor_price,
+    unit: item.unit,
   })
     .from(item);
 
