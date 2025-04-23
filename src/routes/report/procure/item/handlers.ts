@@ -28,7 +28,7 @@ export const itemOpeningClosingStock: AppRouteHandler<itemOpeningClosingStockRou
                         FROM
                             procure.item_work_order_entry
                         WHERE 
-                            created_at::date < ${from_date} AND is_received = true
+                            created_at::date < ${from_date} AND is_received = true AND item_uuid IS NOT NULL
                         GROUP BY item_uuid
 
                         )opening_purchase ON item.uuid = opening_purchase.item_uuid
@@ -39,7 +39,7 @@ export const itemOpeningClosingStock: AppRouteHandler<itemOpeningClosingStockRou
                         FROM
                             procure.item_work_order_entry
                         WHERE 
-                            created_at::date >= ${from_date} AND created_at::date <= ${to_date} AND is_received = true
+                            created_at::date >= ${from_date} AND created_at::date <= ${to_date} AND is_received = true AND item_uuid IS NOT NULL
                         GROUP BY item_uuid
                     )purchase ON item.uuid = purchase.item_uuid
                     LEFT JOIN(
@@ -49,7 +49,7 @@ export const itemOpeningClosingStock: AppRouteHandler<itemOpeningClosingStockRou
                         FROM
                             procure.item_requisition
                         WHERE 
-                            created_at::date >= ${from_date} AND created_at::date <= ${to_date}
+                            created_at::date >= ${from_date} AND created_at::date <= ${to_date} AND item_uuid IS NOT NULL
                         GROUP BY item_uuid
                     )item_requisition_consumption ON item.uuid = item_requisition_consumption.item_uuid 
 
@@ -60,7 +60,7 @@ export const itemOpeningClosingStock: AppRouteHandler<itemOpeningClosingStockRou
                         FROM
                             procure.item_transfer
                         WHERE 
-                            created_at::date >= ${from_date} AND created_at::date <= ${to_date}
+                            created_at::date >= ${from_date} AND created_at::date <= ${to_date} AND item_uuid IS NOT NULL
                         GROUP BY item_uuid
                     )item_transfer_consumption ON item.uuid = item_transfer_consumption.item_uuid
 
@@ -71,7 +71,7 @@ export const itemOpeningClosingStock: AppRouteHandler<itemOpeningClosingStockRou
                         FROM
                             procure.item_requisition
                         WHERE 
-                            created_at::date <= ${from_date} 
+                            created_at::date <= ${from_date} AND item_uuid IS NOT NULL
                         GROUP BY item_uuid
                     )item_requisition_opening_consumption ON item.uuid = item_requisition_opening_consumption.item_uuid
                     LEFT JOIN(
@@ -81,7 +81,7 @@ export const itemOpeningClosingStock: AppRouteHandler<itemOpeningClosingStockRou
                         FROM
                             procure.item_transfer
                         WHERE 
-                            created_at::date <= ${from_date} 
+                            created_at::date <= ${from_date} AND item_uuid IS NOT NULL
                         GROUP BY item_uuid
                     )item_transfer_opening_consumption ON item.uuid = item_transfer_opening_consumption.item_uuid
                     ORDER BY item_name
