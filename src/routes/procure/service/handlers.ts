@@ -1,6 +1,6 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 // import { alias } from 'drizzle-orm/pg-core';
 import * as HSCode from 'stoker/http-status-codes';
 
@@ -65,6 +65,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
 
   const resultPromise = db.select({
     id: service.id,
+    service_id: sql`CONCAT('SI', TO_CHAR(${service.created_at}::timestamp, 'YY'), '-',  TO_CHAR(${service.created_at}::timestamp, 'MM'), '-',  TO_CHAR(${service.id}, 'FM0000'))`,
     uuid: service.uuid,
     sub_category_uuid: service.sub_category_uuid,
     sub_category_name: sub_category.name,

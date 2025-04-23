@@ -65,6 +65,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   const resultPromise = db.select({
     uuid: requisition.uuid,
     id: requisition.id,
+    requisition_id: sql`CONCAT('RI', TO_CHAR(${requisition.created_at}::timestamp, 'YY'), '-',  TO_CHAR(${requisition.created_at}::timestamp, 'MM'), '-',  TO_CHAR(${requisition.id}, 'FM0000'))`,
     internal_cost_center_uuid: requisition.internal_cost_center_uuid,
     internal_cost_center_name: internal_cost_center.name,
     is_received: requisition.is_received,
@@ -113,6 +114,7 @@ export const getItemRequisitionDetailsByRequisitionUuid: AppRouteHandler<GetItem
     {
       uuid: requisition.uuid,
       id: requisition.id,
+      requisition_id: sql`CONCAT('RI', TO_CHAR(${requisition.created_at}::timestamp, 'YY'), '-',  TO_CHAR(${requisition.created_at}::timestamp, 'MM'), '-',  TO_CHAR(${requisition.id}, 'FM0000'))`,
       internal_cost_center_uuid: requisition.internal_cost_center_uuid,
       internal_cost_center_name: internal_cost_center.name,
       is_received: requisition.is_received,
