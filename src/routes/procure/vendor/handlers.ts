@@ -10,7 +10,7 @@ import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 
 import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
 
-import { item, item_vendor, vendor } from '../schema';
+import { vendor } from '../schema';
 
 // const created_user = alias(hrSchema.users, 'created_user');
 
@@ -60,7 +60,7 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 };
 
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
-  const { item_uuid } = c.req.valid('query');
+  // const { item_uuid } = c.req.valid('query');
 
   const resultPromise = db.select({
     id: vendor.id,
@@ -77,18 +77,9 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     starting_date: vendor.starting_date,
     ending_date: vendor.ending_date,
     product_type: vendor.product_type,
-    item_uuid: item_vendor.item_uuid,
-    item_name: item.name,
-    is_active: item_vendor.is_active,
   })
     .from(vendor)
-    .leftJoin(hrSchema.users, eq(vendor.created_by, hrSchema.users.uuid))
-    .leftJoin(item_vendor, eq(vendor.uuid, item_vendor.vendor_uuid))
-    .leftJoin(item, eq(item_vendor.item_uuid, item.uuid));
-
-  if (item_uuid) {
-    resultPromise.where(eq(item_vendor.item_uuid, item_uuid));
-  }
+    .leftJoin(hrSchema.users, eq(vendor.created_by, hrSchema.users.uuid));
 
   const data = await resultPromise;
 

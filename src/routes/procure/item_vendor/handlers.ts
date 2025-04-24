@@ -60,7 +60,7 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 };
 
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
-  // const { sub_category } = c.req.valid('query');
+  const { item_uuid } = c.req.valid('query');
 
   const resultPromise = db.select({
     uuid: item_vendor.uuid,
@@ -79,6 +79,12 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     .leftJoin(hrSchema.users, eq(item_vendor.created_by, hrSchema.users.uuid))
     .leftJoin(item, eq(item_vendor.item_uuid, item.uuid))
     .leftJoin(vendor, eq(item_vendor.vendor_uuid, vendor.uuid));
+
+  if (item_uuid) {
+    resultPromise.where(
+      eq(item_vendor.item_uuid, item_uuid),
+    );
+  }
 
   const data = await resultPromise;
 
