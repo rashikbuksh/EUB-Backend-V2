@@ -109,6 +109,7 @@ export const capital = procure.table('capital', {
   created_at: DateTime('created_at').notNull(),
   updated_at: DateTime('updated_at'),
   remarks: text('remarks'),
+  id: integer('id'),
 });
 
 export const item_index = procure.sequence('item_index', DEFAULT_SEQUENCE);
@@ -172,6 +173,7 @@ export const item_work_order = procure.table('item_work_order', {
   created_at: DateTime('created_at').notNull(),
   updated_at: DateTime('updated_at'),
   remarks: text('remarks'),
+  id: integer('id'),
 });
 
 export const item_work_order_entry = procure.table('item_work_order_entry', {
@@ -186,6 +188,7 @@ export const item_work_order_entry = procure.table('item_work_order_entry', {
   created_at: DateTime('created_at').notNull(),
   updated_at: DateTime('updated_at'),
   remarks: text('remarks'),
+
 });
 
 export const service_id = procure.sequence('service_id', DEFAULT_SEQUENCE);
@@ -195,7 +198,7 @@ export const service_payment_terms = procure.enum('service_payment_terms', ['pre
 export const service_status = procure.enum('service_status', ['active', 'pending', 'expired', 'suspended']);
 
 export const service = procure.table('service', {
-  id: integer('id').default(sql`nextval('procure.service_id')`),
+  id: integer('id'),
   uuid: uuid_primary,
   sub_category_uuid: defaultUUID('sub_category_uuid').references(() => sub_category.uuid, DEFAULT_OPERATION).notNull(),
   vendor_uuid: defaultUUID('vendor_uuid').references(() => vendor.uuid, DEFAULT_OPERATION).notNull(),
@@ -257,7 +260,7 @@ export const requisition_id = procure.sequence('requisition_id', DEFAULT_SEQUENC
 export const requisition_department = procure.enum('requisition_department', ['chairman_bot', 'vice_chancellor', 'treasurer', 'pni', 'pnd', 'civil_engineering', 'admission_office', 'controller_office', 'exam_c_01', 'exam_c_02', 'account_c_01', 'account_c_02', 'cse', 'registrar(hod)', 'additional_registrar', 'additional_registrar_c_01', 'additional_registrar_c_02', 'english', 'business_administration', 'library ', 'ipe_&_iqac', 'textile_engineering', 'proctor_office', 'eee', 'fde', 'medical_centre', 'economics', 'mdgs', 'thm', 'mathematics ', 'pcu', 'program_coordination_manager', 'program_coordination_asst_manager', 'sr_program_coordination_incharge', 'physics', 'chemistry', 'security_director', 'logistics', 'reception_gate', 'ict', 'law']);
 
 export const requisition = procure.table('requisition', {
-  id: integer('id').default(sql`nextval('procure.requisition_id')`),
+  id: integer('id'),
   uuid: uuid_primary,
   internal_cost_center_uuid: defaultUUID('internal_cost_center_uuid').references(() => internal_cost_center.uuid, DEFAULT_OPERATION),
   is_received: boolean('is_received').default(false),

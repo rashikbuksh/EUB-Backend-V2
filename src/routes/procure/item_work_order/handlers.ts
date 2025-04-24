@@ -5,6 +5,7 @@ import { eq, sql } from 'drizzle-orm';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
+import { generateDynamicId } from '@/lib/dynamic_id';
 import * as hrSchema from '@/routes/hr/schema';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 
@@ -17,7 +18,12 @@ import { item_work_order, vendor } from '../schema';
 export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
   const value = c.req.valid('json');
 
-  const [data] = await db.insert(item_work_order).values(value).returning({
+  const newId = await generateDynamicId(item_work_order, item_work_order.id, item_work_order.created_at);
+
+  const [data] = await db.insert(item_work_order).values({
+    id: newId,
+    ...value,
+  }).returning({
     name: item_work_order.uuid,
   });
 
@@ -63,6 +69,8 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   // const { sub_category } = c.req.valid('query');
 
   const resultPromise = db.select({
+    id: item_work_order.id,
+    item_work_order_id: sql`CONCAT('IWOI', TO_CHAR(${item_work_order.created_at}::timestamp, 'YY'), '-',  TO_CHAR(${item_work_order.created_at}::timestamp, 'MM'), '-',  TO_CHAR(${item_work_order.id}, 'FM0000'))`,
     uuid: item_work_order.uuid,
     vendor_uuid: item_work_order.vendor_uuid,
     vendor_name: vendor.name,

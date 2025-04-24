@@ -5,6 +5,7 @@ import { desc, eq, sql } from 'drizzle-orm';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
+import { generateDynamicId } from '@/lib/dynamic_id';
 import * as hrSchema from '@/routes/hr/schema';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 
@@ -17,7 +18,12 @@ import { internal_cost_center, requisition } from '../schema';
 export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
   const value = c.req.valid('json');
 
-  const [data] = await db.insert(requisition).values(value).returning({
+  const newId = await generateDynamicId(requisition, requisition.id, requisition.created_at);
+
+  const [data] = await db.insert(requisition).values({
+    id: newId,
+    ...value,
+  }).returning({
     name: requisition.department,
   });
 

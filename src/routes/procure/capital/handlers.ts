@@ -5,6 +5,7 @@ import { alias } from 'drizzle-orm/pg-core';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
+import { generateDynamicId } from '@/lib/dynamic_id';
 import * as hrSchema from '@/routes/hr/schema';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 
@@ -17,7 +18,12 @@ const sv_vendor = alias(vendor, 'sv_vendor');
 export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
   const value = c.req.valid('json');
 
-  const [data] = await db.insert(capital).values(value).returning({
+  const newId = await generateDynamicId(capital, capital.id, capital.created_at);
+
+  const [data] = await db.insert(capital).values({
+    id: newId,
+    ...value,
+  }).returning({
     name: capital.name,
   });
 
@@ -63,6 +69,8 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   // const { sub_category } = c.req.valid('query');
 
   const resultPromise = db.select({
+    id: capital.id,
+    capital_id: sql`CONCAT('CI', TO_CHAR(${capital.created_at}::timestamp, 'YY'), '-',  TO_CHAR(${capital.created_at}::timestamp, 'MM'), '-',  TO_CHAR(${capital.id}, 'FM0000'))`,
     index: capital.index,
     uuid: capital.uuid,
     sub_category_uuid: capital.sub_category_uuid,
