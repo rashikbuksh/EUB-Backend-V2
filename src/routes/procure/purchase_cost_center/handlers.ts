@@ -92,7 +92,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     index,
   }));
 
-  return c.json({ data: dataWithIndex || [] }, HSCode.OK);
+  return c.json(dataWithIndex || [], HSCode.OK);
 };
 
 export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
