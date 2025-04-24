@@ -86,7 +86,13 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
 
   const data = await resultPromise;
 
-  return c.json(data || [], HSCode.OK);
+  // Generate an array of indices based on the length of the data
+  const dataWithIndex = data.map((item, index) => ({
+    ...item,
+    index,
+  }));
+
+  return c.json({ data: dataWithIndex || [] }, HSCode.OK);
 };
 
 export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
