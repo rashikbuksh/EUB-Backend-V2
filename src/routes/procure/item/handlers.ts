@@ -63,7 +63,7 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   const { vendor_uuid } = c.req.valid('query');
 
-  const resultPromise = db.select({
+  const baseFields = {
     index: item.index,
     uuid: item.uuid,
     purchase_cost_center_uuid: item.purchase_cost_center_uuid,
@@ -78,20 +78,22 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     created_by_name: hrSchema.users.name,
     remarks: item.remarks,
     unit: item.unit,
-    vendor_uuid: item_vendor.vendor_uuid,
-    vendor_name: vendor.name,
-    is_active: item_vendor.is_active,
-  })
+  };
+
+  const query = db
+    .select(vendor_uuid ? { ...baseFields, vendor_uuid: item_vendor.vendor_uuid, vendor_name: vendor.name, is_active: item_vendor.is_active } : baseFields)
     .from(item)
     .leftJoin(hrSchema.users, eq(item.created_by, hrSchema.users.uuid))
-    .leftJoin(purchase_cost_center, eq(item.purchase_cost_center_uuid, purchase_cost_center.uuid))
-    .leftJoin(item_vendor, eq(item.uuid, item_vendor.item_uuid))
-    .leftJoin(vendor, eq(item_vendor.vendor_uuid, vendor.uuid));
+    .leftJoin(purchase_cost_center, eq(item.purchase_cost_center_uuid, purchase_cost_center.uuid));
 
-  if (vendor_uuid)
-    resultPromise.where(eq(item_vendor.vendor_uuid, vendor_uuid));
+  if (vendor_uuid) {
+    query
+      .leftJoin(item_vendor, eq(item.uuid, item_vendor.item_uuid))
+      .leftJoin(vendor, eq(item_vendor.vendor_uuid, vendor.uuid))
+      .where(eq(vendor.uuid, vendor_uuid));
+  }
 
-  const data = await resultPromise;
+  const data = await query;
 
   if (!data)
     return DataNotFound(c);
