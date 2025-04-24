@@ -59,7 +59,7 @@ export const process = procure.table('process', {
 
 export const purchase_cost_center = procure.table('purchase_cost_center', {
   uuid: uuid_primary,
-  index: integer('index').notNull().unique(),
+  index: integer('index').default(sql`0`),
   sub_category_uuid: defaultUUID('sub_category_uuid').references(() => sub_category.uuid, DEFAULT_OPERATION),
   name: text('name').notNull(),
   from: DateTime('from').notNull(),
