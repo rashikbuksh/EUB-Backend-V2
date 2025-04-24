@@ -1,6 +1,6 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { desc, eq } from 'drizzle-orm';
+import { desc, eq, sql } from 'drizzle-orm';
 // import { alias } from 'drizzle-orm/pg-core';
 import * as HSCode from 'stoker/http-status-codes';
 
@@ -67,6 +67,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     uuid: item_requisition.uuid,
     item_uuid: item_requisition.item_uuid,
     item_name: item.name,
+    requisition_id: sql`CONCAT('RI', TO_CHAR(${requisition.created_at}::timestamp, 'YY'), '-',  TO_CHAR(${requisition.created_at}::timestamp, 'MM'), '-',  TO_CHAR(${requisition.id}, 'FM0000'))`,
     requisition_uuid: item_requisition.requisition_uuid,
     requisition_department: requisition.department,
     req_quantity: PG_DECIMAL_TO_FLOAT(item_requisition.req_quantity),
@@ -94,6 +95,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
 
   const data = await db.query.item_requisition.findFirst({
     extras: {
+      requisition_id: sql`CONCAT('RI', TO_CHAR(${requisition.created_at}::timestamp, 'YY'), '-',  TO_CHAR(${requisition.created_at}::timestamp, 'MM'), '-',  TO_CHAR(${requisition.id}, 'FM0000'))`.as('requisition_id'),
       req_quantity: PG_DECIMAL_TO_FLOAT(item_requisition.req_quantity).as('req_quantity'),
       provided_quantity: PG_DECIMAL_TO_FLOAT(item_requisition.provided_quantity).as('provided_quantity'),
     },
