@@ -24,7 +24,6 @@ export const insertSchema = createInsertSchema(
   },
 ).required({
   uuid: true,
-  index: true,
   name: true,
   from: true,
   to: true,
@@ -32,6 +31,7 @@ export const insertSchema = createInsertSchema(
   created_by: true,
 }).partial({
   budget: true,
+  index: true,
   updated_at: true,
   remarks: true,
 });
