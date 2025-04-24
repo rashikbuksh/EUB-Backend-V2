@@ -1,6 +1,6 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 // import { alias } from 'drizzle-orm/pg-core';
 import * as HSCode from 'stoker/http-status-codes';
 
@@ -11,7 +11,7 @@ import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 
 import type { CreateRoute, GetAllByUuidRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
 
-import { item, item_work_order_entry } from '../schema';
+import { item, item_work_order, item_work_order_entry } from '../schema';
 
 // const created_user = alias(hrSchema.users, 'created_user');
 
@@ -66,6 +66,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   const resultPromise = db.select({
     uuid: item_work_order_entry.uuid,
     item_work_order_uuid: item_work_order_entry.item_work_order_uuid,
+    item_work_order_id: sql`CONCAT('IWOI', TO_CHAR(${item_work_order.created_at}::timestamp, 'YY'), '-',  TO_CHAR(${item_work_order.created_at}::timestamp, 'MM'), '-',  TO_CHAR(${item_work_order.id}, 'FM0000'))`,
     item_uuid: item_work_order_entry.item_uuid,
     item_name: item.name,
     quantity: PG_DECIMAL_TO_FLOAT(item_work_order_entry.quantity),
@@ -80,6 +81,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   })
     .from(item_work_order_entry)
     .leftJoin(hrSchema.users, eq(item_work_order_entry.created_by, hrSchema.users.uuid))
+    .leftJoin(item_work_order, eq(item_work_order_entry.item_work_order_uuid, item_work_order.uuid))
     .leftJoin(item, eq(item_work_order_entry.item_uuid, item.uuid));
 
   const data = await resultPromise;
@@ -93,6 +95,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
   const resultPromise = db.select({
     uuid: item_work_order_entry.uuid,
     item_work_order_uuid: item_work_order_entry.item_work_order_uuid,
+    item_work_order_id: sql`CONCAT('IWOI', TO_CHAR(${item_work_order.created_at}::timestamp, 'YY'), '-',  TO_CHAR(${item_work_order.created_at}::timestamp, 'MM'), '-',  TO_CHAR(${item_work_order.id}, 'FM0000'))`,
     item_uuid: item_work_order_entry.item_uuid,
     item_name: item.name,
     quantity: PG_DECIMAL_TO_FLOAT(item_work_order_entry.quantity),
@@ -107,6 +110,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
   })
     .from(item_work_order_entry)
     .leftJoin(hrSchema.users, eq(item_work_order_entry.created_by, hrSchema.users.uuid))
+    .leftJoin(item_work_order, eq(item_work_order_entry.item_work_order_uuid, item_work_order.uuid))
     .leftJoin(item, eq(item_work_order_entry.item_uuid, item.uuid))
     .where(eq(item_work_order_entry.uuid, uuid));
 
@@ -124,6 +128,7 @@ export const getAllByUuid: AppRouteHandler<GetAllByUuidRoute> = async (c: any) =
   const resultPromise = db.select({
     uuid: item_work_order_entry.uuid,
     item_work_order_uuid: item_work_order_entry.item_work_order_uuid,
+    item_work_order_id: sql`CONCAT('IWOI', TO_CHAR(${item_work_order.created_at}::timestamp, 'YY'), '-',  TO_CHAR(${item_work_order.created_at}::timestamp, 'MM'), '-',  TO_CHAR(${item_work_order.id}, 'FM0000'))`,
     item_uuid: item_work_order_entry.item_uuid,
     item_name: item.name,
     quantity: PG_DECIMAL_TO_FLOAT(item_work_order_entry.quantity),
@@ -138,6 +143,7 @@ export const getAllByUuid: AppRouteHandler<GetAllByUuidRoute> = async (c: any) =
   })
     .from(item_work_order_entry)
     .leftJoin(hrSchema.users, eq(item_work_order_entry.created_by, hrSchema.users.uuid))
+    .leftJoin(item_work_order, eq(item_work_order_entry.item_work_order_uuid, item_work_order.uuid))
     .leftJoin(item, eq(item_work_order_entry.item_uuid, item.uuid))
     .where(eq(item_work_order_entry.item_work_order_uuid, item_work_order_uuid));
 
