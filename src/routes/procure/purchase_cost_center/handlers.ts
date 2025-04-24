@@ -1,7 +1,6 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { eq } from 'drizzle-orm';
-// import { alias } from 'drizzle-orm/pg-core';
+import { desc, eq } from 'drizzle-orm';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
@@ -12,8 +11,6 @@ import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
 
 import { purchase_cost_center, sub_category } from '../schema';
-
-// const created_user = alias(hrSchema.users, 'created_user');
 
 export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
   const value = c.req.valid('json');
@@ -82,7 +79,8 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   })
     .from(purchase_cost_center)
     .leftJoin(hrSchema.users, eq(purchase_cost_center.created_by, hrSchema.users.uuid))
-    .leftJoin(sub_category, eq(purchase_cost_center.sub_category_uuid, sub_category.uuid));
+    .leftJoin(sub_category, eq(purchase_cost_center.sub_category_uuid, sub_category.uuid))
+    .orderBy(desc(purchase_cost_center.created_at));
 
   const data = await resultPromise;
 
