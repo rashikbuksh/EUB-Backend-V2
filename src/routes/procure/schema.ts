@@ -207,7 +207,6 @@ export const service = procure.table('service', {
   frequency: service_frequency('frequency'),
   start_date: DateTime('start_date'),
   end_date: DateTime('end_date'),
-  next_due_date: DateTime('next_due_date'),
   cost_per_service: PG_DECIMAL('cost_per_service').default(sql`0`),
   payment_terms: service_payment_terms('payment_terms'),
   status: service_status('status').notNull().default('active'),
@@ -227,6 +226,7 @@ export const service_payment = procure.table('service_payment', {
   created_at: DateTime('created_at').notNull(),
   updated_at: DateTime('updated_at'),
   remarks: text('remarks'),
+  next_due_date: DateTime('next_due_date'),
 });
 
 export const form = procure.table('form', {
@@ -238,12 +238,9 @@ export const form = procure.table('form', {
   updated_at: DateTime('updated_at'),
   remarks: text('remarks'),
 });
-
-export const internal_cost_center_type = procure.enum('internal_cost_center_type', ['proctor', 'admission', 'exam_control', 'fed', 'purchase_committee']);
-
+export const internal_cost_center_department = procure.enum('internal_cost_center_department', ['chairman_bot', 'vice_chancellor', 'treasurer', 'pni', 'pnd', 'civil_engineering', 'admission_office', 'controller_office', 'exam_c_01', 'exam_c_02', 'account_c_01', 'account_c_02', 'cse', 'registrar(hod)', 'additional_registrar', 'additional_registrar_c_01', 'additional_registrar_c_02', 'english', 'business_administration', 'library ', 'ipe_&_iqac', 'textile_engineering', 'proctor_office', 'eee', 'fde', 'medical_centre', 'economics', 'mdgs', 'thm', 'mathematics ', 'pcu', 'program_coordination_manager', 'program_coordination_asst_manager', 'sr_program_coordination_incharge', 'physics', 'chemistry', 'security_director', 'logistics', 'reception_gate', 'ict', 'law']);
 export const internal_cost_center = procure.table('internal_cost_center', {
   uuid: uuid_primary,
-  type: internal_cost_center_type('type').notNull(),
   authorized_person_uuid: defaultUUID('authorized_person_uuid').references(() => users.uuid, DEFAULT_OPERATION),
   name: text('name').notNull(),
   from: DateTime('from').notNull(),
@@ -254,18 +251,16 @@ export const internal_cost_center = procure.table('internal_cost_center', {
   updated_at: DateTime('updated_at'),
   remarks: text('remarks'),
   can_submitted_person_uuid: defaultUUID('can_submitted_person_uuid').references(() => users.uuid, DEFAULT_OPERATION),
+  department: internal_cost_center_department('department').notNull(),
 });
 
 export const requisition_id = procure.sequence('requisition_id', DEFAULT_SEQUENCE);
-export const requisition_department = procure.enum('requisition_department', ['chairman_bot', 'vice_chancellor', 'treasurer', 'pni', 'pnd', 'civil_engineering', 'admission_office', 'controller_office', 'exam_c_01', 'exam_c_02', 'account_c_01', 'account_c_02', 'cse', 'registrar(hod)', 'additional_registrar', 'additional_registrar_c_01', 'additional_registrar_c_02', 'english', 'business_administration', 'library ', 'ipe_&_iqac', 'textile_engineering', 'proctor_office', 'eee', 'fde', 'medical_centre', 'economics', 'mdgs', 'thm', 'mathematics ', 'pcu', 'program_coordination_manager', 'program_coordination_asst_manager', 'sr_program_coordination_incharge', 'physics', 'chemistry', 'security_director', 'logistics', 'reception_gate', 'ict', 'law']);
 
 export const requisition = procure.table('requisition', {
   id: integer('id'),
   uuid: uuid_primary,
-  internal_cost_center_uuid: defaultUUID('internal_cost_center_uuid').references(() => internal_cost_center.uuid, DEFAULT_OPERATION),
   is_received: boolean('is_received').default(false),
   received_date: DateTime('received_date').default(sql`null`),
-  department: requisition_department('department').notNull(),
   created_by: defaultUUID('created_by').references(() => users.uuid, DEFAULT_OPERATION),
   created_at: DateTime('created_at').notNull(),
   updated_at: DateTime('updated_at'),
@@ -489,10 +484,6 @@ export const procure_requisition_rel = relations (requisition, ({ one }) => ({
   created_by: one(users, {
     fields: [requisition.created_by],
     references: [users.uuid],
-  }),
-  internal_cost_center: one(internal_cost_center, {
-    fields: [requisition.internal_cost_center_uuid],
-    references: [internal_cost_center.uuid],
   }),
 }));
 

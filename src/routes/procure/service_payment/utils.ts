@@ -32,6 +32,7 @@ export const insertSchema = createInsertSchema(
   payment_date: true,
   updated_at: true,
   remarks: true,
+  next_due_date: true,
 });
 
 export const patchSchema = insertSchema.partial();

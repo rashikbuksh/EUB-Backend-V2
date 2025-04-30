@@ -11,7 +11,7 @@ import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 
 import type { CreateRoute, GetItemRequisitionDetailsByRequisitionUuidRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
 
-import { internal_cost_center, requisition } from '../schema';
+import { requisition } from '../schema';
 
 // const authorized_person = alias(hrSchema.users, 'authorized_person');
 
@@ -24,7 +24,7 @@ export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
     id: newId,
     ...value,
   }).returning({
-    name: requisition.department,
+    name: requisition.uuid,
   });
 
   return c.json(createToast('create', data.name), HSCode.OK);
@@ -41,7 +41,7 @@ export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
     .set(updates)
     .where(eq(requisition.uuid, uuid))
     .returning({
-      name: requisition.department,
+      name: requisition.uuid,
     });
 
   if (!data)
@@ -56,7 +56,7 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
   const [data] = await db.delete(requisition)
     .where(eq(requisition.uuid, uuid))
     .returning({
-      name: requisition.department,
+      name: requisition.uuid,
     });
 
   if (!data)
@@ -72,11 +72,8 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     uuid: requisition.uuid,
     id: requisition.id,
     requisition_id: sql`CONCAT('RI', TO_CHAR(${requisition.created_at}::timestamp, 'YY'), '-',  TO_CHAR(${requisition.created_at}::timestamp, 'MM'), '-',  TO_CHAR(${requisition.id}, 'FM0000'))`,
-    internal_cost_center_uuid: requisition.internal_cost_center_uuid,
-    internal_cost_center_name: internal_cost_center.name,
     is_received: requisition.is_received,
     received_date: requisition.received_date,
-    department: requisition.department,
     created_at: requisition.created_at,
     updated_at: requisition.updated_at,
     created_by: requisition.created_by,
@@ -86,7 +83,6 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   })
     .from(requisition)
     .leftJoin(hrSchema.users, eq(requisition.created_by, hrSchema.users.uuid))
-    .leftJoin(internal_cost_center, eq(requisition.internal_cost_center_uuid, internal_cost_center.uuid))
     .orderBy(desc(requisition.created_at));
 
   if (user_uuid) {
@@ -121,11 +117,8 @@ export const getItemRequisitionDetailsByRequisitionUuid: AppRouteHandler<GetItem
       uuid: requisition.uuid,
       id: requisition.id,
       requisition_id: sql`CONCAT('RI', TO_CHAR(${requisition.created_at}::timestamp, 'YY'), '-',  TO_CHAR(${requisition.created_at}::timestamp, 'MM'), '-',  TO_CHAR(${requisition.id}, 'FM0000'))`,
-      internal_cost_center_uuid: requisition.internal_cost_center_uuid,
-      internal_cost_center_name: internal_cost_center.name,
       is_received: requisition.is_received,
       received_date: requisition.received_date,
-      department: requisition.department,
       created_at: requisition.created_at,
       updated_at: requisition.updated_at,
       created_by: requisition.created_by,
@@ -154,7 +147,6 @@ export const getItemRequisitionDetailsByRequisitionUuid: AppRouteHandler<GetItem
   )
     .from(requisition)
     .leftJoin(hrSchema.users, eq(requisition.created_by, hrSchema.users.uuid))
-    .leftJoin(internal_cost_center, eq(requisition.internal_cost_center_uuid, internal_cost_center.uuid))
     .where(eq(requisition.uuid, uuid));
 
   const data = await resultPromise;
