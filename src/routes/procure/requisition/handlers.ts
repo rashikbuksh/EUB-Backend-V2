@@ -129,7 +129,6 @@ export const getItemRequisitionDetailsByRequisitionUuid: AppRouteHandler<GetItem
         'item_uuid', item_requisition.item_uuid,
         'item_name', item.name,
         'requisition_uuid', item_requisition.requisition_uuid,
-        'requisition_department', requisition.department,
         'req_quantity', item_requisition.req_quantity::float8,
         'provided_quantity', item_requisition.provided_quantity::float8,
         'created_by', item_requisition.created_by,
