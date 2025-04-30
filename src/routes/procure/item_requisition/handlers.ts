@@ -69,7 +69,6 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     item_name: item.name,
     requisition_id: sql`CONCAT('RI', TO_CHAR(${requisition.created_at}::timestamp, 'YY'), '-',  TO_CHAR(${requisition.created_at}::timestamp, 'MM'), '-',  TO_CHAR(${requisition.id}, 'FM0000'))`,
     requisition_uuid: item_requisition.requisition_uuid,
-    requisition_department: requisition.department,
     req_quantity: PG_DECIMAL_TO_FLOAT(item_requisition.req_quantity),
     provided_quantity: PG_DECIMAL_TO_FLOAT(item_requisition.provided_quantity),
     created_at: item_requisition.created_at,
