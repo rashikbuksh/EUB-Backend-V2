@@ -32,7 +32,6 @@ export const insertSchema = createInsertSchema(
   frequency: true,
   start_date: true,
   end_date: true,
-  next_due_date: true,
   payment_terms: true,
   status: true,
   approval_required: true,

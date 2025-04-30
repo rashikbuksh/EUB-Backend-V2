@@ -74,6 +74,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     created_by: service_payment.created_by,
     created_by_name: hrSchema.users.name,
     remarks: service_payment.remarks,
+    next_due_date: service_payment.next_due_date,
   })
     .from(service_payment)
     .leftJoin(hrSchema.users, eq(service_payment.created_by, hrSchema.users.uuid))

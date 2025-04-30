@@ -30,7 +30,7 @@ export const insertSchema = createInsertSchema(
   },
 ).required({
   uuid: true,
-  type: true,
+  department: true,
   authorized_person_uuid: true,
   name: true,
   from: true,
