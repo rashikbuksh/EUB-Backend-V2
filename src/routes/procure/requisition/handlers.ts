@@ -131,6 +131,15 @@ export const getItemRequisitionDetailsByRequisitionUuid: AppRouteHandler<GetItem
         'requisition_uuid', item_requisition.requisition_uuid,
         'req_quantity', item_requisition.req_quantity::float8,
         'provided_quantity', item_requisition.provided_quantity::float8,
+        'prev_provided_quantity', COALESCE((
+            SELECT ir.provided_quantity::float8
+            FROM procure.item_requisition ir
+            WHERE ir.created_by = requisition.created_by
+              AND ir.requisition_uuid = requisition.uuid
+              AND requisition.is_received = true
+            ORDER BY requisition.received_date DESC
+            LIMIT 1
+        ), 0),
         'created_by', item_requisition.created_by,
         'created_by_name', hr.users.name,
         'created_at', item_requisition.created_at,
