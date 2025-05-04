@@ -12,7 +12,7 @@ import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 
 import type { CreateRoute, GetOneDetailsRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
 
-import { service, sub_category, vendor } from '../schema';
+import { service, service_payment, sub_category, vendor } from '../schema';
 
 // const sv_vendor = alias(vendor, 'sv_vendor');
 
@@ -93,11 +93,13 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     created_by: service.created_by,
     created_by_name: hrSchema.users.name,
     remarks: service.remarks,
+    next_due_date: service_payment.next_due_date,
 
   })
     .from(service)
     .leftJoin(hrSchema.users, eq(service.created_by, hrSchema.users.uuid))
     .leftJoin(sub_category, eq(service.sub_category_uuid, sub_category.uuid))
+    .leftJoin(service_payment, eq(service.uuid, service_payment.service_uuid))
     .leftJoin(vendor, eq(service.vendor_uuid, vendor.uuid));
 
   const data = await resultPromise;
@@ -130,10 +132,12 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     created_by: service.created_by,
     created_by_name: hrSchema.users.name,
     remarks: service.remarks,
+    next_due_date: service_payment.next_due_date,
   })
     .from(service)
     .leftJoin(hrSchema.users, eq(service.created_by, hrSchema.users.uuid))
     .leftJoin(sub_category, eq(service.sub_category_uuid, sub_category.uuid))
+    .leftJoin(service_payment, eq(service.uuid, service_payment.service_uuid))
     .leftJoin(vendor, eq(service.vendor_uuid, vendor.uuid))
     .where(eq(service.uuid, uuid));
 
