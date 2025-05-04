@@ -11,7 +11,7 @@ import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 
 import type { CreateRoute, GetItemRequisitionDetailsByRequisitionUuidRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
 
-import { requisition } from '../schema';
+import { internal_cost_center, requisition } from '../schema';
 
 // const authorized_person = alias(hrSchema.users, 'authorized_person');
 
@@ -79,6 +79,9 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     created_by: requisition.created_by,
     created_by_name: hrSchema.users.name,
     remarks: requisition.remarks,
+    is_store_received: requisition.is_store_received,
+    store_received_date: requisition.store_received_date,
+    pi_generated_number: requisition.pi_generated_number,
 
   })
     .from(requisition)
@@ -124,6 +127,11 @@ export const getItemRequisitionDetailsByRequisitionUuid: AppRouteHandler<GetItem
       created_by: requisition.created_by,
       created_by_name: hrSchema.users.name,
       remarks: requisition.remarks,
+      is_store_received: requisition.is_store_received,
+      store_received_date: requisition.store_received_date,
+      pi_generated_number: requisition.pi_generated_number,
+      department: internal_cost_center.department,
+      designation: hrSchema.designation.name,
       item_requisition: sql`COALESCE(ARRAY(SELECT json_build_object(
         'uuid', item_requisition.uuid,
         'item_uuid', item_requisition.item_uuid,
@@ -174,6 +182,8 @@ export const getItemRequisitionDetailsByRequisitionUuid: AppRouteHandler<GetItem
   )
     .from(requisition)
     .leftJoin(hrSchema.users, eq(requisition.created_by, hrSchema.users.uuid))
+    .leftJoin(hrSchema.designation, eq(hrSchema.users.designation_uuid, hrSchema.designation.uuid))
+    .leftJoin(internal_cost_center, eq(internal_cost_center.can_submitted_person_uuid, requisition.created_by))
     .where(eq(requisition.uuid, uuid));
 
   const data = await resultPromise;
