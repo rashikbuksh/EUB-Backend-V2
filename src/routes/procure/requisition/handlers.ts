@@ -140,6 +140,15 @@ export const getItemRequisitionDetailsByRequisitionUuid: AppRouteHandler<GetItem
             ORDER BY requisition.received_date DESC
             LIMIT 1
         ), 0),
+        'prev_provided_date', COALESCE((
+            SELECT requisition.received_date
+            FROM procure.item_requisition ir
+            WHERE ir.created_by = requisition.created_by
+              AND ir.requisition_uuid = requisition.uuid
+              AND requisition.is_received = true
+            ORDER BY requisition.received_date DESC
+            LIMIT 1
+        ), NULL),
         'created_by', item_requisition.created_by,
         'created_by_name', hr.users.name,
         'created_at', item_requisition.created_at,
