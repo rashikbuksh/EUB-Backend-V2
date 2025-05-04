@@ -265,6 +265,9 @@ export const requisition = procure.table('requisition', {
   created_at: DateTime('created_at').notNull(),
   updated_at: DateTime('updated_at'),
   remarks: text('remarks'),
+  is_store_received: boolean('is_store_received').default(false),
+  store_received_date: DateTime('store_received_date').default(sql`null`),
+  pi_generated_number: integer('pi_generated_number').default(sql`0`),
 });
 
 export const item_requisition = procure.table('item_requisition', {

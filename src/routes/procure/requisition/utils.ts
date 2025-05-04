@@ -29,6 +29,9 @@ export const insertSchema = createInsertSchema(
   received_date: true,
   updated_at: true,
   remarks: true,
+  is_store_received: true,
+  store_received_date: true,
+  pi_generated_number: true,
 }).omit({
   id: true,
 
