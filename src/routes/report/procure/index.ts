@@ -1,3 +1,4 @@
 import item from './item';
+import requisition from './requisition';
 
-export default [item];
+export default [item, requisition];
