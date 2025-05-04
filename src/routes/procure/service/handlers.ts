@@ -93,7 +93,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     created_by: service.created_by,
     created_by_name: hrSchema.users.name,
     remarks: service.remarks,
-    next_due_date: service_payment.next_due_date,
+    next_due_date: sql`(SELECT MAX(${service_payment.next_due_date}) FROM ${service_payment} WHERE ${service_payment.service_uuid} = ${service.uuid})`.as('next_due_date'),
 
   })
     .from(service)
@@ -132,12 +132,11 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     created_by: service.created_by,
     created_by_name: hrSchema.users.name,
     remarks: service.remarks,
-    next_due_date: service_payment.next_due_date,
+    next_due_date: sql`(SELECT MAX(${service_payment.next_due_date}) FROM ${service_payment} WHERE ${service_payment.service_uuid} = ${service.uuid})`.as('next_due_date'),
   })
     .from(service)
     .leftJoin(hrSchema.users, eq(service.created_by, hrSchema.users.uuid))
     .leftJoin(sub_category, eq(service.sub_category_uuid, sub_category.uuid))
-    .leftJoin(service_payment, eq(service.uuid, service_payment.service_uuid))
     .leftJoin(vendor, eq(service.vendor_uuid, vendor.uuid))
     .where(eq(service.uuid, uuid));
 
