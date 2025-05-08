@@ -96,7 +96,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     .leftJoin(hrSchema.department, eq(user_information.department_uuid, hrSchema.department.uuid))
     .leftJoin(hrSchema.designation, eq(user_information.designation_uuid, hrSchema.designation.uuid))
     .leftJoin(hrSchema.users, eq(office_entry.created_by, hrSchema.users.uuid))
-    .orderBy(asc(office_entry.created_at));
+    .orderBy(asc(office_entry.index));
 
   if (category)
     resultPromise.where(eq(office.category, category));
