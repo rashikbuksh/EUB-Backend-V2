@@ -171,6 +171,12 @@ export const getOneDetails: AppRouteHandler<GetOneDetailsRoute> = async (c: any)
         },
         orderBy: (service_payment, { asc }) => [asc(service_payment.created_at)],
       },
+      vendor: {
+        columns: {
+          uuid: true,
+          name: true,
+        },
+      },
     },
   });
 
