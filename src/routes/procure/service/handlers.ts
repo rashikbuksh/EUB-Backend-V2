@@ -151,29 +151,74 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
 export const getOneDetails: AppRouteHandler<GetOneDetailsRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
 
-  const data = await db.query.service.findFirst({
-    extras: fields => ({
-      cost_per_service: PG_DECIMAL_TO_FLOAT(fields.cost_per_service).as('cost_per_service'),
-      vendor_name: sql`vendor.name`.as('vendor_name'),
-    }),
-    where(fields, operators) {
-      return operators.eq(fields.uuid, uuid);
-    },
-    with: {
-      service_payment: {
-        columns: {
-          uuid: true,
-          amount: true,
-          payment_date: true,
-          created_by: true,
-          created_at: true,
-          updated_at: true,
-          remarks: true,
-        },
-        orderBy: (service_payment, { asc }) => [asc(service_payment.created_at)],
-      },
-    },
-  });
+  const resultPromise = db.select({
+    id: service.id,
+    uuid: service.uuid,
+    sub_category_uuid: service.sub_category_uuid,
+    sub_category_name: sub_category.name,
+    sub_category_type: sub_category.type,
+    vendor_uuid: service.vendor_uuid,
+    vendor_name: vendor.name,
+    name: service.name,
+    description: service.description,
+    frequency: service.frequency,
+    start_date: service.start_date,
+    end_date: service.end_date,
+    cost_per_service: PG_DECIMAL_TO_FLOAT(service.cost_per_service),
+    payment_terms: service.payment_terms,
+    status: service.status,
+    approval_required: service.approval_required,
+    created_at: service.created_at,
+    updated_at: service.updated_at,
+    created_by: service.created_by,
+    created_by_name: hrSchema.users.name,
+    remarks: service.remarks,
+    service_payment: sql`
+      (SELECT json_agg(
+        json_build_object(
+          'uuid', ${service_payment.uuid},
+          'amount', ${service_payment.amount},
+          'payment_date', ${service_payment.payment_date},
+          'created_by', ${service_payment.created_by},
+          'created_at', ${service_payment.created_at},
+          'updated_at', ${service_payment.updated_at},
+          'remarks', ${service_payment.remarks}
+          )
+          )
+          FROM ${service_payment}
+          WHERE ${service_payment.service_uuid} = ${uuid}
+        )`.as('service_payment'),
+  })
+    .from(service)
+    .leftJoin(hrSchema.users, eq(service.created_by, hrSchema.users.uuid))
+    .leftJoin(sub_category, eq(service.sub_category_uuid, sub_category.uuid))
+    .leftJoin(vendor, eq(service.vendor_uuid, vendor.uuid))
+    .where(eq(service.uuid, uuid));
+
+  const [data] = await resultPromise;
+
+  // const data = await db.query.service.findFirst({
+  //   extras: fields => ({
+  //     cost_per_service: PG_DECIMAL_TO_FLOAT(fields.cost_per_service).as('cost_per_service'),
+  //   }),
+  //   where(fields, operators) {
+  //     return operators.eq(fields.uuid, uuid);
+  //   },
+  //   with: {
+  //     service_payment: {
+  //       columns: {
+  //         uuid: true,
+  //         amount: true,
+  //         payment_date: true,
+  //         created_by: true,
+  //         created_at: true,
+  //         updated_at: true,
+  //         remarks: true,
+  //       },
+  //       orderBy: (service_payment, { asc }) => [asc(service_payment.created_at)],
+  //     },
+  //   },
+  // });
 
   if (!data)
     return DataNotFound(c);
