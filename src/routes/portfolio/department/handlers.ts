@@ -129,6 +129,8 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
 export const getDepartmentAndDepartmentTeachersDetailsByDepartmentUuid: AppRouteHandler<GetDepartmentAndDepartmentTeachersDetailsByDepartmentUuidRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
 
+  const { is_resign } = c.req.valid('query');
+
   // const data = await db.query.department.findFirst({
   //   where(fields, operators) {
   //     return operators.eq(fields.uuid, uuid);
@@ -182,7 +184,15 @@ export const getDepartmentAndDepartmentTeachersDetailsByDepartmentUuid: AppRoute
       FROM portfolio.department_teachers
       LEFT JOIN hr.users createdByUser ON department_teachers.created_by = createdByUser.uuid
       LEFT JOIN hr.users teachers ON department_teachers.teacher_uuid = teachers.uuid
-      WHERE department_teachers.department_uuid = ${department.uuid}
+      WHERE 
+        department_teachers.department_uuid = ${department.uuid}
+        ${
+          is_resign === 'true'
+            ? sql` AND department_teachers.resign_date IS NULL`
+            : is_resign === 'false'
+              ? sql` AND department_teachers.resign_date IS NOT NULL`
+              : sql``
+        }
       ORDER BY department_teachers.index ASC), '{}')`,
     },
   )

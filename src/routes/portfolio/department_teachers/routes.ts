@@ -24,6 +24,7 @@ export const list = createRoute({
     query: z.object({
       portfolio_department: z.string().optional(),
       access: z.string().optional(),
+      is_resign: z.string().optional(),
     }),
   },
 });

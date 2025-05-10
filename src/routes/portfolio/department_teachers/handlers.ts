@@ -1,6 +1,6 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { asc, eq, inArray } from 'drizzle-orm';
+import { asc, eq, inArray, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import * as HSCode from 'stoker/http-status-codes';
 
@@ -60,7 +60,7 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 };
 
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
-  const { portfolio_department, access } = c.req.valid('query');
+  const { portfolio_department, access, is_resign } = c.req.valid('query');
 
   let accessArray = [];
   if (access) {
@@ -104,6 +104,14 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
 
   if (portfolio_department)
     resultPromise.where(eq(department.name, portfolio_department));
+
+  if (is_resign) {
+    is_resign === 'true'
+      ? resultPromise.where(sql`department_teachers.resign_date IS NULL`)
+      : is_resign === 'false'
+        ? resultPromise.where(sql`department_teachers.resign_date IS NOT NULL`)
+        : resultPromise.where(sql`1=1`);
+  }
 
   if (accessArray.length > 0)
     resultPromise.where(inArray(department.short_name, accessArray));
@@ -194,7 +202,6 @@ export const getTeacherDetails: AppRouteHandler<GetTeacherDetailsRoute> = async 
     teacher_initial: department_teachers.teacher_initial,
     index: department_teachers.index,
     status: department_teachers.status,
-
   })
     .from(department_teachers)
     .leftJoin(department, eq(department_teachers.department_uuid, department.uuid))

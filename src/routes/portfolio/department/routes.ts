@@ -127,6 +127,9 @@ export const getDepartmentAndDepartmentTeachersDetailsByDepartmentUuid = createR
   method: 'get',
   request: {
     params: param.uuid,
+    query: z.object({
+      is_resign: z.string().optional(),
+    }),
   },
   tags,
   responses: {
