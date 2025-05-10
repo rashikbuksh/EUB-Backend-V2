@@ -1,6 +1,6 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { asc, eq, inArray, sql } from 'drizzle-orm';
+import { and, asc, eq, inArray, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import * as HSCode from 'stoker/http-status-codes';
 
@@ -102,19 +102,27 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     .leftJoin(hrSchema.designation, eq(hrSchema.users.designation_uuid, hrSchema.designation.uuid))
     .leftJoin(createdByUser, eq(department_teachers.created_by, createdByUser.uuid));
 
-  if (portfolio_department)
-    resultPromise.where(eq(department.name, portfolio_department));
-
-  if (is_resign) {
-    is_resign === 'true'
-      ? resultPromise.where(sql`department_teachers.resign_date IS NULL`)
-      : is_resign === 'false'
-        ? resultPromise.where(sql`department_teachers.resign_date IS NOT NULL`)
-        : resultPromise.where(sql`1=1`);
+  // Build conditions
+  const conditions = [];
+  if (portfolio_department) {
+    conditions.push(eq(department.name, portfolio_department));
   }
 
-  if (accessArray.length > 0)
-    resultPromise.where(inArray(department.short_name, accessArray));
+  if (is_resign === 'true') {
+    conditions.push(sql`department_teachers.resign_date IS NULL`);
+  }
+  else if (is_resign === 'false') {
+    conditions.push(sql`department_teachers.resign_date IS NOT NULL`);
+  }
+
+  if (accessArray.length > 0) {
+    conditions.push(inArray(department.short_name, accessArray));
+  }
+
+  // Apply conditions to the query
+  if (conditions.length > 0) {
+    resultPromise.where(and(...conditions));
+  }
 
   resultPromise.orderBy(asc(department_teachers.index));
 
