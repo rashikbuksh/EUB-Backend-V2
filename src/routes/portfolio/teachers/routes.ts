@@ -8,16 +8,16 @@ import { createRoute, z } from '@hono/zod-openapi';
 
 import { insertSchema, patchSchema, selectSchema } from './utils';
 
-const tags = ['portfolio.department_teachers'];
+const tags = ['portfolio.teachers'];
 
 export const list = createRoute({
-  path: '/portfolio/department-teachers',
+  path: '/portfolio/teachers',
   method: 'get',
   tags,
   responses: {
     [HSCode.OK]: jsonContent(
       z.array(selectSchema),
-      'The list of department-teachers',
+      'The list of teachers',
     ),
   },
   request: {
@@ -30,19 +30,19 @@ export const list = createRoute({
 });
 
 export const create = createRoute({
-  path: '/portfolio/department-teachers',
+  path: '/portfolio/teachers',
   method: 'post',
   request: {
     body: jsonContentRequired(
       insertSchema,
-      'The department_teachers to create',
+      'The teachers to create',
     ),
   },
   tags,
   responses: {
     [HSCode.OK]: jsonContent(
       selectSchema,
-      'The created department_teachers',
+      'The created teachers',
     ),
     [HSCode.UNPROCESSABLE_ENTITY]: jsonContent(
       createErrorSchema(insertSchema),
@@ -52,7 +52,7 @@ export const create = createRoute({
 });
 
 export const getOne = createRoute({
-  path: '/portfolio/department-teachers/{uuid}',
+  path: '/portfolio/teachers/{uuid}',
   method: 'get',
   request: {
     params: param.uuid,
@@ -75,24 +75,24 @@ export const getOne = createRoute({
 });
 
 export const patch = createRoute({
-  path: '/portfolio/department-teachers/{uuid}',
+  path: '/portfolio/teachers/{uuid}',
   method: 'patch',
   request: {
     params: param.uuid,
     body: jsonContentRequired(
       patchSchema,
-      'The department_teachers updates',
+      'The teachers updates',
     ),
   },
   tags,
   responses: {
     [HSCode.OK]: jsonContent(
       selectSchema,
-      'The updated department_teachers',
+      'The updated teachers',
     ),
     [HSCode.NOT_FOUND]: jsonContent(
       notFoundSchema,
-      'department_teachers not found',
+      'teachers not found',
     ),
     [HSCode.UNPROCESSABLE_ENTITY]: jsonContent(
       createErrorSchema(patchSchema)
@@ -103,7 +103,7 @@ export const patch = createRoute({
 });
 
 export const remove = createRoute({
-  path: '/portfolio/department-teachers/{uuid}',
+  path: '/portfolio/teachers/{uuid}',
   method: 'delete',
   request: {
     params: param.uuid,
@@ -111,11 +111,11 @@ export const remove = createRoute({
   tags,
   responses: {
     [HSCode.NO_CONTENT]: {
-      description: 'department_teachers deleted',
+      description: 'teachers deleted',
     },
     [HSCode.NOT_FOUND]: jsonContent(
       notFoundSchema,
-      'department_teachers not found',
+      'teachers not found',
     ),
     [HSCode.UNPROCESSABLE_ENTITY]: jsonContent(
       createErrorSchema(param.uuid),
@@ -134,11 +134,11 @@ export const getTeacherDetails = createRoute({
   responses: {
     [HSCode.OK]: jsonContent(
       selectSchema,
-      'The requested department-teachers',
+      'The requested teachers',
     ),
     [HSCode.NOT_FOUND]: jsonContent(
       notFoundSchema,
-      'department_teachers not found',
+      'Teachers not found',
     ),
     [HSCode.UNPROCESSABLE_ENTITY]: jsonContent(
       createErrorSchema(param.uuid),

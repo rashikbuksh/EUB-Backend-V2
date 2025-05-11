@@ -2,18 +2,16 @@ import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 
 import { dateTimePattern } from '@/utils';
 
-import { department_teachers } from '../schema';
+import { teachers } from '../schema';
 
 //* crud
-export const selectSchema = createSelectSchema(department_teachers);
+export const selectSchema = createSelectSchema(teachers);
 
 export const insertSchema = createInsertSchema(
-  department_teachers,
+  teachers,
   {
     uuid: schema => schema.uuid.length(21),
-    department_uuid: schema => schema.department_uuid.length(21),
     teacher_uuid: schema => schema.teacher_uuid.length(21),
-    teacher_designation: schema => schema.teacher_designation.min(1),
     teacher_email: schema => schema.teacher_email.min(1),
     created_by: schema => schema.created_by.length(21),
     created_at: schema => schema.created_at.regex(dateTimePattern, {
@@ -25,18 +23,15 @@ export const insertSchema = createInsertSchema(
   },
 ).required({
   uuid: true,
-  department_uuid: true,
+
   teacher_uuid: true,
   education: true,
   created_at: true,
   created_by: true,
-  teacher_designation: true,
   teacher_email: true,
-  index: true,
   status: true,
 }).partial({
   teacher_phone: true,
-  department_head: true,
   publication: true,
   updated_at: true,
   remarks: true,
@@ -44,7 +39,6 @@ export const insertSchema = createInsertSchema(
   appointment_date: true,
   resign_date: true,
   about: true,
-  department_head_message: true,
   teacher_initial: true,
 }).omit({
   id: true,

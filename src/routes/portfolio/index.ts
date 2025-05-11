@@ -4,7 +4,6 @@ import certificate_course_fee from './certificate_course_fee';
 import club from './club';
 import contact_us from './contact_us';
 import department from './department';
-import department_teachers from './department_teachers';
 import faculty from './faculty';
 import feature from './feature';
 import financial_info from './financial_info';
@@ -19,6 +18,7 @@ import online_admission from './online_admission';
 import policy from './policy';
 import program from './program';
 import routine from './routine';
+import teachers from './teachers';
 import tender from './tender';
 import tuition_fee from './tuition_fee';
 
@@ -39,7 +39,7 @@ export default [
   faculty,
   job_circular,
   routine,
-  department_teachers,
+  teachers,
   financial_info,
   contact_us,
   offer,
