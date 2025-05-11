@@ -4,6 +4,7 @@ import certificate_course_fee from './certificate_course_fee';
 import club from './club';
 import contact_us from './contact_us';
 import department from './department';
+import department_teachers from './department_teachers';
 import faculty from './faculty';
 import feature from './feature';
 import financial_info from './financial_info';
@@ -46,4 +47,5 @@ export default [
   policy,
   tender,
   feature,
+  department_teachers,
 ];
