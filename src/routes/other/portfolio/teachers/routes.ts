@@ -57,6 +57,7 @@ export const valueLabel = createRoute({
       is_pagination: z.string().optional(),
       field_name: z.string().optional(),
       field_value: z.string().optional(),
+      department_uuid: z.string().optional(),
     }),
   },
 });
