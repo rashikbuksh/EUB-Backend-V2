@@ -56,7 +56,7 @@ export const valueLabelForPublication: AppRouteHandler<ValueLabelRouteForPublica
 export const valueLabel: AppRouteHandler<ValueLabelRoute> = async (c: any) => {
   const { department_uuid } = c.req.valid('query');
   const resultPromise = db.select({
-    value: teachers.teacher_uuid,
+    value: teachers.uuid,
     label: hrSchema.users.name,
   })
     .from(teachers)
