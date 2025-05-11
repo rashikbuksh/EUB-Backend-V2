@@ -336,7 +336,7 @@ export const info = portfolio.table('info', {
   remarks: text('remarks'),
 });
 
-// * department teachers
+// *  teachers
 
 export const teachers_id = portfolio.sequence(
   'teachers_id',
@@ -361,6 +361,29 @@ export const teachers = portfolio.table('teachers', {
   remarks: text('remarks'),
   teacher_initial: text('teacher_initial').default(sql`null`),
   status: boolean('status').default(false),
+});
+
+//* department teachers
+
+export const department_teachers_id = portfolio.sequence(
+  'department_teachers_id',
+  DEFAULT_SEQUENCE,
+);
+
+export const department_teachers = portfolio.table('department_teachers', {
+  id: integer('id').default(sql`nextval('portfolio.department_teachers_id')`),
+  index: integer('index').notNull(),
+  uuid: uuid_primary,
+  department_uuid: defaultUUID('department_uuid').notNull().references(() => department.uuid, DEFAULT_OPERATION),
+  teachers_uuid: defaultUUID('teacher_uuid').notNull().references(() => teachers.uuid, DEFAULT_OPERATION),
+  department_head: boolean('department_head').default(false),
+  department_head_message: text('department_head_message').notNull(),
+  teacher_designation: text('teachers_designation').notNull(),
+  status: boolean('status').default(false),
+  created_at: DateTime('created_at').notNull(),
+  updated_at: DateTime('updated_at'),
+  created_by: defaultUUID('created_by').references(() => users.uuid, DEFAULT_OPERATION),
+  remarks: text('remarks'),
 });
 
 //* routine
@@ -769,12 +792,12 @@ export const portfolio_job_circular_rel = relations(job_circular, ({ one }) => (
   }),
 }));
 
-export const portfolio_department_rel = relations(department, ({ one }) => ({
-  // department_teachers: many(department_teachers),
-  // faculty: one(faculty, {
-  //   fields: [department.faculty_uuid],
-  //   references: [faculty.uuid],
-  // }),
+export const portfolio_department_rel = relations(department, ({ one, many }) => ({
+  department_teachers: many(department_teachers),
+  faculty: one(faculty, {
+    fields: [department.faculty_uuid],
+    references: [faculty.uuid],
+  }),
   created_by: one(users, {
     fields: [department.created_by],
     references: [users.uuid],
@@ -821,6 +844,21 @@ export const portfolio_teachers_rel = relations(teachers, ({ one }) => ({
   }),
   created_by: one(users, {
     fields: [teachers.created_by],
+    references: [users.uuid],
+  }),
+}));
+
+export const portfolio_department_teachers_rel = relations(department_teachers, ({ one }) => ({
+  department: one(department, {
+    fields: [department_teachers.department_uuid],
+    references: [department.uuid],
+  }),
+  teacher: one(users, {
+    fields: [department_teachers.teachers_uuid],
+    references: [users.uuid],
+  }),
+  created_by: one(users, {
+    fields: [department_teachers.created_by],
     references: [users.uuid],
   }),
 }));
