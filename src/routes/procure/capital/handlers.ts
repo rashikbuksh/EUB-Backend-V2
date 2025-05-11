@@ -119,7 +119,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
                     WHEN ${capital.is_quotation} = true AND ${capital.is_cs} = true AND ${capital.cs_remarks} IS NOT NULL AND ${capital.is_monthly_meeting} = true AND ${capital.monthly_meeting_remarks} IS NOT NULL AND ${capital.is_work_order} = true AND ${capital.work_order_remarks} IS NOT NULL THEN (
                         SELECT cv.amount 
                         FROM ${capital_vendor} cv 
-                        WHERE cv.capital_uuid = ${capital.uuid} AND cv.is_selected = true
+                        WHERE cv.capital_uuid = ${capital.uuid} AND cv.vendor_uuid = ${capital.vendor_uuid}
                     )
                     END`,
   })
