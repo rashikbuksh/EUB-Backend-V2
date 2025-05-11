@@ -54,12 +54,19 @@ export const valueLabelForPublication: AppRouteHandler<ValueLabelRouteForPublica
 };
 
 export const valueLabel: AppRouteHandler<ValueLabelRoute> = async (c: any) => {
+  const { department_uuid } = c.req.valid('query');
   const resultPromise = db.select({
     value: teachers.uuid,
     label: hrSchema.users.name,
   })
     .from(teachers)
-    .leftJoin(hrSchema.users, eq(teachers.teacher_uuid, hrSchema.users.uuid));
+    .leftJoin(hrSchema.users, eq(teachers.teacher_uuid, hrSchema.users.uuid))
+    .leftJoin(department_teachers, eq(teachers.uuid, department_teachers.teachers_uuid))
+    .leftJoin(department, eq(department_teachers.department_uuid, department.uuid));
+
+  if (department_uuid) {
+    resultPromise.where(eq(department.uuid, department_uuid));
+  }
 
   const data = await resultPromise;
 
