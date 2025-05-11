@@ -6,7 +6,7 @@ import { createRoute, z } from '@hono/zod-openapi';
 const tags = ['other'];
 
 export const valueLabelForPublication = createRoute({
-  path: '/other/portfolio/department-teachers-publication/value/label',
+  path: '/other/portfolio/teachers-publication/value/label',
   method: 'get',
   tags,
   responses: {

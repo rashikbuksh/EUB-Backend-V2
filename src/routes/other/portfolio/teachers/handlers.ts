@@ -6,7 +6,7 @@ import * as HSCode from 'stoker/http-status-codes';
 import db from '@/db';
 import { constructSelectAllQuery } from '@/lib/variables';
 import * as hrSchema from '@/routes/hr/schema';
-import { department, department_teachers, faculty } from '@/routes/portfolio/schema';
+import { department, faculty, teachers } from '@/routes/portfolio/schema';
 
 import type { ValueLabelRouteForPublication } from './routes';
 
@@ -14,12 +14,11 @@ export const valueLabelForPublication: AppRouteHandler<ValueLabelRouteForPublica
   const { is_pagination, field_name, field_value } = c.req.valid('query');
 
   const resultPromise = db.select({
-    value: department_teachers.publication,
+    value: teachers.publication,
     label: sql`CONCAT(users.name, ' - ', faculty.name)`,
   })
-    .from(department_teachers)
-    .leftJoin(hrSchema.users, eq(department_teachers.teacher_uuid, hrSchema.users.uuid))
-    .leftJoin(department, eq(department_teachers.department_uuid, department.uuid))
+    .from(teachers)
+    .leftJoin(hrSchema.users, eq(teachers.teacher_uuid, hrSchema.users.uuid))
     .leftJoin(faculty, eq(department.faculty_uuid, faculty.uuid));
 
   const resultPromiseForCount = await resultPromise;
