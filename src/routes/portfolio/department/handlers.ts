@@ -156,41 +156,46 @@ export const getDepartmentAndDepartmentTeachersDetailsByDepartmentUuid: AppRoute
       index: department.index,
       department_teaches: sql`COALESCE(ARRAY(SELECT json_build_object(
         'id', department_teachers.id,
+        'teacher_id', teachers.id,
         'uuid', department_teachers.uuid,
+        'teachers_uuid', teachers.uuid,
         'department_uuid', department_teachers.department_uuid,
         'department_name', department.name,
-        'teacher_uuid', department_teachers.teacher_uuid,
-        'teacher_name', teachers.name,
+        'teacher_uuid', teachers.teacher_uuid,
+        'teacher_name', th.name,
         'teacher_designation', department_teachers.teacher_designation,
-        'teacher_email', department_teachers.teacher_email,
-        'teacher_phone', department_teachers.teacher_phone,
+        'teacher_email', teachers.teacher_email,
+        'teacher_phone', teachers.teacher_phone,
         'department_head', department_teachers.department_head,
-        'education', department_teachers.education,
-        'publication', department_teachers.publication,
-        'journal', department_teachers.journal,
-        'appointment_date', department_teachers.appointment_date,
-        'resign_date', department_teachers.resign_date,
-        'about', department_teachers.about,
+        'department_head_message', department_teachers.department_head_message,
+        'education', teachers.education,
+        'publication', teachers.publication,
+        'journal', teachers.journal,
+        'appointment_date', teachers.appointment_date,
+        'resign_date', teachers.resign_date,
+        'about', teachers.about,
         'created_at', department_teachers.created_at,
         'updated_at', department_teachers.updated_at,
         'created_by', department_teachers.created_by,
         'created_by_name', createdByUser.name,
         'remarks', department_teachers.remarks,
-        'department_head_message', department_teachers.department_head_message,
-        'teacher_initial', department_teachers.teacher_initial,
+        'teacher_initial', teachers.teacher_initial,
         'index', department_teachers.index,
-        'status', department_teachers.status
+        'status', department_teachers.status,
+        'teacher_status', teachers.status
       ) 
-      FROM portfolio.department_teachers
+      FROM portfolio.teachers
+      LEFT JOIN  portfolio.department_teachers ON department_teachers.teachers_uuid = teachers.uuid
       LEFT JOIN hr.users createdByUser ON department_teachers.created_by = createdByUser.uuid
-      LEFT JOIN hr.users teachers ON department_teachers.teacher_uuid = teachers.uuid
+      LEFT JOIN hr.users th ON teachers.teacher_uuid = th.uuid
+      LEFT JOIN portfolio.department ON department_teachers.department_uuid = department.uuid
       WHERE 
         department_teachers.department_uuid = ${department.uuid}
         ${
           is_resign === 'true'
-            ? sql` AND department_teachers.resign_date IS NULL`
+            ? sql` AND teachers.resign_date IS NULL`
             : is_resign === 'false'
-              ? sql` AND department_teachers.resign_date IS NOT NULL`
+              ? sql` AND teachers.resign_date IS NOT NULL`
               : sql``
         }
       ORDER BY department_teachers.index ASC), '{}')`,
