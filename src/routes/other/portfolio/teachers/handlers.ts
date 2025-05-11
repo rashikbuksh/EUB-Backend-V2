@@ -6,9 +6,9 @@ import * as HSCode from 'stoker/http-status-codes';
 import db from '@/db';
 import { constructSelectAllQuery } from '@/lib/variables';
 import * as hrSchema from '@/routes/hr/schema';
-import { department, faculty, teachers } from '@/routes/portfolio/schema';
+import { department, department_teachers, faculty, teachers } from '@/routes/portfolio/schema';
 
-import type { ValueLabelRouteForPublication } from './routes';
+import type { ValueLabelRoute, ValueLabelRouteForPublication } from './routes';
 
 export const valueLabelForPublication: AppRouteHandler<ValueLabelRouteForPublication> = async (c: any) => {
   const { is_pagination, field_name, field_value } = c.req.valid('query');
@@ -19,6 +19,8 @@ export const valueLabelForPublication: AppRouteHandler<ValueLabelRouteForPublica
   })
     .from(teachers)
     .leftJoin(hrSchema.users, eq(teachers.teacher_uuid, hrSchema.users.uuid))
+    .leftJoin(department_teachers, eq(teachers.uuid, department_teachers.teachers_uuid))
+    .leftJoin(department, eq(department_teachers.department_uuid, department.uuid))
     .leftJoin(faculty, eq(department.faculty_uuid, faculty.uuid));
 
   const resultPromiseForCount = await resultPromise;
@@ -49,4 +51,17 @@ export const valueLabelForPublication: AppRouteHandler<ValueLabelRouteForPublica
       };
 
   return c.json(response, HSCode.OK);
+};
+
+export const valueLabel: AppRouteHandler<ValueLabelRoute> = async (c: any) => {
+  const resultPromise = db.select({
+    value: teachers.uuid,
+    label: hrSchema.users.name,
+  })
+    .from(teachers)
+    .leftJoin(hrSchema.users, eq(teachers.teacher_uuid, hrSchema.users.uuid));
+
+  const data = await resultPromise;
+
+  return c.json(data, HSCode.OK);
 };

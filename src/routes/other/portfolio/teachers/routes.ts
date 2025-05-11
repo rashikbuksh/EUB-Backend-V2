@@ -33,4 +33,32 @@ export const valueLabelForPublication = createRoute({
   },
 });
 
+export const valueLabel = createRoute({
+  path: '/other/portfolio/teachers/value/label',
+  method: 'get',
+  tags,
+  responses: {
+    [HSCode.OK]: jsonContent(
+      z.object({
+        value: z.string(),
+        label: z.string(),
+      }),
+      'The valueLabel of teachers',
+    ),
+  },
+  request: {
+    query: z.object({
+      latest: z.string().optional(),
+      limit: z.string().optional(),
+      page: z.string().optional(),
+      q: z.string().optional(),
+      sort: z.string().optional(),
+      orderby: z.string().optional(),
+      is_pagination: z.string().optional(),
+      field_name: z.string().optional(),
+      field_value: z.string().optional(),
+    }),
+  },
+});
+export type ValueLabelRoute = typeof valueLabel;
 export type ValueLabelRouteForPublication = typeof valueLabelForPublication;
