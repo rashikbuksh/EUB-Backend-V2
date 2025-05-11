@@ -92,11 +92,42 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     created_by: capital.created_by,
     created_by_name: hrSchema.users.name,
     remarks: capital.remarks,
-
+    status: sql` CASE 
+                    WHEN ${capital.is_quotation} = false THEN 'requested' 
+                    WHEN ${capital.is_quotation} = true AND ${capital.is_cs} = false AND ${capital.cs_remarks} IS NULL AND ${capital.is_monthly_meeting} = false AND ${capital.monthly_meeting_remarks} IS NULL AND ${capital.is_work_order} = false AND ${capital.work_order_remarks} IS NULL THEN 'pipeline' 
+                    WHEN ${capital.is_quotation} = true AND ${capital.is_cs} = true AND ${capital.cs_remarks} IS NOT NULL AND ${capital.is_monthly_meeting} = false AND ${capital.monthly_meeting_remarks} IS NULL AND ${capital.is_work_order} = false AND ${capital.work_order_remarks} IS NULL THEN 'pipeline'
+                    WHEN ${capital.is_quotation} = true AND ${capital.is_cs} = true AND ${capital.cs_remarks} IS NOT NULL AND ${capital.is_monthly_meeting} = true AND ${capital.monthly_meeting_remarks} IS NOT NULL AND ${capital.is_work_order} = false AND ${capital.work_order_remarks} IS NULL THEN 'decided'
+                    WHEN ${capital.is_quotation} = true AND ${capital.is_cs} = true AND ${capital.cs_remarks} IS NOT NULL AND ${capital.is_monthly_meeting} = true AND ${capital.monthly_meeting_remarks} IS NOT NULL AND ${capital.is_work_order} = true AND ${capital.work_order_remarks} IS NOT NULL THEN 'committed'
+                  END`,
+    value: sql` CASE 
+                    WHEN ${capital.is_quotation} = false THEN 0
+                    WHEN ${capital.is_quotation} = true AND ${capital.is_cs} = false AND ${capital.cs_remarks} IS NULL AND ${capital.is_monthly_meeting} = false AND ${capital.monthly_meeting_remarks} IS NULL AND ${capital.is_work_order} = false AND ${capital.work_order_remarks} IS NULL THEN (
+                        SELECT MIN(cv.amount) 
+                        FROM ${capital_vendor} cv 
+                        WHERE cv.capital_uuid = ${capital.uuid}
+                    )
+                    WHEN ${capital.is_quotation} = true AND ${capital.is_cs} = true AND ${capital.cs_remarks} IS NOT NULL AND ${capital.is_monthly_meeting} = false AND ${capital.monthly_meeting_remarks} IS NULL AND ${capital.is_work_order} = false AND ${capital.work_order_remarks} IS NULL THEN (
+                        SELECT MIN(cv.amount) 
+                        FROM ${capital_vendor} cv 
+                        WHERE cv.capital_uuid = ${capital.uuid}
+                    )
+                    WHEN ${capital.is_quotation} = true AND ${capital.is_cs} = true AND ${capital.cs_remarks} IS NOT NULL AND ${capital.is_monthly_meeting} = true AND ${capital.monthly_meeting_remarks} IS NOT NULL AND ${capital.is_work_order} = false AND ${capital.work_order_remarks} IS NULL THEN (
+                        SELECT MIN(cv.amount) 
+                        FROM ${capital_vendor} cv 
+                        WHERE cv.capital_uuid = ${capital.uuid}
+                    )
+                    WHEN ${capital.is_quotation} = true AND ${capital.is_cs} = true AND ${capital.cs_remarks} IS NOT NULL AND ${capital.is_monthly_meeting} = true AND ${capital.monthly_meeting_remarks} IS NOT NULL AND ${capital.is_work_order} = true AND ${capital.work_order_remarks} IS NOT NULL THEN (
+                        SELECT cv.amount 
+                        FROM ${capital_vendor} cv 
+                        WHERE cv.capital_uuid = ${capital.uuid} AND cv.is_selected = true
+                    )
+                    END`,
   })
     .from(capital)
     .leftJoin(hrSchema.users, eq(capital.created_by, hrSchema.users.uuid))
-    .leftJoin(sub_category, eq(capital.sub_category_uuid, sub_category.uuid));
+    .leftJoin(sub_category, eq(capital.sub_category_uuid, sub_category.uuid))
+    .leftJoin(capital_vendor, eq(capital_vendor.capital_uuid, capital.uuid))
+    .leftJoin(vendor, eq(capital.vendor_uuid, vendor.uuid));
 
   const data = await resultPromise;
 
@@ -165,6 +196,36 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
       '[]'::jsonb
     )
   `,
+    status: sql` CASE 
+                    WHEN ${capital.is_quotation} = false THEN 'requested' 
+                    WHEN ${capital.is_quotation} = true AND ${capital.is_cs} = false AND ${capital.cs_remarks} IS NULL AND ${capital.is_monthly_meeting} = false AND ${capital.monthly_meeting_remarks} IS NULL AND ${capital.is_work_order} = false AND ${capital.work_order_remarks} IS NULL THEN 'pipeline' 
+                    WHEN ${capital.is_quotation} = true AND ${capital.is_cs} = true AND ${capital.cs_remarks} IS NOT NULL AND ${capital.is_monthly_meeting} = false AND ${capital.monthly_meeting_remarks} IS NULL AND ${capital.is_work_order} = false AND ${capital.work_order_remarks} IS NULL THEN 'pipeline'
+                    WHEN ${capital.is_quotation} = true AND ${capital.is_cs} = true AND ${capital.cs_remarks} IS NOT NULL AND ${capital.is_monthly_meeting} = true AND ${capital.monthly_meeting_remarks} IS NOT NULL AND ${capital.is_work_order} = false AND ${capital.work_order_remarks} IS NULL THEN 'decided'
+                    WHEN ${capital.is_quotation} = true AND ${capital.is_cs} = true AND ${capital.cs_remarks} IS NOT NULL AND ${capital.is_monthly_meeting} = true AND ${capital.monthly_meeting_remarks} IS NOT NULL AND ${capital.is_work_order} = true AND ${capital.work_order_remarks} IS NOT NULL THEN 'committed'
+                  END`,
+    value: sql` CASE 
+                    WHEN ${capital.is_quotation} = false THEN 0
+                    WHEN ${capital.is_quotation} = true AND ${capital.is_cs} = false AND ${capital.cs_remarks} IS NULL AND ${capital.is_monthly_meeting} = false AND ${capital.monthly_meeting_remarks} IS NULL AND ${capital.is_work_order} = false AND ${capital.work_order_remarks} IS NULL THEN (
+                        SELECT MIN(cv.amount) 
+                        FROM ${capital_vendor} cv 
+                        WHERE cv.capital_uuid = ${capital.uuid}
+                    )
+                    WHEN ${capital.is_quotation} = true AND ${capital.is_cs} = true AND ${capital.cs_remarks} IS NOT NULL AND ${capital.is_monthly_meeting} = false AND ${capital.monthly_meeting_remarks} IS NULL AND ${capital.is_work_order} = false AND ${capital.work_order_remarks} IS NULL THEN (
+                        SELECT MIN(cv.amount) 
+                        FROM ${capital_vendor} cv 
+                        WHERE cv.capital_uuid = ${capital.uuid}
+                    )
+                    WHEN ${capital.is_quotation} = true AND ${capital.is_cs} = true AND ${capital.cs_remarks} IS NOT NULL AND ${capital.is_monthly_meeting} = true AND ${capital.monthly_meeting_remarks} IS NOT NULL AND ${capital.is_work_order} = false AND ${capital.work_order_remarks} IS NULL THEN (
+                        SELECT MIN(cv.amount) 
+                        FROM ${capital_vendor} cv 
+                        WHERE cv.capital_uuid = ${capital.uuid}
+                    )
+                    WHEN ${capital.is_quotation} = true AND ${capital.is_cs} = true AND ${capital.cs_remarks} IS NOT NULL AND ${capital.is_monthly_meeting} = true AND ${capital.monthly_meeting_remarks} IS NOT NULL AND ${capital.is_work_order} = true AND ${capital.work_order_remarks} IS NOT NULL THEN (
+                        SELECT cv.amount 
+                        FROM ${capital_vendor} cv 
+                        WHERE cv.capital_uuid = ${capital.uuid} AND cv.is_selected = true
+                    )
+                    END`,
   })
     .from(capital)
     .leftJoin(hrSchema.users, eq(capital.created_by, hrSchema.users.uuid))
