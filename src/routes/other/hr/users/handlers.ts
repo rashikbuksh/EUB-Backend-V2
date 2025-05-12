@@ -10,7 +10,7 @@ import * as portfolioSchema from '@/routes/portfolio/schema';
 import type { UserAccessRoute, ValueLabelRoute } from './routes';
 
 export const valueLabel: AppRouteHandler<ValueLabelRoute> = async (c: any) => {
-  const { is_teacher } = c.req.valid('query');
+  const { is_teacher, teacher_uuid } = c.req.valid('query');
   const resultPromise = db.select({
     value: users.uuid,
     label: sql`${users.name} || '-' || ${users.email}`,
@@ -20,6 +20,9 @@ export const valueLabel: AppRouteHandler<ValueLabelRoute> = async (c: any) => {
 
   if (is_teacher === 'false') {
     resultPromise.where(sql`${portfolioSchema.teachers.teacher_uuid} IS NULL`);
+  }
+  if (teacher_uuid) {
+    resultPromise.where(sql`${portfolioSchema.teachers.teacher_uuid} = ${teacher_uuid}`);
   }
 
   const data = await resultPromise;
