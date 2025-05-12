@@ -12,6 +12,7 @@ export const valueLabel = createRoute({
   request: {
     query: z.object({
       is_teacher: z.string().optional(),
+      teacher_uuid: z.string().optional(),
     }),
   },
   responses: {
