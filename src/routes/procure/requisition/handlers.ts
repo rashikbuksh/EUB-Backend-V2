@@ -156,12 +156,16 @@ export const getItemRequisitionDetailsByRequisitionUuid: AppRouteHandler<GetItem
         ), 0),
         'prev_provided_date', COALESCE((
             SELECT rl.received_date
-            FROM procure.requisition_log rl
-            LEFT JOIN procure.item_requisition ir2 ON rl.requisition_uuid = ir2.requisition_uuid
-            WHERE ir2.created_by = ${requisition.created_by}
+            FROM procure.item_requisition ir
+            LEFT JOIN (
+              SELECT ir2.uuid
+              FROM procure.item_requisition ir2
+              WHERE ir2.requisition_uuid = ${requisition.uuid})
+              AS ir2 ON ir2.uuid = ir.uuid
+            LEFT JOIN procure.requisition_log rl ON ir.requisition_uuid = rl.requisition_uuid
+            WHERE ir.created_by = ${requisition.created_by}
               AND rl.is_received = true
-              AND rl.requisition_uuid = ${requisition.uuid}
-            ORDER BY rl.received_date ASC
+            ORDER BY rl.received_date DESC
             LIMIT 1
         ), NULL),
         'created_by', item_requisition.created_by,
