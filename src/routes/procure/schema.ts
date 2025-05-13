@@ -270,6 +270,17 @@ export const requisition = procure.table('requisition', {
   pi_generated_number: integer('pi_generated_number').default(sql`0`),
 });
 
+export const requisition_log_id = procure.sequence('requisition_log_id', DEFAULT_SEQUENCE);
+
+export const requisition_log = procure.table('requisition_log', {
+  id: integer('id').default(sql`nextval('procure.requisition_log_id')`),
+  requisition_uuid: defaultUUID('requisition_uuid').references(() => requisition.uuid, DEFAULT_OPERATION),
+  is_received: boolean('is_received').default(false),
+  received_date: DateTime('received_date').default(sql`null`),
+  created_by: defaultUUID('created_by').references(() => users.uuid, DEFAULT_OPERATION),
+  created_at: DateTime('created_at').notNull(),
+});
+
 export const item_requisition = procure.table('item_requisition', {
   uuid: uuid_primary,
   requisition_uuid: defaultUUID('requisition_uuid').references(() => requisition.uuid, DEFAULT_OPERATION),
