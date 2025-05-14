@@ -12,7 +12,7 @@ export const insertSchema = createInsertSchema(
   item_work_order_entry,
   {
     uuid: schema => schema.uuid.length(21),
-    item_work_order_uuid: schema => schema.item_work_order_uuid.length(21),
+    capital_uuid: schema => schema.capital_uuid.length(21),
     item_uuid: schema => schema.item_uuid.length(21),
     created_by: schema => schema.created_by.length(21),
     quantity: z.number().optional().default(0),
@@ -29,7 +29,7 @@ export const insertSchema = createInsertSchema(
   },
 ).required({
   uuid: true,
-  item_work_order_uuid: true,
+  capital_uuid: true,
   item_uuid: true,
   created_at: true,
   created_by: true,
