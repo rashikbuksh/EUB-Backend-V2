@@ -178,7 +178,6 @@ export const item_work_order = procure.table('item_work_order', {
 
 export const item_work_order_entry = procure.table('item_work_order_entry', {
   uuid: uuid_primary,
-  item_work_order_uuid: defaultUUID('item_work_order_uuid').references(() => item_work_order.uuid, DEFAULT_OPERATION),
   item_uuid: defaultUUID('item_uuid').references(() => item.uuid, DEFAULT_OPERATION),
   quantity: PG_DECIMAL('quantity').default(sql`0`),
   unit_price: PG_DECIMAL('unit_price').default(sql`0`),
@@ -439,10 +438,6 @@ export const procure_item_work_order_entry_rel = relations (item_work_order_entr
   item: one(item, {
     fields: [item_work_order_entry.item_uuid],
     references: [item.uuid],
-  }),
-  item_work_order: one(item_work_order, {
-    fields: [item_work_order_entry.item_work_order_uuid],
-    references: [item_work_order.uuid],
   }),
 }));
 
