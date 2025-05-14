@@ -11,7 +11,7 @@ import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 
 import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
 
-import { capital, capital_vendor, sub_category, vendor } from '../schema';
+import { capital, capital_vendor, item_work_order_entry, sub_category, vendor } from '../schema';
 
 const sv_vendor = alias(vendor, 'sv_vendor');
 
@@ -254,6 +254,32 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
                         WHERE cv.capital_uuid = ${capital.uuid} AND cv.vendor_uuid = ${capital.vendor_uuid}
                     )
                     END`,
+    items: sql`
+              COALESCE(
+                (
+                  SELECT jsonb_agg(
+                    jsonb_build_object(
+                        'uuid', iwe.uuid,
+                        'capital_uuid', iwe.capital_uuid,
+                        'item_uuid', iwe.item_uuid,
+                        'item_name', i.name,
+                        'quantity', iwe.quantity::float8,
+                        'unit_price', iwe.unit_price::float8,
+                        'is_received', iwe.is_received,
+                        'created_at', iwe.created_at,
+                        'updated_at', iwe.updated_at,
+                        'created_by', iwe.created_by,
+                        'created_by_name', hrSchema.users.name,
+                        'remarks', iwe.remarks,
+                        'received_date', iwe.received_date
+                    )
+                  )
+                  FROM procure.item_work_order_entry iwe
+                  LEFT JOIN procure.item i ON iwe.item_uuid = i.uuid
+                  LEFT JOIN hrSchema.users ON iwe.created_by = hrSchema.users.uuid
+                  WHERE iwe.capital_uuid = capital.uuid
+                ),
+                '[]'::jsonb)`,
   })
     .from(capital)
     .leftJoin(hrSchema.users, eq(capital.created_by, hrSchema.users.uuid))
@@ -261,6 +287,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     .leftJoin(capital_vendor, eq(capital_vendor.capital_uuid, capital.uuid))
     .leftJoin(vendor, eq(capital.vendor_uuid, vendor.uuid))
     .leftJoin(sv_vendor, eq(capital_vendor.vendor_uuid, sv_vendor.uuid))
+    .leftJoin(item_work_order_entry, eq(item_work_order_entry.capital_uuid, capital.uuid))
     .where(eq(capital.uuid, uuid))
     .groupBy(
       capital.index,
