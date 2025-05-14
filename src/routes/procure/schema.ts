@@ -188,6 +188,7 @@ export const item_work_order_entry = procure.table('item_work_order_entry', {
   created_at: DateTime('created_at').notNull(),
   updated_at: DateTime('updated_at'),
   remarks: text('remarks'),
+  capital_uuid: defaultUUID('capital_uuid').references(() => capital.uuid, DEFAULT_OPERATION),
 
 });
 
