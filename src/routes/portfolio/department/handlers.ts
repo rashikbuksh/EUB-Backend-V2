@@ -184,13 +184,13 @@ export const getDepartmentAndDepartmentTeachersDetailsByDepartmentUuid: AppRoute
         'status', department_teachers.status,
         'teacher_status', teachers.status
       ) 
-      FROM portfolio.teachers
-      LEFT JOIN  portfolio.department_teachers ON department_teachers.teachers_uuid = teachers.uuid
+      FROM portfolio.department_teachers
+      LEFT JOIN  portfolio.teachers ON department_teachers.teachers_uuid = teachers.uuid
       LEFT JOIN hr.users createdByUser ON department_teachers.created_by = createdByUser.uuid
       LEFT JOIN hr.users th ON teachers.teacher_uuid = th.uuid
       LEFT JOIN portfolio.department ON department_teachers.department_uuid = department.uuid
       WHERE 
-        department_teachers.department_uuid = ${department.uuid}
+        department_teachers.department_uuid = ${uuid}
         ${
           is_resign === 'true'
             ? sql` AND teachers.resign_date IS NULL`
