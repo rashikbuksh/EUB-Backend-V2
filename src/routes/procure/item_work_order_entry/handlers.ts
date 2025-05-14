@@ -11,7 +11,7 @@ import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 
 import type { CreateRoute, GetAllByUuidRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
 
-import { item, item_work_order, item_work_order_entry } from '../schema';
+import { capital, item, item_work_order, item_work_order_entry } from '../schema';
 
 // const created_user = alias(hrSchema.users, 'created_user');
 
@@ -78,11 +78,14 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     created_by_name: hrSchema.users.name,
     remarks: item_work_order_entry.remarks,
     received_date: item_work_order_entry.received_date,
+    capital_uuid: item_work_order_entry.capital_uuid,
+    capital_name: capital.name,
   })
     .from(item_work_order_entry)
     .leftJoin(hrSchema.users, eq(item_work_order_entry.created_by, hrSchema.users.uuid))
     .leftJoin(item_work_order, eq(item_work_order_entry.item_work_order_uuid, item_work_order.uuid))
-    .leftJoin(item, eq(item_work_order_entry.item_uuid, item.uuid));
+    .leftJoin(item, eq(item_work_order_entry.item_uuid, item.uuid))
+    .leftJoin(capital, eq(item_work_order_entry.capital_uuid, capital.uuid));
 
   const data = await resultPromise;
 
@@ -107,11 +110,14 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     created_by_name: hrSchema.users.name,
     remarks: item_work_order_entry.remarks,
     received_date: item_work_order_entry.received_date,
+    capital_uuid: item_work_order_entry.capital_uuid,
+    capital_name: capital.name,
   })
     .from(item_work_order_entry)
     .leftJoin(hrSchema.users, eq(item_work_order_entry.created_by, hrSchema.users.uuid))
     .leftJoin(item_work_order, eq(item_work_order_entry.item_work_order_uuid, item_work_order.uuid))
     .leftJoin(item, eq(item_work_order_entry.item_uuid, item.uuid))
+    .leftJoin(capital, eq(item_work_order_entry.capital_uuid, capital.uuid))
     .where(eq(item_work_order_entry.uuid, uuid));
 
   const data = await resultPromise;
@@ -140,11 +146,14 @@ export const getAllByUuid: AppRouteHandler<GetAllByUuidRoute> = async (c: any) =
     created_by_name: hrSchema.users.name,
     remarks: item_work_order_entry.remarks,
     received_date: item_work_order_entry.received_date,
+    capital_uuid: item_work_order_entry.capital_uuid,
+    capital_name: capital.name,
   })
     .from(item_work_order_entry)
     .leftJoin(hrSchema.users, eq(item_work_order_entry.created_by, hrSchema.users.uuid))
     .leftJoin(item_work_order, eq(item_work_order_entry.item_work_order_uuid, item_work_order.uuid))
     .leftJoin(item, eq(item_work_order_entry.item_uuid, item.uuid))
+    .leftJoin(capital, eq(item_work_order_entry.capital_uuid, capital.uuid))
     .where(eq(item_work_order_entry.item_work_order_uuid, item_work_order_uuid));
 
   const data = await resultPromise;
