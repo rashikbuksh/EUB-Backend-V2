@@ -439,10 +439,6 @@ export const procure_item_work_order_entry_rel = relations (item_work_order_entr
     fields: [item_work_order_entry.item_uuid],
     references: [item.uuid],
   }),
-  item_work_order: one(item_work_order, {
-    fields: [item_work_order_entry.item_work_order_uuid],
-    references: [item_work_order.uuid],
-  }),
 }));
 
 export const procure_service_rel = relations (service, ({ one, many }) => ({
