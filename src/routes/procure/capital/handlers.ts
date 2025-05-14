@@ -269,14 +269,14 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
                         'created_at', iwe.created_at,
                         'updated_at', iwe.updated_at,
                         'created_by', iwe.created_by,
-                        'created_by_name', hrSchema.users.name,
+                        'created_by_name', hu.name,
                         'remarks', iwe.remarks,
                         'received_date', iwe.received_date
                     )
                   )
                   FROM procure.item_work_order_entry iwe
                   LEFT JOIN procure.item i ON iwe.item_uuid = i.uuid
-                  LEFT JOIN hrSchema.users ON iwe.created_by = hrSchema.users.uuid
+                  LEFT JOIN hr.users hu ON iwe.created_by = hu.uuid
                   WHERE iwe.capital_uuid = capital.uuid
                 ),
                 '[]'::jsonb)`,
