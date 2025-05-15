@@ -10,6 +10,7 @@ export const selectSchema = createSelectSchema(contact_us);
 export const insertSchema = createInsertSchema(
   contact_us,
   {
+    uuid: schema => schema.uuid.length(21),
     full_name: schema => schema.full_name.min(1),
     email: schema => schema.email.email(),
     question: schema => schema.question.min(1),
@@ -22,6 +23,7 @@ export const insertSchema = createInsertSchema(
     }),
   },
 ).required({
+  uuid: true,
   full_name: true,
   email: true,
   question: true,
