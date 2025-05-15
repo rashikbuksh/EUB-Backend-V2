@@ -480,6 +480,7 @@ export const office_category = portfolio.enum('office_category', [
   'office_18',
   'office_19',
   'office_20',
+  'medical',
 ]);
 
 export const office = portfolio.table('office', {
