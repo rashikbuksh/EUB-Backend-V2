@@ -6,11 +6,6 @@ const uuid = getParamsSchema({
   validator: 'nanoid',
 });
 
-const id = getParamsSchema({
-  name: 'id',
-  validator: 'number', // or 'string', depending on your needs
-});
-
 const name = SlugParamsSchema;
 
-export { id, name, uuid };
+export { name, uuid };

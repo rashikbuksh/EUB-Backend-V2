@@ -45,10 +45,10 @@ export const create = createRoute({
 });
 
 export const getOne = createRoute({
-  path: '/portfolio/contact-us/{id}',
+  path: '/portfolio/contact-us/{uuid}',
   method: 'get',
   request: {
-    params: param.id,
+    params: param.uuid,
   },
   tags,
   responses: {
@@ -61,17 +61,17 @@ export const getOne = createRoute({
       'contact-us not found',
     ),
     [HSCode.UNPROCESSABLE_ENTITY]: jsonContent(
-      createErrorSchema(param.id),
+      createErrorSchema(param.uuid),
       'Invalid id error',
     ),
   },
 });
 
 export const patch = createRoute({
-  path: '/portfolio/contact-us/{id}',
+  path: '/portfolio/contact-us/{uuid}',
   method: 'patch',
   request: {
-    params: param.id,
+    params: param.uuid,
     body: jsonContentRequired(
       patchSchema,
       'The contact-us updates',
@@ -89,17 +89,17 @@ export const patch = createRoute({
     ),
     [HSCode.UNPROCESSABLE_ENTITY]: jsonContent(
       createErrorSchema(patchSchema)
-        .or(createErrorSchema(param.id)),
+        .or(createErrorSchema(param.uuid)),
       'The validation error(s)',
     ),
   },
 });
 
 export const remove = createRoute({
-  path: '/portfolio/contact-us/{id}',
+  path: '/portfolio/contact-us/{uuid}',
   method: 'delete',
   request: {
-    params: param.id,
+    params: param.uuid,
   },
   tags,
   responses: {
@@ -111,7 +111,7 @@ export const remove = createRoute({
       'contact-us not found',
     ),
     [HSCode.UNPROCESSABLE_ENTITY]: jsonContent(
-      createErrorSchema(param.id),
+      createErrorSchema(param.uuid),
       'Invalid id error',
     ),
   },
