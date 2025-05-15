@@ -8,7 +8,7 @@ const uuid = getParamsSchema({
 
 const id = getParamsSchema({
   name: 'id',
-  validator: 'integer',
+  validator: 'number', // or 'string', depending on your needs
 });
 
 const name = SlugParamsSchema;

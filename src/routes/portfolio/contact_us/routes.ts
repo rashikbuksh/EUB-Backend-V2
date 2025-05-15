@@ -61,7 +61,7 @@ export const getOne = createRoute({
       'contact-us not found',
     ),
     [HSCode.UNPROCESSABLE_ENTITY]: jsonContent(
-      createErrorSchema(param.uuid),
+      createErrorSchema(param.id),
       'Invalid id error',
     ),
   },
@@ -89,7 +89,7 @@ export const patch = createRoute({
     ),
     [HSCode.UNPROCESSABLE_ENTITY]: jsonContent(
       createErrorSchema(patchSchema)
-        .or(createErrorSchema(param.uuid)),
+        .or(createErrorSchema(param.id)),
       'The validation error(s)',
     ),
   },
@@ -111,7 +111,7 @@ export const remove = createRoute({
       'contact-us not found',
     ),
     [HSCode.UNPROCESSABLE_ENTITY]: jsonContent(
-      createErrorSchema(param.uuid),
+      createErrorSchema(param.id),
       'Invalid id error',
     ),
   },
