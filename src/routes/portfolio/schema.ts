@@ -598,6 +598,7 @@ export const financial_info = portfolio.table('financial_info', {
 export const contact_us_id = portfolio.sequence('contact_us_id', DEFAULT_SEQUENCE);
 
 export const contact_us = portfolio.table('contact_us', {
+  uuid: uuid_primary,
   id: integer('id').default(sql`nextval('portfolio.contact_us_id')`),
   full_name: text('full_name').notNull(),
   email: text('email').notNull(),
