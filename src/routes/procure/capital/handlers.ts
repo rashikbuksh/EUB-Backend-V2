@@ -95,16 +95,8 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     status: sql` CASE 
                     WHEN ${capital.is_quotation} = false THEN 'Requested' 
                     WHEN ${capital.done} = true THEN 'Paid'
-                    WHEN ${capital.sub_category_uuid} IS NOT NULL AND (
-                      SELECT sc.type
-                      FROM procure.sub_category sc
-                      WHERE sc.uuid = ${capital.sub_category_uuid}
-                    ) = 'items' AND ${capital.is_work_order} = false THEN 'Decided'
-                    WHEN ${capital.sub_category_uuid} IS NOT NULL AND (
-                      SELECT sc.type
-                      FROM procure.sub_category sc
-                      WHERE sc.uuid = ${capital.sub_category_uuid}
-                    ) = 'items' AND ${capital.is_work_order} = true THEN 'Committed'
+                    WHEN ${capital.sub_category_uuid} IS NOT NULL AND ${sub_category.type} = 'items' AND ${capital.is_work_order} = false THEN 'Decided'
+                    WHEN ${capital.sub_category_uuid} IS NOT NULL AND ${sub_category.type} = 'items' AND ${capital.is_work_order} = true THEN 'Committed'
                     WHEN ${capital.is_quotation} = true AND ${capital.is_cs} = false AND ${capital.cs_remarks} IS NULL AND ${capital.is_monthly_meeting} = false AND ${capital.monthly_meeting_remarks} IS NULL AND ${capital.is_work_order} = false AND ${capital.work_order_remarks} IS NULL THEN 'Pipeline' 
                     WHEN ${capital.is_quotation} = true AND ${capital.is_cs} = true AND ${capital.cs_remarks} IS NOT NULL AND ${capital.is_monthly_meeting} = false AND ${capital.monthly_meeting_remarks} IS NULL AND ${capital.is_work_order} = false AND ${capital.work_order_remarks} IS NULL THEN 'Pipeline'
                     WHEN ${capital.is_quotation} = true AND ${capital.is_cs} = true AND ${capital.cs_remarks} IS NOT NULL AND ${capital.is_monthly_meeting} = true AND ${capital.monthly_meeting_remarks} IS NOT NULL AND ${capital.is_work_order} = false AND ${capital.work_order_remarks} IS NULL THEN 'Decided'
@@ -117,7 +109,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
                         FROM ${capital_vendor} cv 
                         WHERE cv.capital_uuid = ${capital.uuid}
                     )
-                    WHEN  ${capital.sub_category_uuid} IS NOT NULL THEN (
+                     WHEN ${capital.sub_category_uuid} IS NOT NULL AND ${sub_category.type} = 'items' THEN (
                         SELECT SUM(iwe.quantity::float8 * iwe.unit_price::float8)
                         FROM ${item_work_order_entry} iwe
                         LEFT JOIN ${capital} c ON c.uuid = iwe.capital_uuid
@@ -243,16 +235,8 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     status: sql` CASE 
                     WHEN ${capital.is_quotation} = false THEN 'Requested' 
                     WHEN ${capital.done} = true THEN 'Paid'
-                    WHEN ${capital.sub_category_uuid} IS NOT NULL AND (
-                      SELECT sc.type
-                      FROM procure.sub_category sc
-                      WHERE sc.uuid = ${capital.sub_category_uuid}
-                    ) = 'items' AND ${capital.is_work_order} = false THEN 'Decided'
-                    WHEN ${capital.sub_category_uuid} IS NOT NULL AND (
-                      SELECT sc.type
-                      FROM procure.sub_category sc
-                      WHERE sc.uuid = ${capital.sub_category_uuid}
-                    ) = 'items' AND ${capital.is_work_order} = true THEN 'Committed'
+                    WHEN ${capital.sub_category_uuid} IS NOT NULL AND ${sub_category.type} = 'items' AND ${capital.is_work_order} = false THEN 'Decided'
+                    WHEN ${capital.sub_category_uuid} IS NOT NULL AND ${sub_category.type} = 'items' AND ${capital.is_work_order} = true THEN 'Committed'
                     WHEN ${capital.is_quotation} = true AND ${capital.is_cs} = false AND ${capital.cs_remarks} IS NULL AND ${capital.is_monthly_meeting} = false AND ${capital.monthly_meeting_remarks} IS NULL AND ${capital.is_work_order} = false AND ${capital.work_order_remarks} IS NULL THEN 'Pipeline' 
                     WHEN ${capital.is_quotation} = true AND ${capital.is_cs} = true AND ${capital.cs_remarks} IS NOT NULL AND ${capital.is_monthly_meeting} = false AND ${capital.monthly_meeting_remarks} IS NULL AND ${capital.is_work_order} = false AND ${capital.work_order_remarks} IS NULL THEN 'Pipeline'
                     WHEN ${capital.is_quotation} = true AND ${capital.is_cs} = true AND ${capital.cs_remarks} IS NOT NULL AND ${capital.is_monthly_meeting} = true AND ${capital.monthly_meeting_remarks} IS NOT NULL AND ${capital.is_work_order} = false AND ${capital.work_order_remarks} IS NULL THEN 'Decided'
@@ -266,7 +250,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
                         FROM ${capital_vendor} cv 
                         WHERE cv.capital_uuid = ${capital.uuid}
                     )
-                    WHEN  ${capital.sub_category_uuid} IS NOT NULL THEN (
+                    WHEN ${capital.sub_category_uuid} IS NOT NULL AND ${sub_category.type} = 'items' THEN (
                         SELECT SUM(iwe.quantity::float8 * iwe.unit_price::float8)
                         FROM ${item_work_order_entry} iwe
                         LEFT JOIN ${capital} c ON c.uuid = iwe.capital_uuid
