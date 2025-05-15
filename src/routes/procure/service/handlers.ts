@@ -99,7 +99,6 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     .from(service)
     .leftJoin(hrSchema.users, eq(service.created_by, hrSchema.users.uuid))
     .leftJoin(sub_category, eq(service.sub_category_uuid, sub_category.uuid))
-    .leftJoin(service_payment, eq(service.uuid, service_payment.service_uuid))
     .leftJoin(vendor, eq(service.vendor_uuid, vendor.uuid));
 
   const data = await resultPromise;
