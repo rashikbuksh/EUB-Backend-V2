@@ -57,7 +57,7 @@ export const valueLabel: AppRouteHandler<ValueLabelRoute> = async (c: any) => {
   const { department_uuid } = c.req.valid('query');
   const resultPromise = db.select({
     value: teachers.uuid,
-    label: hrSchema.users.name,
+    label: sql`CONCAT(users.name, CASE WHEN teachers.teacher_email IS NOT NULL THEN ' - ' ELSE '' END, teachers.teacher_email)`,
   })
     .from(teachers)
     .leftJoin(hrSchema.users, eq(teachers.teacher_uuid, hrSchema.users.uuid))
