@@ -15,7 +15,7 @@ export const valueLabelForPublication: AppRouteHandler<ValueLabelRouteForPublica
 
   const resultPromise = db.select({
     value: teachers.publication,
-    label: sql`CONCAT(users.name, CASE WHEN faculty.name IS NOT NULL THEN ' - ' ELSE '' END, faculty.name)`,
+    label: sql`DISTINCT CONCAT(users.name, CASE WHEN faculty.name IS NOT NULL THEN ' - ' ELSE '' END, faculty.name)`,
   })
     .from(teachers)
     .leftJoin(hrSchema.users, eq(teachers.teacher_uuid, hrSchema.users.uuid))
