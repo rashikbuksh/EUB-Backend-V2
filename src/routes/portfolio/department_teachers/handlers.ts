@@ -106,7 +106,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   // Build conditions
   const conditions = [];
   if (portfolio_department) {
-    conditions.push(eq(department.short_name, sql`lower(${portfolio_department})`));
+    conditions.push(eq(sql`department.short_name::text`, sql`lower(${portfolio_department.toLowerCase()})`));
   }
 
   if (is_resign === 'true') {
