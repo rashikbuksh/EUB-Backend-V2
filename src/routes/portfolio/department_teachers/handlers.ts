@@ -1,6 +1,6 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { and, eq, inArray, sql } from 'drizzle-orm';
+import { and, asc, eq, inArray, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import * as HSCode from 'stoker/http-status-codes';
 
@@ -95,6 +95,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     created_by_name: createdByUser.name,
     remarks: department_teachers.remarks,
     teachers_uuid: teachers.uuid,
+    index: department_teachers.index,
   })
     .from(department_teachers)
     .leftJoin(teachers, eq(department_teachers.teachers_uuid, teachers.uuid))
@@ -122,7 +123,8 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
 
   // Apply conditions to the query
   if (conditions.length > 0) {
-    resultPromise.where(and(...conditions));
+    resultPromise.where(and(...conditions))
+      .orderBy(asc(department_teachers.index));
   }
 
   const data = await resultPromise;
