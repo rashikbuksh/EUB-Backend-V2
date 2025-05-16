@@ -123,9 +123,10 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
 
   // Apply conditions to the query
   if (conditions.length > 0) {
-    resultPromise.where(and(...conditions))
-      .orderBy(asc(department_teachers.index));
+    resultPromise.where(and(...conditions));
   }
+
+  resultPromise.orderBy(asc(department_teachers.index));
 
   const data = await resultPromise;
 
