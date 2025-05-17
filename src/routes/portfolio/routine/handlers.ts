@@ -1,6 +1,6 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { and, desc, eq, inArray } from 'drizzle-orm';
+import { and, desc, eq, inArray, sql } from 'drizzle-orm';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
@@ -144,52 +144,52 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   const page = Number.parseInt(c.req.valid('query').page);
 
   const baseQuery = is_pagination === 'true'
-    ? constructSelectAllQuery(resultPromise, c.req.valid('query'), 'created_at', [department.name.name, hrSchema.users.name.name], field_name, field_value)
+    ? constructSelectAllQuery(resultPromise, c.req.valid('query'), 'created_at', [department.short_name.name, hrSchema.users.name.name], field_name, field_value)
     : resultPromise;
 
   if (portfolio_department && program && type) {
-    baseQuery.groupBy(routine.uuid, department.name, hrSchema.users.name, department.faculty_uuid, faculty.name, department.page_link);
+    baseQuery.groupBy(routine.uuid, department.name, department.short_name, hrSchema.users.name, department.faculty_uuid, faculty.name, department.page_link);
     baseQuery.having(and(
-      eq(department.name, portfolio_department),
+      eq(sql`department.short_name::text`, sql`lower(${portfolio_department})`),
       eq(routine.programs, program),
       eq(routine.type, type),
     ));
   }
   else if (portfolio_department && program) {
-    baseQuery.groupBy(routine.uuid, department.name, hrSchema.users.name, department.faculty_uuid, faculty.name, department.page_link);
+    baseQuery.groupBy(routine.uuid, department.name, department.short_name, hrSchema.users.name, department.faculty_uuid, faculty.name, department.page_link);
     baseQuery.having(and(
-      eq(department.name, portfolio_department),
+      eq(sql`department.short_name::text`, sql`lower(${portfolio_department})`),
       eq(routine.programs, program),
     ));
   }
   else if (portfolio_department && type) {
-    baseQuery.groupBy(routine.uuid, department.name, hrSchema.users.name, department.faculty_uuid, faculty.name, department.page_link);
+    baseQuery.groupBy(routine.uuid, department.name, department.short_name, hrSchema.users.name, department.faculty_uuid, faculty.name, department.page_link);
     baseQuery.having(and(
-      eq(department.name, portfolio_department),
+      eq(sql`department.short_name::text`, sql`lower(${portfolio_department})`),
       eq(routine.type, type),
     ));
   }
   else if (program && type) {
-    baseQuery.groupBy(routine.uuid, department.name, hrSchema.users.name, department.faculty_uuid, faculty.name, department.page_link);
+    baseQuery.groupBy(routine.uuid, department.name, department.short_name, hrSchema.users.name, department.faculty_uuid, faculty.name, department.page_link);
     baseQuery.having(and(
       eq(routine.programs, program),
       eq(routine.type, type),
     ));
   }
   else if (portfolio_department) {
-    baseQuery.groupBy(routine.uuid, department.name, hrSchema.users.name, department.faculty_uuid, faculty.name, department.page_link);
-    baseQuery.having(eq(department.name, portfolio_department));
+    baseQuery.groupBy(routine.uuid, department.name, department.short_name, hrSchema.users.name, department.faculty_uuid, faculty.name, department.page_link);
+    baseQuery.having(eq(sql`department.short_name::text`, sql`lower(${portfolio_department})`));
   }
   else if (program) {
-    baseQuery.groupBy(routine.uuid, department.name, hrSchema.users.name, department.faculty_uuid, faculty.name, department.page_link);
+    baseQuery.groupBy(routine.uuid, department.name, department.short_name, hrSchema.users.name, department.faculty_uuid, faculty.name, department.page_link);
     baseQuery.having(eq(routine.programs, program));
   }
   else if (type) {
-    baseQuery.groupBy(routine.uuid, department.name, hrSchema.users.name, department.faculty_uuid, faculty.name, department.page_link);
+    baseQuery.groupBy(routine.uuid, department.name, department.short_name, hrSchema.users.name, department.faculty_uuid, faculty.name, department.page_link);
     baseQuery.having(eq(routine.type, type));
   }
   if (accessArray.length > 0) {
-    baseQuery.groupBy(routine.uuid, department.name, department.short_name, hrSchema.users.name, department.faculty_uuid, faculty.name, department.page_link);
+    baseQuery.groupBy(routine.uuid, department.name, department.short_name, department.short_name, hrSchema.users.name, department.faculty_uuid, faculty.name, department.page_link);
     baseQuery.having(inArray(department.short_name, accessArray));
   }
 
