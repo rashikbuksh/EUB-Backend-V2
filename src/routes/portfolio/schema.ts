@@ -403,6 +403,7 @@ export const routine_type = portfolio.enum('routine_type', [
   'class_routine',
   'exam_schedule',
   'notices',
+  'course_offer',
 ]);
 
 export const routine = portfolio.table('routine', {
