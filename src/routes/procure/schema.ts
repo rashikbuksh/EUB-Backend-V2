@@ -313,7 +313,7 @@ export const item_transfer = procure.table('item_transfer', {
 
 export const sub_purchase_cost_center = procure.table('sub_purchase_cost_center', {
   uuid: uuid_primary,
-  index: integer('index').notNull().unique(),
+  index: integer('index').default(sql`0`),
   purchase_cost_center_uuid: defaultUUID('purchase_cost_center_uuid').references(() => purchase_cost_center.uuid, DEFAULT_OPERATION),
   name: text('name').notNull(),
   created_by: defaultUUID('created_by').references(() => users.uuid, DEFAULT_OPERATION),
