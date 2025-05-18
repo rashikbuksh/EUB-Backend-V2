@@ -121,7 +121,7 @@ export const item = procure.table('item', {
   name: text('name').notNull(),
   quantity: PG_DECIMAL('quantity').default(sql`0`),
   vendor_price: PG_DECIMAL('vendor_price').default(sql`0`),
-  price_validity: DateTime('price_validity').notNull(),
+  price_validity: DateTime('price_validity'),
   created_by: defaultUUID('created_by').references(() => users.uuid, DEFAULT_OPERATION),
   created_at: DateTime('created_at').notNull(),
   updated_at: DateTime('updated_at'),
