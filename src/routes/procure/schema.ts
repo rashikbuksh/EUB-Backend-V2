@@ -238,7 +238,9 @@ export const form = procure.table('form', {
   updated_at: DateTime('updated_at'),
   remarks: text('remarks'),
 });
+
 export const internal_cost_center_department = procure.enum('internal_cost_center_department', ['chairman_bot', 'vice_chancellor', 'treasurer', 'pni', 'pnd', 'civil_engineering', 'admission_office', 'controller_office', 'exam_c_01', 'exam_c_02', 'account_c_01', 'account_c_02', 'cse', 'registrar(hod)', 'additional_registrar', 'additional_registrar_c_01', 'additional_registrar_c_02', 'english', 'business_administration', 'library ', 'ipe_&_iqac', 'textile_engineering', 'proctor_office', 'eee', 'fde', 'medical_centre', 'economics', 'mdgs', 'thm', 'mathematics ', 'pcu', 'program_coordination_manager', 'program_coordination_asst_manager', 'sr_program_coordination_incharge', 'physics', 'chemistry', 'security_director', 'logistics', 'reception_gate', 'ict', 'law']);
+
 export const internal_cost_center = procure.table('internal_cost_center', {
   uuid: uuid_primary,
   authorized_person_uuid: defaultUUID('authorized_person_uuid').references(() => users.uuid, DEFAULT_OPERATION),
@@ -309,6 +311,17 @@ export const item_transfer = procure.table('item_transfer', {
   remarks: text('remarks'),
 });
 
+export const sub_purchase_cost_center = procure.table('sub_purchase_cost_center', {
+  uuid: uuid_primary,
+  index: integer('index').notNull().unique(),
+  purchase_cost_center_uuid: defaultUUID('purchase_cost_center_uuid').references(() => purchase_cost_center.uuid, DEFAULT_OPERATION),
+  name: text('name').notNull(),
+  created_by: defaultUUID('created_by').references(() => users.uuid, DEFAULT_OPERATION),
+  created_at: DateTime('created_at').notNull(),
+  updated_at: DateTime('updated_at'),
+  remarks: text('remarks'),
+});
+
 //* Relations *//
 
 export const procure_category_rel = relations (category, ({ one }) => ({
@@ -344,6 +357,17 @@ export const procure_purchase_cost_center_rel = relations (purchase_cost_center,
   sub_category: one(sub_category, {
     fields: [purchase_cost_center.sub_category_uuid],
     references: [sub_category.uuid],
+  }),
+}));
+
+export const procure_sub_purchase_cost_center_rel = relations (sub_purchase_cost_center, ({ one }) => ({
+  created_by: one(users, {
+    fields: [sub_purchase_cost_center.created_by],
+    references: [users.uuid],
+  }),
+  purchase_cost_center: one(purchase_cost_center, {
+    fields: [sub_purchase_cost_center.purchase_cost_center_uuid],
+    references: [purchase_cost_center.uuid],
   }),
 }));
 
