@@ -16,6 +16,7 @@ import requisition from './requisition';
 import service from './service';
 import service_payment from './service_payment';
 import sub_category from './sub_category';
+import sub_purchase_cost_center from './sub_purchase_cost_center';
 import vendor from './vendor';
 
 export default [
@@ -38,4 +39,5 @@ export default [
   requisition,
   item_requisition,
   item_transfer,
+  sub_purchase_cost_center,
 ];
