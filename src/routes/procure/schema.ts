@@ -71,6 +71,17 @@ export const purchase_cost_center = procure.table('purchase_cost_center', {
   remarks: text('remarks'),
 });
 
+export const sub_purchase_cost_center = procure.table('sub_purchase_cost_center', {
+  uuid: uuid_primary,
+  index: integer('index').default(sql`0`),
+  purchase_cost_center_uuid: defaultUUID('purchase_cost_center_uuid').references(() => purchase_cost_center.uuid, DEFAULT_OPERATION),
+  name: text('name').notNull(),
+  created_by: defaultUUID('created_by').references(() => users.uuid, DEFAULT_OPERATION),
+  created_at: DateTime('created_at').notNull(),
+  updated_at: DateTime('updated_at'),
+  remarks: text('remarks'),
+});
+
 export const vendor_id = procure.sequence('vendor_id', DEFAULT_SEQUENCE);
 
 export const vendor = procure.table('vendor', {
@@ -127,6 +138,7 @@ export const item = procure.table('item', {
   updated_at: DateTime('updated_at'),
   remarks: text('remarks'),
   unit: text('unit').default(sql`null`),
+  sub_purchase_cost_center_uuid: defaultUUID('sub_purchase_cost_center_uuid').references(() => sub_purchase_cost_center.uuid, DEFAULT_OPERATION),
 });
 
 export const general_note = procure.table('general_note', {
@@ -305,17 +317,6 @@ export const item_transfer = procure.table('item_transfer', {
   quantity: PG_DECIMAL('quantity').default(sql`0`),
   reason: item_transfer_reason('reason').notNull().default('emergency'),
   is_requisition_received: boolean('is_requisition_received').default(false),
-  created_by: defaultUUID('created_by').references(() => users.uuid, DEFAULT_OPERATION),
-  created_at: DateTime('created_at').notNull(),
-  updated_at: DateTime('updated_at'),
-  remarks: text('remarks'),
-});
-
-export const sub_purchase_cost_center = procure.table('sub_purchase_cost_center', {
-  uuid: uuid_primary,
-  index: integer('index').default(sql`0`),
-  purchase_cost_center_uuid: defaultUUID('purchase_cost_center_uuid').references(() => purchase_cost_center.uuid, DEFAULT_OPERATION),
-  name: text('name').notNull(),
   created_by: defaultUUID('created_by').references(() => users.uuid, DEFAULT_OPERATION),
   created_at: DateTime('created_at').notNull(),
   updated_at: DateTime('updated_at'),

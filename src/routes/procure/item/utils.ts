@@ -13,6 +13,7 @@ export const insertSchema = createInsertSchema(
   {
     uuid: schema => schema.uuid.length(21),
     purchase_cost_center_uuid: schema => schema.purchase_cost_center_uuid.length(21),
+    sub_purchase_cost_center_uuid: schema => schema.sub_purchase_cost_center_uuid.length(21),
     vendor_price: z.number().optional().default(0),
     created_by: schema => schema.created_by.length(21),
     created_at: schema => schema.created_at.regex(dateTimePattern, {
@@ -29,6 +30,7 @@ export const insertSchema = createInsertSchema(
   created_at: true,
   created_by: true,
 }).partial({
+  sub_purchase_cost_center_uuid: true,
   index: true,
   quantity: true,
   vendor_price: true,
