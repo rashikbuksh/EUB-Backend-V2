@@ -71,11 +71,10 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     created_by: sub_purchase_cost_center.created_by,
     created_by_name: hrSchema.users.name,
     remarks: sub_purchase_cost_center.remarks,
-
   })
     .from(sub_purchase_cost_center)
     .leftJoin(hrSchema.users, eq(sub_purchase_cost_center.created_by, hrSchema.users.uuid))
-    .leftJoin(purchase_cost_center, eq(sub_purchase_cost_center.uuid, purchase_cost_center.uuid))
+    .leftJoin(purchase_cost_center, eq(purchase_cost_center.uuid, sub_purchase_cost_center.purchase_cost_center_uuid))
     .orderBy(desc(sub_purchase_cost_center.created_at));
 
   const data = await resultPromise;
@@ -106,7 +105,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
   })
     .from(sub_purchase_cost_center)
     .leftJoin(hrSchema.users, eq(sub_purchase_cost_center.created_by, hrSchema.users.uuid))
-    .leftJoin(purchase_cost_center, eq(sub_purchase_cost_center.uuid, purchase_cost_center.uuid))
+    .leftJoin(purchase_cost_center, eq(purchase_cost_center.uuid, sub_purchase_cost_center.purchase_cost_center_uuid))
     .where(eq(sub_purchase_cost_center.uuid, uuid));
 
   const data = await resultPromise;
