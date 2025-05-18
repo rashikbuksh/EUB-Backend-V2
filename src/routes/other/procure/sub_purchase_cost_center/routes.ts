@@ -13,6 +13,7 @@ export const valueLabel = createRoute({
     query: z.object({
       access: z.string().optional(),
     }),
+    purchase_cost_center_uuid: z.string().optional(),
   },
   responses: {
     [HSCode.OK]: jsonContent(
