@@ -1,7 +1,5 @@
 import { bearerAuth } from 'hono/bearer-auth';
 import { cors } from 'hono/cors';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 
 import configureOpenAPI from '@/lib/configure_open_api';
 import createApp from '@/lib/create_app';
@@ -15,20 +13,12 @@ const app = createApp();
 
 configureOpenAPI(app);
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
 // ! don't put a trailing slash
 export const basePath = '/v1';
 const isDev = env.NODE_ENV === 'development';
 
 // Serve static files from the 'uploads' directory
-app.use(
-  '/uploads/*',
-  serveStatic({
-    root: isDev ? path.join(__dirname, './') : path.join(__dirname, '../'),
-  }),
-);
+app.use('/uploads/*', serveStatic({ root: isDev ? './' : '../' }));
 
 app.use(`${basePath}/*`, cors({
   origin: ALLOWED_ROUTES,
