@@ -16,7 +16,7 @@ export default function configureOpenAPI(app: AppOpenAPI) {
     },
     servers: [
       { url: env.SERVER_URL, description: 'Dev' },
-      { url: env.SERVER_URL, description: 'Prod' },
+      { url: env.PRODUCTION_URL, description: 'Prod' },
     ],
 
   });
