@@ -18,7 +18,7 @@ export const basePath = '/v1';
 const isDev = env.NODE_ENV === 'development';
 
 // Serve static files from the 'uploads' directory
-app.use('/uploads/*', serveStatic({ root: isDev ? './' : '../' }));
+app.use('/uploads/*', serveStatic({ root: isDev ? './src/' : './' }));
 
 app.use(`${basePath}/*`, cors({
   origin: ALLOWED_ROUTES,
