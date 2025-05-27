@@ -16,9 +16,10 @@ configureOpenAPI(app);
 // ! don't put a trailing slash
 export const basePath = '/v1';
 const isDev = env.NODE_ENV === 'development';
+const isVps = env.NODE_ENV === 'vps';
 
 // Serve static files from the 'uploads' directory
-app.use('/uploads/*', serveStatic({ root: isDev ? './src/' : './' }));
+app.use('/uploads/*', serveStatic({ root: isDev ? './src/' : isVps ? './dist/src/' : './' }));
 
 app.use(`${basePath}/*`, cors({
   origin: ALLOWED_ROUTES,
