@@ -23,7 +23,6 @@ export const insertSchema = createInsertSchema(
   },
 ).required({
   uuid: true,
-
   teacher_uuid: true,
   education: true,
   created_at: true,
@@ -40,6 +39,11 @@ export const insertSchema = createInsertSchema(
   resign_date: true,
   about: true,
   teacher_initial: true,
+  interests: true,
+  awards: true,
+  experience: true,
+  courses: true,
+  corporate: true,
 }).omit({
   id: true,
 });

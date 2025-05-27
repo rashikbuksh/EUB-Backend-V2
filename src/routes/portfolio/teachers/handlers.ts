@@ -88,6 +88,12 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     remarks: teachers.remarks,
     teacher_initial: teachers.teacher_initial,
     status: teachers.status,
+    interests: teachers.interests,
+    awards: teachers.awards,
+    experience: teachers.experience,
+    courses: teachers.courses,
+    corporate: teachers.corporate,
+
   })
     .from(teachers)
     .leftJoin(hrSchema.users, eq(teachers.teacher_uuid, hrSchema.users.uuid))
@@ -147,6 +153,11 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     remarks: teachers.remarks,
     teacher_initial: teachers.teacher_initial,
     status: teachers.status,
+    interests: teachers.interests,
+    awards: teachers.awards,
+    experience: teachers.experience,
+    courses: teachers.courses,
+    corporate: teachers.corporate,
   })
     .from(teachers)
     .leftJoin(hrSchema.users, eq(teachers.teacher_uuid, hrSchema.users.uuid))
@@ -187,6 +198,11 @@ export const getTeacherDetails: AppRouteHandler<GetTeacherDetailsRoute> = async 
     remarks: teachers.remarks,
     teacher_initial: teachers.teacher_initial,
     status: teachers.status,
+    interests: teachers.interests,
+    awards: teachers.awards,
+    experience: teachers.experience,
+    courses: teachers.courses,
+    corporate: teachers.corporate,
   })
     .from(teachers)
     .leftJoin(hrSchema.users, eq(teachers.teacher_uuid, hrSchema.users.uuid))
