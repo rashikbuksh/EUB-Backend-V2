@@ -23,6 +23,7 @@ export const insertSchema = createInsertSchema(
   uuid: true,
   title: true,
   index: true,
+  type: true,
   description: true,
   created_at: true,
   created_by: true,
