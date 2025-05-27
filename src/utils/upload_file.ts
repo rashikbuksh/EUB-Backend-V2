@@ -12,7 +12,7 @@ export async function insertFile(file: any, folderName: string) {
   const buffer = await file.arrayBuffer(); // Ensure this is awaited
 
   const upload_path = `/uploads/${folderName}/${nanoid()}.${file.name.split('.').pop()}`;
-  const fullUploadPath = path.join(__dirname, '../../', upload_path);
+  const fullUploadPath = path.join(__dirname, '../', upload_path);
 
   // Ensure the directory exists
   fs.mkdirSync(path.dirname(fullUploadPath), { recursive: true });
@@ -24,7 +24,7 @@ export async function insertFile(file: any, folderName: string) {
 
 export async function deleteFile(filePath: string) {
   // delete the file
-  const fullFilePath = path.join(__dirname, '../../', filePath);
+  const fullFilePath = path.join(__dirname, '../', filePath);
   fs.unlinkSync(fullFilePath);
 }
 
