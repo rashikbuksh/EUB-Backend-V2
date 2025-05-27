@@ -361,6 +361,11 @@ export const teachers = portfolio.table('teachers', {
   remarks: text('remarks'),
   teacher_initial: text('teacher_initial').default(sql`null`),
   status: boolean('status').default(false),
+  interests: text('interests').default(sql`null`),
+  awards: text('awards').default(sql`null`),
+  experience: text('experience').default(sql`null`),
+  courses: text('courses').default(sql`null`),
+  corporate: text('corporate').default(sql`null`),
 });
 
 //* department teachers
