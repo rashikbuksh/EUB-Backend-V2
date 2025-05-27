@@ -140,7 +140,8 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     remarks: feature.remarks,
   })
     .from(feature)
-    .leftJoin(hrSchema.users, eq(feature.created_by, hrSchema.users.uuid));
+    .leftJoin(hrSchema.users, eq(feature.created_by, hrSchema.users.uuid))
+    .orderBy(asc(feature.index));
 
   if (feature_type) {
     resultPromise.where(eq(feature.type, feature_type));
