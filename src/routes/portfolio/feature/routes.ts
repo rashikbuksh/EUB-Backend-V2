@@ -23,6 +23,7 @@ export const list = createRoute({
       is_pagination: z.string().optional(),
       field_name: z.string().optional(),
       field_value: z.string().optional(),
+      feature_type: z.string().optional(),
     }),
   },
   tags,
