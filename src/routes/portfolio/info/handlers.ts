@@ -1,6 +1,6 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { and, desc, eq, inArray } from 'drizzle-orm';
+import { and, eq, inArray, sql } from 'drizzle-orm';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
@@ -117,6 +117,12 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   const resultPromise = db.select({
     id: info.id,
     uuid: info.uuid,
+    department_uuid: sql`null as department_uuid`,
+    department_name: sql`null as department_name`,
+    faculty_uuid: sql`null as faculty_uuid`,
+    faculty_name: sql`null as faculty_name`,
+    programs: sql`null as programs`,
+    type: sql`null as type`,
     description: info.description,
     page_name: info.page_name,
     file: info.file,
@@ -124,18 +130,61 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     created_by_name: hrSchema.users.name,
     created_at: info.created_at,
     updated_at: info.updated_at,
+    remarks: info.remarks,
+    is_global: sql`true as is_global`,
+    page_link: sql`null as page_link`,
   })
     .from(info)
-    .leftJoin(hrSchema.users, eq(info.created_by, hrSchema.users.uuid));
+    .leftJoin(hrSchema.users, eq(info.created_by, hrSchema.users.uuid))
+    .where(and(
+      page_name ? eq(info.page_name, page_name) : sql`true`,
+    ));
 
-  const resultPromiseForCount = await resultPromise;
+  let routineResultPromise = null;
+
+  if (page_name === 'notices') {
+    routineResultPromise = db.select({
+      id: routine.id,
+      uuid: routine.uuid,
+      department_uuid: routine.department_uuid,
+      department_name: department.name,
+      faculty_uuid: department.faculty_uuid,
+      faculty_name: faculty.name,
+      programs: routine.programs,
+      type: routine.type,
+      description: routine.description,
+      page_name: sql`null as page_name`,
+      file: routine.file,
+      created_by: routine.created_by,
+      created_by_name: hrSchema.users.name,
+      created_at: routine.created_at,
+      updated_at: routine.updated_at,
+      remarks: routine.remarks,
+      is_global: routine.is_global,
+      page_link: department.page_link,
+    })
+      .from(routine)
+      .leftJoin(department, eq(routine.department_uuid, department.uuid))
+      .leftJoin(hrSchema.users, eq(routine.created_by, hrSchema.users.uuid))
+      .leftJoin(faculty, eq(department.faculty_uuid, faculty.uuid))
+      .where(and(
+        eq(routine.type, page_name),
+        eq(routine.is_global, true),
+      ));
+  }
 
   const limit = Number.parseInt(c.req.valid('query').limit);
   const page = Number.parseInt(c.req.valid('query').page);
 
-  const baseQuery = is_pagination === 'true'
-    ? constructSelectAllQuery(resultPromise, c.req.valid('query'), 'created_at', [hrSchema.users.name.name], field_name, field_value)
+  const mergeQuery = page_name === 'notices' && routineResultPromise
+    ? resultPromise.union(routineResultPromise)
     : resultPromise;
+
+  const mergeQueryPromise = await mergeQuery;
+
+  const baseQuery = is_pagination === 'true'
+    ? constructSelectAllQuery(mergeQuery, c.req.valid('query'), 'created_at', [hrSchema.users.name.name], field_name, field_value)
+    : mergeQuery;
 
   if (page_name) {
     baseQuery.groupBy(info.uuid, hrSchema.users.name);
@@ -150,54 +199,20 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
       baseQuery.having(inArray(info.page_name, accessArray));
     }
   }
-  let routineData;
-
-  if (page_name === 'notices') {
-    const routineResultPromise = db.select({
-      id: routine.id,
-      uuid: routine.uuid,
-      department_uuid: routine.department_uuid,
-      department_name: department.name,
-      faculty_uuid: department.faculty_uuid,
-      faculty_name: faculty.name,
-      programs: routine.programs,
-      type: routine.type,
-      file: routine.file,
-      description: routine.description,
-      created_at: routine.created_at,
-      updated_at: routine.updated_at,
-      created_by: routine.created_by,
-      created_by_name: hrSchema.users.name,
-      remarks: routine.remarks,
-      is_global: routine.is_global,
-      page_link: department.page_link,
-    })
-      .from(routine)
-      .leftJoin(department, eq(routine.department_uuid, department.uuid))
-      .leftJoin(hrSchema.users, eq(routine.created_by, hrSchema.users.uuid))
-      .leftJoin(faculty, eq(department.faculty_uuid, faculty.uuid))
-      .where(and(
-        eq(routine.type, page_name),
-        eq(routine.is_global, true),
-      ))
-      .orderBy(desc(routine.created_at));
-
-    routineData = await routineResultPromise;
-  }
 
   const infoData = await baseQuery;
 
-  const data = page_name === 'notices' && routineData ? [...infoData, ...routineData] : infoData;
+  const data = infoData;
 
   // sort data based on created_at in descending order
   data.sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
   const pagination = is_pagination === 'true'
     ? {
-        total_record: resultPromiseForCount.length + (routineData ? routineData.length : 0),
+        total_record: mergeQueryPromise.length,
         current_page: Number(page),
-        total_page: Math.ceil(resultPromiseForCount.length + (routineData ? routineData.length : 0) / limit),
-        next_page: page + 1 > Math.ceil(resultPromiseForCount.length + (routineData ? routineData.length : 0) / limit) ? null : page + 1,
+        total_page: Math.ceil(mergeQueryPromise.length / limit),
+        next_page: page + 1 > Math.ceil(mergeQueryPromise.length / limit) ? null : page + 1,
         prev_page: page - 1 <= 0 ? null : page - 1,
       }
     : null;
