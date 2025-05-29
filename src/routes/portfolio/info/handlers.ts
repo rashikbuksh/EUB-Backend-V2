@@ -189,12 +189,15 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
 
   const data = page_name === 'notices' && routineData ? [...infoData, ...routineData] : infoData;
 
+  // sort data based on created_at in descending order
+  data.sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+
   const pagination = is_pagination === 'true'
     ? {
-        total_record: resultPromiseForCount.length,
+        total_record: resultPromiseForCount.length + (routineData ? routineData.length : 0),
         current_page: Number(page),
-        total_page: Math.ceil(resultPromiseForCount.length / limit),
-        next_page: page + 1 > Math.ceil(resultPromiseForCount.length / limit) ? null : page + 1,
+        total_page: Math.ceil(resultPromiseForCount.length + (routineData ? routineData.length : 0) / limit),
+        next_page: page + 1 > Math.ceil(resultPromiseForCount.length + (routineData ? routineData.length : 0) / limit) ? null : page + 1,
         prev_page: page - 1 <= 0 ? null : page - 1,
       }
     : null;
