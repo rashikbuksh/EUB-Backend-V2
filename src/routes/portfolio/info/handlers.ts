@@ -1,6 +1,6 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { and, eq, inArray } from 'drizzle-orm';
+import { and, desc, eq, inArray } from 'drizzle-orm';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
@@ -179,7 +179,8 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
       .where(and(
         eq(routine.type, page_name),
         eq(routine.is_global, true),
-      ));
+      ))
+      .orderBy(desc(routine.created_at));
 
     routineData = await routineResultPromise;
   }
