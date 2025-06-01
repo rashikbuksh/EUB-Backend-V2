@@ -178,7 +178,7 @@ export const getItemRequisitionDetailsByRequisitionUuid: AppRouteHandler<GetItem
       LEFT JOIN hr.users ON item_requisition.created_by = hr.users.uuid
       LEFT JOIN procure.item ON item_requisition.item_uuid = item.uuid
       WHERE item_requisition.requisition_uuid = ${requisition.uuid}
-      ORDER BY item_requisition.created_at DESC), '{}')`,
+      ORDER BY item_requisition.index ASC), '{}')`,
     },
   )
     .from(requisition)
