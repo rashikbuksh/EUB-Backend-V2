@@ -23,7 +23,7 @@ export const insertSchema = createInsertSchema(
     }),
     req_quantity: z.number().optional().default(0),
     provided_quantity: z.number().optional().default(0),
-
+    index: z.number().optional().default(0),
   },
 ).required({
   uuid: true,
@@ -36,6 +36,7 @@ export const insertSchema = createInsertSchema(
   provided_quantity: true,
   updated_at: true,
   remarks: true,
+  index: true,
 });
 
 export const patchSchema = insertSchema.partial();

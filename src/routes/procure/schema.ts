@@ -297,6 +297,7 @@ export const requisition_log = procure.table('requisition_log', {
 
 export const item_requisition = procure.table('item_requisition', {
   uuid: uuid_primary,
+  index: integer('index').default(sql`0`),
   requisition_uuid: defaultUUID('requisition_uuid').references(() => requisition.uuid, DEFAULT_OPERATION),
   item_uuid: defaultUUID('item_uuid').references(() => item.uuid, DEFAULT_OPERATION),
   req_quantity: PG_DECIMAL('req_quantity').default(sql`0`),
