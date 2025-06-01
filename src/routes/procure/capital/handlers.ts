@@ -8,6 +8,7 @@ import db from '@/db';
 import { generateDynamicId } from '@/lib/dynamic_id';
 import * as hrSchema from '@/routes/hr/schema';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
+import { deleteFile, insertFile, updateFile } from '@/utils/upload_file';
 
 import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
 
@@ -16,9 +17,48 @@ import { capital, capital_vendor, item_work_order_entry, sub_category, vendor } 
 const sv_vendor = alias(vendor, 'sv_vendor');
 
 export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
-  const value = c.req.valid('json');
+  const formData = await c.req.parseBody();
+
+  const quotation_file = formData.quotation_file;
+  const cs_file = formData.cs_file;
+  const monthly_meeting_file = formData.monthly_meeting_file;
+  const work_order_file = formData.work_order_file;
+  const delivery_statement_file = formData.delivery_statement_file;
+
+  const quotationFilePath = quotation_file ? await insertFile(quotation_file, 'public/capital/quotation') : null;
+  const csFilePath = cs_file ? await insertFile(cs_file, 'public/capital/cs') : null;
+  const monthlyMeetingFilePath = monthly_meeting_file ? await insertFile(monthly_meeting_file, 'public/capital/monthly-meeting') : null;
+  const workOrderFilePath = work_order_file ? await insertFile(work_order_file, 'public/capital/work-order') : null;
+  const deliveryStatementFilePath = delivery_statement_file ? await insertFile(delivery_statement_file, 'public/capital/delivery-statement') : null;
 
   const newId = await generateDynamicId(capital, capital.id, capital.created_at);
+
+  const value = {
+    uuid: formData.uuid,
+    index: formData.index,
+    sub_category_uuid: formData.sub_category_uuid,
+    vendor_uuid: formData.vendor_uuid,
+    name: formData.name,
+    is_quotation: formData.is_quotation,
+    is_cs: formData.is_cs,
+    cs_remarks: formData.cs_remarks,
+    is_monthly_meeting: formData.is_monthly_meeting,
+    monthly_meeting_remarks: formData.monthly_meeting_remarks,
+    is_work_order: formData.is_work_order,
+    work_order_remarks: formData.work_order_remarks,
+    is_delivery_statement: formData.is_delivery_statement,
+    delivery_statement_remarks: formData.delivery_statement_remarks,
+    done: formData.done,
+    created_at: formData.created_at,
+    updated_at: formData.updated_at,
+    created_by: formData.created_by,
+    remarks: formData.remarks,
+    quotation_file: quotationFilePath,
+    cs_file: csFilePath,
+    monthly_meeting_file: monthlyMeetingFilePath,
+    work_order_file: workOrderFilePath,
+    delivery_statement_file: deliveryStatementFilePath,
+  };
 
   const [data] = await db.insert(capital).values({
     id: newId,
@@ -32,7 +72,38 @@ export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
 
 export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
-  const updates = c.req.valid('json');
+
+  const formData = await c.req.parseBody();
+
+  const [existingCapital] = await db.select().from(capital).where(eq(capital.uuid, uuid));
+
+  // Handle file fields
+  const fileFields = [
+    { key: 'quotation_file', path: 'public/capital/quotation' },
+    { key: 'cs_file', path: 'public/capital/cs' },
+    { key: 'monthly_meeting_file', path: 'public/capital/monthly-meeting' },
+    { key: 'work_order_file', path: 'public/capital/work_order' },
+    { key: 'delivery_statement_file', path: 'public/capital/delivery-statement' },
+  ];
+
+  // Add this type assertion to allow string indexing
+  const existingCapitalObj = existingCapital as Record<string, any>;
+
+  for (const { key, path } of fileFields) {
+    if (formData[key] && typeof formData[key] === 'object') {
+      if (existingCapitalObj && existingCapitalObj[key]) {
+        formData[key] = await updateFile(formData[key], existingCapitalObj[key], path);
+      }
+      else {
+        formData[key] = await insertFile(formData[key], path);
+      }
+    }
+  }
+
+  // Build updates object, only including fields present in formData
+  const updates = Object.fromEntries(
+    Object.entries(formData).filter(([_, v]) => v !== undefined),
+  );
 
   if (Object.keys(updates).length === 0)
     return ObjectNotFound(c);
@@ -52,6 +123,26 @@ export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
 
 export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
+
+  const [capitalData] = await db.select().from(capital).where(eq(capital.uuid, uuid));
+
+  if (capitalData) {
+    const fileFields = [
+      'quotation_file',
+      'cs_file',
+      'monthly_meeting_file',
+      'work_order_file',
+      'delivery_statement_file',
+    ];
+
+    const capitalDataObj = capitalData as Record<string, any>;
+
+    for (const key of fileFields) {
+      if (capitalDataObj[key]) {
+        deleteFile(capitalDataObj[key]);
+      }
+    }
+  }
 
   const [data] = await db.delete(capital)
     .where(eq(capital.uuid, uuid))
@@ -92,6 +183,11 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     created_by: capital.created_by,
     created_by_name: hrSchema.users.name,
     remarks: capital.remarks,
+    quotation_file: capital.quotation_file,
+    cs_file: capital.cs_file,
+    monthly_meeting_file: capital.monthly_meeting_file,
+    work_order_file: capital.work_order_file,
+    delivery_statement_file: capital.delivery_statement_file,
     status: sql` CASE 
                     
                     WHEN ${capital.done} = true THEN 'Paid'
@@ -199,6 +295,11 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     created_by: capital.created_by,
     created_by_name: hrSchema.users.name,
     remarks: capital.remarks,
+    quotation_file: capital.quotation_file,
+    cs_file: capital.cs_file,
+    monthly_meeting_file: capital.monthly_meeting_file,
+    work_order_file: capital.work_order_file,
+    delivery_statement_file: capital.delivery_statement_file,
     quotations: sql`
     COALESCE(
         jsonb_agg(
