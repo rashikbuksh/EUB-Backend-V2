@@ -121,6 +121,11 @@ export const capital = procure.table('capital', {
   updated_at: DateTime('updated_at'),
   remarks: text('remarks'),
   id: integer('id'),
+  quotation_file: text('quotation_file').default(sql`null`),
+  cs_file: text('cs_file').default(sql`null`),
+  monthly_meeting_file: text('monthly_meeting_file').default(sql`null`),
+  work_order_file: text('work_order_file').default(sql`null`),
+  delivery_statement_file: text('delivery_statement_file').default(sql`null`),
 });
 
 export const item_index = procure.sequence('item_index', DEFAULT_SEQUENCE);

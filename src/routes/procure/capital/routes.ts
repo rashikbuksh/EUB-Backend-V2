@@ -1,5 +1,5 @@
 import * as HSCode from 'stoker/http-status-codes';
-import { jsonContent, jsonContentRequired } from 'stoker/openapi/helpers';
+import { jsonContent } from 'stoker/openapi/helpers';
 import { createErrorSchema } from 'stoker/openapi/schemas';
 
 import { notFoundSchema } from '@/lib/constants';
@@ -31,10 +31,15 @@ export const create = createRoute({
   path: '/procure/capital',
   method: 'post',
   request: {
-    body: jsonContentRequired(
-      insertSchema,
-      'The capital to create',
-    ),
+    body: {
+      content: {
+        'multipart/form-data': {
+          schema: {
+            ...insertSchema,
+          },
+        },
+      },
+    },
   },
   tags,
   responses: {
@@ -77,10 +82,15 @@ export const patch = createRoute({
   method: 'patch',
   request: {
     params: param.uuid,
-    body: jsonContentRequired(
-      patchSchema,
-      'The capital updates',
-    ),
+    body: {
+      content: {
+        'multipart/form-data': {
+          schema: {
+            ...patchSchema,
+          },
+        },
+      },
+    },
   },
   tags,
   responses: {

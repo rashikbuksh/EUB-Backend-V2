@@ -39,6 +39,11 @@ export const insertSchema = createInsertSchema(
   done: true,
   updated_at: true,
   remarks: true,
+  quotation_file: true,
+  cs_file: true,
+  monthly_meeting_file: true,
+  work_order_file: true,
+  delivery_statement_file: true,
 });
 
 export const patchSchema = insertSchema.partial();
