@@ -612,6 +612,8 @@ export const contact_us = portfolio.table('contact_us', {
   description: text('description').notNull(),
   created_at: DateTime('created_at').notNull().$defaultFn(() => 'now()'),
   updated_at: DateTime('updated_at').$onUpdate(() => 'now()'),
+  phone: text('phone').default(sql`null`),
+  is_response: boolean('is_response').default(false),
 });
 
 //* offer

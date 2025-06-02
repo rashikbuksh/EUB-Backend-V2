@@ -38,6 +38,8 @@ export const insertSchema = createInsertSchema(
   updated_at: true,
   remarks: true,
   unit: true,
+  threshold: true,
+  lead_time: true,
 });
 
 export const patchSchema = insertSchema.partial();
