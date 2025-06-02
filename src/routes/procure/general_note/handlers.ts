@@ -25,6 +25,8 @@ export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
 
   const general_note_file = formData.general_note_file;
 
+  console.log('formData general_note', formData.general_note_file);
+
   const generalNoteFilePath = general_note_file ? await insertFile(general_note_file, 'public/general-note') : null;
 
   const value = {
@@ -49,8 +51,12 @@ export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
 export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
   // const updates = c.req.valid('json');
-
+  console.log('uuid', uuid);
   const formData = await c.req.parseBody();
+
+  console.log('formData', formData);
+
+  console.log('formData general_note', formData.general_note_file);
 
   // updates includes file then do it else exclude it
   if (formData.general_note_file && typeof formData.general_note_file === 'object') {
@@ -69,22 +75,22 @@ export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
       const generalNoteFilePath = await insertFile(formData.general_note_file, 'public/general-note');
       formData.general_note_file = generalNoteFilePath;
     }
-
-    if (Object.keys(formData).length === 0)
-      return ObjectNotFound(c);
-
-    const [data] = await db.update(general_note)
-      .set(formData)
-      .where(eq(general_note.uuid, uuid))
-      .returning({
-        name: general_note.uuid,
-      });
-
-    if (!data)
-      return DataNotFound(c);
-
-    return c.json(createToast('update', data.name ?? ''), HSCode.OK);
   }
+
+  if (Object.keys(formData).length === 0)
+    return ObjectNotFound(c);
+
+  const [data] = await db.update(general_note)
+    .set(formData)
+    .where(eq(general_note.uuid, uuid))
+    .returning({
+      name: general_note.uuid,
+    });
+
+  if (!data)
+    return DataNotFound(c);
+
+  return c.json(createToast('update', data.name), HSCode.OK);
 };
 
 export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
