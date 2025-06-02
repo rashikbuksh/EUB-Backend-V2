@@ -194,14 +194,14 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
                     WHEN ${capital.sub_category_uuid} IS NOT NULL AND ${sub_category.type} = 'items' AND ${capital.is_work_order} = false THEN 'Decided'
                     WHEN ${capital.sub_category_uuid} IS NOT NULL AND ${sub_category.type} = 'items' AND ${capital.is_work_order} = true THEN 'Committed'
                     WHEN ${capital.is_quotation} = false THEN 'Requested'
-                    WHEN ${capital.is_quotation} = true AND ${capital.is_cs} = false AND ${capital.cs_remarks} IS NULL AND ${capital.is_monthly_meeting} = false AND ${capital.monthly_meeting_remarks} IS NULL AND ${capital.is_work_order} = false AND ${capital.work_order_remarks} IS NULL THEN 'Pipeline' 
-                    WHEN ${capital.is_quotation} = true AND ${capital.is_cs} = true AND ${capital.cs_remarks} IS NOT NULL AND ${capital.is_monthly_meeting} = false AND ${capital.monthly_meeting_remarks} IS NULL AND ${capital.is_work_order} = false AND ${capital.work_order_remarks} IS NULL THEN 'Pipeline'
-                    WHEN ${capital.is_quotation} = true AND ${capital.is_cs} = true AND ${capital.cs_remarks} IS NOT NULL AND ${capital.is_monthly_meeting} = true AND ${capital.monthly_meeting_remarks} IS NOT NULL AND ${capital.is_work_order} = false AND ${capital.work_order_remarks} IS NULL THEN 'Decided'
-                    WHEN ${capital.is_quotation} = true AND ${capital.is_cs} = true AND ${capital.cs_remarks} IS NOT NULL AND ${capital.is_monthly_meeting} = true AND ${capital.monthly_meeting_remarks} IS NOT NULL AND ${capital.is_work_order} = true AND ${capital.work_order_remarks} IS NOT NULL THEN 'Committed'
+                    WHEN ${capital.is_quotation} = true AND ${capital.is_cs} = false AND ${capital.is_monthly_meeting} = false  AND ${capital.is_work_order} = false THEN 'Pipeline' 
+                    WHEN ${capital.is_quotation} = true AND ${capital.is_cs} = true AND ${capital.is_monthly_meeting} = false AND ${capital.is_work_order} = false THEN 'Pipeline'
+                    WHEN ${capital.is_quotation} = true AND ${capital.is_cs} = true AND ${capital.is_monthly_meeting} = true AND ${capital.is_work_order} = false THEN 'Decided'
+                    WHEN ${capital.is_quotation} = true AND ${capital.is_cs} = true AND ${capital.is_monthly_meeting} = true AND ${capital.is_work_order} = true THEN 'Committed'
                   END`,
     value: sql` CASE 
                    
-                    WHEN ${capital.is_quotation} = true AND ${capital.is_cs} = false AND ${capital.cs_remarks} IS NULL AND ${capital.is_monthly_meeting} = false AND ${capital.monthly_meeting_remarks} IS NULL AND ${capital.is_work_order} = false AND ${capital.work_order_remarks} IS NULL THEN (
+                    WHEN ${capital.is_quotation} = true AND ${capital.is_cs} = false AND ${capital.is_monthly_meeting} = false AND ${capital.is_work_order} = false THEN (
                         SELECT MIN(cv.amount)::float8 
                         FROM ${capital_vendor} cv 
                         WHERE cv.capital_uuid = ${capital.uuid}
@@ -214,17 +214,17 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
                         WHERE sc.uuid = ${capital.sub_category_uuid} AND sc.type = 'items'
                     )
                     WHEN ${capital.is_quotation} = false THEN 0
-                    WHEN ${capital.is_quotation} = true AND ${capital.is_cs} = true AND ${capital.cs_remarks} IS NOT NULL AND ${capital.is_monthly_meeting} = false AND ${capital.monthly_meeting_remarks} IS NULL AND ${capital.is_work_order} = false AND ${capital.work_order_remarks} IS NULL THEN (
+                    WHEN ${capital.is_quotation} = true AND ${capital.is_cs} = true AND ${capital.is_monthly_meeting} = false AND ${capital.is_work_order} = false THEN (
                         SELECT MIN(cv.amount)::float8 
                         FROM ${capital_vendor} cv 
                         WHERE cv.capital_uuid = ${capital.uuid}
                     )
-                    WHEN ${capital.is_quotation} = true AND ${capital.is_cs} = true AND ${capital.cs_remarks} IS NOT NULL AND ${capital.is_monthly_meeting} = true AND ${capital.monthly_meeting_remarks} IS NOT NULL AND ${capital.is_work_order} = false AND ${capital.work_order_remarks} IS NULL THEN (
+                    WHEN ${capital.is_quotation} = true AND ${capital.is_cs} = true AND ${capital.is_monthly_meeting} = true AND ${capital.is_work_order} = false THEN (
                         SELECT MIN(cv.amount)::float8 
                         FROM ${capital_vendor} cv 
                         WHERE cv.capital_uuid = ${capital.uuid}
                     )
-                    WHEN ${capital.is_quotation} = true AND ${capital.is_cs} = true AND ${capital.cs_remarks} IS NOT NULL AND ${capital.is_monthly_meeting} = true AND ${capital.monthly_meeting_remarks} IS NOT NULL AND ${capital.is_work_order} = true AND ${capital.work_order_remarks} IS NOT NULL THEN (
+                    WHEN ${capital.is_quotation} = true AND ${capital.is_cs} = true AND ${capital.is_monthly_meeting} = true AND ${capital.is_work_order} = true THEN (
                         SELECT cv.amount::float8
                         FROM ${capital_vendor} cv 
                         WHERE cv.capital_uuid = ${capital.uuid} AND cv.vendor_uuid = ${capital.vendor_uuid}
@@ -341,15 +341,15 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
                     WHEN ${capital.sub_category_uuid} IS NOT NULL AND ${sub_category.type} = 'items' AND ${capital.is_work_order} = false THEN 'Decided'
                     WHEN ${capital.sub_category_uuid} IS NOT NULL AND ${sub_category.type} = 'items' AND ${capital.is_work_order} = true THEN 'Committed'
                     WHEN ${capital.is_quotation} = false THEN 'Requested' 
-                    WHEN ${capital.is_quotation} = true AND ${capital.is_cs} = false AND ${capital.cs_remarks} IS NULL AND ${capital.is_monthly_meeting} = false AND ${capital.monthly_meeting_remarks} IS NULL AND ${capital.is_work_order} = false AND ${capital.work_order_remarks} IS NULL THEN 'Pipeline' 
-                    WHEN ${capital.is_quotation} = true AND ${capital.is_cs} = true AND ${capital.cs_remarks} IS NOT NULL AND ${capital.is_monthly_meeting} = false AND ${capital.monthly_meeting_remarks} IS NULL AND ${capital.is_work_order} = false AND ${capital.work_order_remarks} IS NULL THEN 'Pipeline'
-                    WHEN ${capital.is_quotation} = true AND ${capital.is_cs} = true AND ${capital.cs_remarks} IS NOT NULL AND ${capital.is_monthly_meeting} = true AND ${capital.monthly_meeting_remarks} IS NOT NULL AND ${capital.is_work_order} = false AND ${capital.work_order_remarks} IS NULL THEN 'Decided'
-                    WHEN ${capital.is_quotation} = true AND ${capital.is_cs} = true AND ${capital.cs_remarks} IS NOT NULL AND ${capital.is_monthly_meeting} = true AND ${capital.monthly_meeting_remarks} IS NOT NULL AND ${capital.is_work_order} = true AND ${capital.work_order_remarks} IS NOT NULL THEN 'Committed'
+                    WHEN ${capital.is_quotation} = true AND ${capital.is_cs} = false AND ${capital.is_monthly_meeting} = false AND ${capital.is_work_order} = false THEN 'Pipeline' 
+                    WHEN ${capital.is_quotation} = true AND ${capital.is_cs} = true AND ${capital.is_monthly_meeting} = false AND ${capital.is_work_order} = false THEN 'Pipeline'
+                    WHEN ${capital.is_quotation} = true AND ${capital.is_cs} = true AND ${capital.is_monthly_meeting} = true AND ${capital.is_work_order} = false THEN 'Decided'
+                    WHEN ${capital.is_quotation} = true AND ${capital.is_cs} = true AND ${capital.is_monthly_meeting} = true AND ${capital.is_work_order} = true THEN 'Committed'
                    
                   END`,
     value: sql` CASE 
                     
-                    WHEN ${capital.is_quotation} = true AND ${capital.is_cs} = false AND ${capital.cs_remarks} IS NULL AND ${capital.is_monthly_meeting} = false AND ${capital.monthly_meeting_remarks} IS NULL AND ${capital.is_work_order} = false AND ${capital.work_order_remarks} IS NULL THEN (
+                    WHEN ${capital.is_quotation} = true AND ${capital.is_cs} = false AND ${capital.is_monthly_meeting} = false AND ${capital.is_work_order} = false THEN (
                         SELECT MIN(cv.amount)::float8  
                         FROM ${capital_vendor} cv 
                         WHERE cv.capital_uuid = ${capital.uuid}
@@ -362,17 +362,17 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
                         WHERE sc.uuid = ${capital.sub_category_uuid} AND sc.type = 'items'
                     )
                     WHEN ${capital.is_quotation} = false THEN 0
-                    WHEN ${capital.is_quotation} = true AND ${capital.is_cs} = true AND ${capital.cs_remarks} IS NOT NULL AND ${capital.is_monthly_meeting} = false AND ${capital.monthly_meeting_remarks} IS NULL AND ${capital.is_work_order} = false AND ${capital.work_order_remarks} IS NULL THEN (
+                    WHEN ${capital.is_quotation} = true AND ${capital.is_cs} = true AND ${capital.is_monthly_meeting} = false AND ${capital.is_work_order} = false THEN (
                         SELECT MIN(cv.amount)::float8  
                         FROM ${capital_vendor} cv 
                         WHERE cv.capital_uuid = ${capital.uuid}
                     )
-                    WHEN ${capital.is_quotation} = true AND ${capital.is_cs} = true AND ${capital.cs_remarks} IS NOT NULL AND ${capital.is_monthly_meeting} = true AND ${capital.monthly_meeting_remarks} IS NOT NULL AND ${capital.is_work_order} = false AND ${capital.work_order_remarks} IS NULL THEN (
+                    WHEN ${capital.is_quotation} = true AND ${capital.is_cs} = true AND ${capital.is_monthly_meeting} = true AND ${capital.is_work_order} = false THEN (
                         SELECT MIN(cv.amount)::float8  
                         FROM ${capital_vendor} cv 
                         WHERE cv.capital_uuid = ${capital.uuid}
                     )
-                    WHEN ${capital.is_quotation} = true AND ${capital.is_cs} = true AND ${capital.cs_remarks} IS NOT NULL AND ${capital.is_monthly_meeting} = true AND ${capital.monthly_meeting_remarks} IS NOT NULL AND ${capital.is_work_order} = true AND ${capital.work_order_remarks} IS NOT NULL THEN (
+                    WHEN ${capital.is_quotation} = true AND ${capital.is_cs} = true AND ${capital.is_monthly_meeting} = true AND ${capital.is_work_order} = true THEN (
                         SELECT cv.amount::float8 
                         FROM ${capital_vendor} cv 
                         WHERE cv.capital_uuid = ${capital.uuid} AND cv.vendor_uuid = ${capital.vendor_uuid}
