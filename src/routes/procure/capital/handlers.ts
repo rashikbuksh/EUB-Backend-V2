@@ -64,6 +64,7 @@ export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
     work_order_date: formData.work_order_date ? formData.work_order_date : null,
     delivery_statement_date: formData.delivery_statement_date ? formData.delivery_statement_date : null,
     monthly_meeting_schedule_date: formData.monthly_meeting_schedule_date,
+    done_date: formData.done_date ? formData.done_date : null,
   };
 
   const [data] = await db.insert(capital).values({
@@ -200,6 +201,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     work_order_date: capital.work_order_date,
     delivery_statement_date: capital.delivery_statement_date,
     monthly_meeting_schedule_date: capital.monthly_meeting_schedule_date,
+    done_date: capital.done_date,
     status: sql` CASE 
                     
                     WHEN ${capital.done} = true THEN 'Paid'
@@ -318,6 +320,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     work_order_date: capital.work_order_date,
     delivery_statement_date: capital.delivery_statement_date,
     monthly_meeting_schedule_date: capital.monthly_meeting_schedule_date,
+    done_date: capital.done_date,
     quotations: sql`
     COALESCE(
         jsonb_agg(

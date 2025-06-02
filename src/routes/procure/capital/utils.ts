@@ -50,6 +50,7 @@ export const insertSchema = createInsertSchema(
   monthly_meeting_date: true,
   work_order_date: true,
   delivery_statement_date: true,
+  done_date: true,
 });
 
 export const patchSchema = insertSchema.partial();
