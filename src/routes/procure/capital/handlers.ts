@@ -63,7 +63,7 @@ export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
     monthly_meeting_date: formData.monthly_meeting_date ? formData.monthly_meeting_date : null,
     work_order_date: formData.work_order_date ? formData.work_order_date : null,
     delivery_statement_date: formData.delivery_statement_date ? formData.delivery_statement_date : null,
-    monthly_meeting_schedule_date: formData.monthly_meeting_schedule_date,
+    monthly_meeting_schedule_date: formData.monthly_meeting_schedule_date ? formData.monthly_meeting_schedule_date : null,
     done_date: formData.done_date ? formData.done_date : null,
   };
 

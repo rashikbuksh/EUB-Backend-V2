@@ -25,7 +25,6 @@ export const insertSchema = createInsertSchema(
   name: true,
   created_at: true,
   created_by: true,
-  monthly_meeting_schedule_date: true,
 }).partial({
   index: true,
   is_quotation: true,
@@ -50,6 +49,7 @@ export const insertSchema = createInsertSchema(
   monthly_meeting_date: true,
   work_order_date: true,
   delivery_statement_date: true,
+  monthly_meeting_schedule_date: true,
   done_date: true,
 });
 
