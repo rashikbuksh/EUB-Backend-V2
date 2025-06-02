@@ -144,6 +144,8 @@ export const item = procure.table('item', {
   remarks: text('remarks'),
   unit: text('unit').default(sql`null`),
   sub_purchase_cost_center_uuid: defaultUUID('sub_purchase_cost_center_uuid').references(() => sub_purchase_cost_center.uuid, DEFAULT_OPERATION),
+  threshold: PG_DECIMAL('threshold').default(sql`0`),
+  lead_time: integer('lead_time').default(sql`0`),
 });
 
 export const general_note = procure.table('general_note', {

@@ -80,6 +80,8 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     unit: item.unit,
     sub_purchase_cost_center_uuid: item.sub_purchase_cost_center_uuid,
     sub_purchase_cost_center_name: sub_purchase_cost_center.name,
+    threshold: PG_DECIMAL_TO_FLOAT(item.threshold),
+    lead_time: PG_DECIMAL_TO_FLOAT(item.lead_time),
   };
 
   const query = db
@@ -124,6 +126,8 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     unit: item.unit,
     sub_purchase_cost_center_uuid: item.sub_purchase_cost_center_uuid,
     sub_purchase_cost_center_name: sub_purchase_cost_center.name,
+    threshold: PG_DECIMAL_TO_FLOAT(item.threshold),
+    lead_time: PG_DECIMAL_TO_FLOAT(item.lead_time),
   })
     .from(item)
     .leftJoin(hrSchema.users, eq(item.created_by, hrSchema.users.uuid))
@@ -145,6 +149,8 @@ export const getItemDetailsByItemUuid: AppRouteHandler<GetItemDetailsByItemUuidR
     extras: {
       quantity: PG_DECIMAL_TO_FLOAT(item.quantity).as('quantity'),
       vendor_price: PG_DECIMAL_TO_FLOAT(item.vendor_price).as('vendor_price'),
+      threshold: PG_DECIMAL_TO_FLOAT(item.threshold).as('threshold'),
+      lead_time: PG_DECIMAL_TO_FLOAT(item.lead_time).as('lead_time'),
     },
     where(fields, operators) {
       return operators.eq(fields.uuid, uuid);
@@ -185,6 +191,9 @@ export const getItemByVendorUuid: AppRouteHandler<GetItemByVendorUuidRoute> = as
     unit: item.unit,
     sub_purchase_cost_center_uuid: item.sub_purchase_cost_center_uuid,
     sub_purchase_cost_center_name: sub_purchase_cost_center.name,
+    threshold: PG_DECIMAL_TO_FLOAT(item.threshold),
+    lead_time: PG_DECIMAL_TO_FLOAT(item.lead_time),
+
   })
     .from(item)
     .leftJoin(hrSchema.users, eq(item.created_by, hrSchema.users.uuid))
