@@ -121,7 +121,7 @@ export const capital = procure.table('capital', {
   updated_at: DateTime('updated_at'),
   remarks: text('remarks'),
   id: integer('id'),
-  quotation_file: text('quotation_file').default(sql`null`),
+  // quotation_file: text('quotation_file').default(sql`null`),
   cs_file: text('cs_file').default(sql`null`),
   monthly_meeting_file: text('monthly_meeting_file').default(sql`null`),
   work_order_file: text('work_order_file').default(sql`null`),
@@ -164,6 +164,7 @@ export const general_note = procure.table('general_note', {
   created_at: DateTime('created_at').notNull(),
   updated_at: DateTime('updated_at'),
   remarks: text('remarks'),
+  general_note_file: text('general_note_file').default(sql`null`),
 });
 
 export const item_vendor = procure.table('item_vendor', {
@@ -187,6 +188,7 @@ export const capital_vendor = procure.table('capital_vendor', {
   created_at: DateTime('created_at').notNull(),
   updated_at: DateTime('updated_at'),
   remarks: text('remarks'),
+  quotation_file: text('quotation_file').default(sql`null`),
 });
 
 export const item_work_order_status = procure.enum('item_work_order_status', ['pending', 'accept', 'rejected']);

@@ -34,6 +34,7 @@ export const insertSchema = createInsertSchema(
   is_selected: true,
   updated_at: true,
   remarks: true,
+  quotation_file: true,
 });
 
 export const patchSchema = insertSchema.partial();
