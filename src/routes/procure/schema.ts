@@ -126,6 +126,12 @@ export const capital = procure.table('capital', {
   monthly_meeting_file: text('monthly_meeting_file').default(sql`null`),
   work_order_file: text('work_order_file').default(sql`null`),
   delivery_statement_file: text('delivery_statement_file').default(sql`null`),
+  quotation_date: DateTime('quotation_date').default(sql`null`),
+  cs_date: DateTime('cs_date').default(sql`null`),
+  monthly_meeting_date: DateTime('monthly_meeting_date').default(sql`null`),
+  work_order_date: DateTime('work_order_date').default(sql`null`),
+  delivery_statement_date: DateTime('delivery_statement_date').default(sql`null`),
+  monthly_meeting_schedule_date: DateTime('monthly_meeting_schedule_date').default(sql`null`),
 });
 
 export const item_index = procure.sequence('item_index', DEFAULT_SEQUENCE);
