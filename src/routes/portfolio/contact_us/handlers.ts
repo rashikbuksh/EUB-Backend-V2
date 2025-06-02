@@ -1,6 +1,6 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { eq } from 'drizzle-orm';
+import { desc, eq } from 'drizzle-orm';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
@@ -69,7 +69,8 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     phone: contact_us.phone,
     is_response: contact_us.is_response,
   })
-    .from(contact_us);
+    .from(contact_us)
+    .orderBy(desc(contact_us.created_at));
 
   const data = await resultPromise;
 
