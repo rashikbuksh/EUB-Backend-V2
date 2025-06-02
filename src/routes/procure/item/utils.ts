@@ -22,6 +22,8 @@ export const insertSchema = createInsertSchema(
     updated_at: schema => schema.updated_at.regex(dateTimePattern, {
       message: 'updated_at must be in the format "YYYY-MM-DD HH:MM:SS"',
     }),
+    threshold: z.number().optional().default(0),
+    lead_time: z.number().optional().default(0),
   },
 ).required({
   uuid: true,
