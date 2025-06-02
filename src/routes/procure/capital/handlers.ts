@@ -58,6 +58,12 @@ export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
     monthly_meeting_file: monthlyMeetingFilePath,
     work_order_file: workOrderFilePath,
     delivery_statement_file: deliveryStatementFilePath,
+    quotation_date: formData.quotation_date ? formData.quotation_date : null,
+    cs_date: formData.cs_date ? formData.cs_date : null,
+    monthly_meeting_date: formData.monthly_meeting_date ? formData.monthly_meeting_date : null,
+    work_order_date: formData.work_order_date ? formData.work_order_date : null,
+    delivery_statement_date: formData.delivery_statement_date ? formData.delivery_statement_date : null,
+    monthly_meeting_schedule_date: formData.monthly_meeting_schedule_date,
   };
 
   const [data] = await db.insert(capital).values({
