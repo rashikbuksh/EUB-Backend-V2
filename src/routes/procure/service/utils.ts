@@ -25,7 +25,6 @@ export const insertSchema = createInsertSchema(
   },
 ).required({
   uuid: true,
-  sub_category_uuid: true,
   vendor_uuid: true,
   name: true,
   description: true,
@@ -39,6 +38,7 @@ export const insertSchema = createInsertSchema(
   created_by: true,
 }).partial({
   id: true,
+  sub_category_uuid: true,
   cost_per_service: true,
   updated_at: true,
   remarks: true,
