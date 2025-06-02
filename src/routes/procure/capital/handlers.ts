@@ -347,7 +347,9 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
             'description', gn.description,
             'amount', gn.amount,
             'created_at', gn.created_at,
-            'updated_at', gn.updated_at
+            'updated_at', gn.updated_at,
+            'general_note_file', gn.general_note_file,
+            'created_by', gn.created_by
           )
         )
         FROM procure.general_note gn
