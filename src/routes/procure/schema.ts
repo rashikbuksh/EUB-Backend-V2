@@ -226,7 +226,7 @@ export const service_status = procure.enum('service_status', ['active', 'pending
 export const service = procure.table('service', {
   id: integer('id'),
   uuid: uuid_primary,
-  sub_category_uuid: defaultUUID('sub_category_uuid').references(() => sub_category.uuid, DEFAULT_OPERATION).notNull(),
+  sub_category_uuid: defaultUUID('sub_category_uuid').references(() => sub_category.uuid, DEFAULT_OPERATION),
   vendor_uuid: defaultUUID('vendor_uuid').references(() => vendor.uuid, DEFAULT_OPERATION).notNull(),
   name: text('name').notNull(),
   description: text('description').notNull(),
