@@ -32,6 +32,7 @@ export const insertSchema = createInsertSchema(
   amount: true,
   updated_at: true,
   remarks: true,
+  general_note_file: true,
 });
 
 export const patchSchema = insertSchema.partial();
