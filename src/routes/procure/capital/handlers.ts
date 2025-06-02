@@ -188,6 +188,12 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     monthly_meeting_file: capital.monthly_meeting_file,
     work_order_file: capital.work_order_file,
     delivery_statement_file: capital.delivery_statement_file,
+    quotation_date: capital.quotation_date,
+    cs_date: capital.cs_date,
+    monthly_meeting_date: capital.monthly_meeting_date,
+    work_order_date: capital.work_order_date,
+    delivery_statement_date: capital.delivery_statement_date,
+    monthly_meeting_schedule_date: capital.monthly_meeting_schedule_date,
     status: sql` CASE 
                     
                     WHEN ${capital.done} = true THEN 'Paid'
@@ -300,6 +306,12 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     monthly_meeting_file: capital.monthly_meeting_file,
     work_order_file: capital.work_order_file,
     delivery_statement_file: capital.delivery_statement_file,
+    quotation_date: capital.quotation_date,
+    cs_date: capital.cs_date,
+    monthly_meeting_date: capital.monthly_meeting_date,
+    work_order_date: capital.work_order_date,
+    delivery_statement_date: capital.delivery_statement_date,
+    monthly_meeting_schedule_date: capital.monthly_meeting_schedule_date,
     quotations: sql`
     COALESCE(
         jsonb_agg(
