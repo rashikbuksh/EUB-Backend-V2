@@ -331,7 +331,8 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
               'vendor_uuid', capital_vendor.vendor_uuid,
               'vendor_name', sv_vendor.name,
               'amount', capital_vendor.amount,
-              'is_selected', capital_vendor.is_selected
+              'is_selected', capital_vendor.is_selected,
+              'quotation_file', capital_vendor.quotation_file
             )
         ) FILTER (WHERE capital_vendor.uuid IS NOT NULL),
       '[]'::jsonb      
