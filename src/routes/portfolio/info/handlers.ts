@@ -31,6 +31,7 @@ export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
     updated_at: formData.updated_at,
     created_by: formData.created_by,
     remarks: formData.remarks,
+    is_offer: formData.is_offer || false,
   };
 
   const [data] = await db.insert(info).values(value).returning({
