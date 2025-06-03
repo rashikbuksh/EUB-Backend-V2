@@ -138,6 +138,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     .leftJoin(hrSchema.users, eq(info.created_by, hrSchema.users.uuid))
     .where(and(
       page_name ? eq(info.page_name, page_name) : sql`true`,
+      accessArray.length > 0 ? inArray(info.page_name, accessArray) : sql`true`,
     ));
 
   let routineResultPromise = null;
@@ -185,20 +186,6 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   const baseQuery = is_pagination === 'true'
     ? constructSelectAllQuery(mergeQuery, c.req.valid('query'), 'created_at', [hrSchema.users.name.name], field_name, field_value)
     : mergeQuery;
-
-  if (page_name) {
-    baseQuery.groupBy(info.uuid, hrSchema.users.name);
-    baseQuery.having(eq(info.page_name, page_name));
-    if (access) {
-      baseQuery.having(inArray(info.page_name, accessArray));
-    }
-  }
-  else {
-    baseQuery.groupBy(info.uuid, hrSchema.users.name);
-    if (access) {
-      baseQuery.having(inArray(info.page_name, accessArray));
-    }
-  }
 
   const infoData = await baseQuery;
 
