@@ -93,7 +93,12 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     created_by: service.created_by,
     created_by_name: hrSchema.users.name,
     remarks: service.remarks,
-    next_due_date: sql`(SELECT MAX(${service_payment.next_due_date}) FROM ${service_payment} WHERE ${service_payment.service_uuid} = ${service.uuid})`.as('next_due_date'),
+    next_due_date: sql`
+                    COALESCE(
+                      (SELECT MIN(${service_payment.next_due_date}) FROM ${service_payment} WHERE ${service_payment.service_uuid} = ${service.uuid} AND ${service_payment.payment_date} IS NULL),
+                      (SELECT MAX(${service_payment.next_due_date}) FROM ${service_payment} WHERE ${service_payment.service_uuid} = ${service.uuid})
+                    )
+                  `.as('next_due_date'),
 
   })
     .from(service)
@@ -132,7 +137,12 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     created_by: service.created_by,
     created_by_name: hrSchema.users.name,
     remarks: service.remarks,
-    next_due_date: sql`(SELECT MAX(${service_payment.next_due_date}) FROM ${service_payment} WHERE ${service_payment.service_uuid} = ${service.uuid})`.as('next_due_date'),
+    next_due_date: sql`
+                    COALESCE(
+                      (SELECT MIN(${service_payment.next_due_date}) FROM ${service_payment} WHERE ${service_payment.service_uuid} = ${service.uuid} AND ${service_payment.payment_date} IS NULL),
+                      (SELECT MAX(${service_payment.next_due_date}) FROM ${service_payment} WHERE ${service_payment.service_uuid} = ${service.uuid})
+                    )
+                  `.as('next_due_date'),
   })
     .from(service)
     .leftJoin(hrSchema.users, eq(service.created_by, hrSchema.users.uuid))
@@ -182,14 +192,14 @@ export const getOneDetails: AppRouteHandler<GetOneDetailsRoute> = async (c: any)
           'created_by', ${service_payment.created_by},
           'created_at', ${service_payment.created_at},
           'updated_at', ${service_payment.updated_at},
-          'remarks', ${service_payment.remarks}
-          'next_due_date', ${service_payment.next_due_date
-          }
+          'remarks', ${service_payment.remarks},
+          'next_due_date', ${service_payment.next_due_date}
           )
+           ORDER BY ${service_payment.next_due_date} ASC
           )
           FROM ${service_payment}
           WHERE ${service_payment.service_uuid} = ${uuid}
-          ORDER BY ${service_payment.next_due_date} ASC
+          
         )`.as('service_payment'),
   })
     .from(service)
