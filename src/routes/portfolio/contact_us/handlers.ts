@@ -57,6 +57,9 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   // const data = await db.query.contact_us.findMany();
+
+  const { is_response } = c.req.valid('query');
+
   const resultPromise = db.select({
     uuid: contact_us.uuid,
     id: contact_us.id,
@@ -71,6 +74,11 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   })
     .from(contact_us)
     .orderBy(desc(contact_us.created_at));
+
+  if (is_response === 'true')
+    resultPromise.where(eq(contact_us.is_response, true));
+  else if (is_response === 'false')
+    resultPromise.where(eq(contact_us.is_response, false));
 
   const data = await resultPromise;
 
