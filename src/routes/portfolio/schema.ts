@@ -212,6 +212,12 @@ export const online_admission = portfolio.table('online_admission', {
   created_by: defaultUUID('created_by').references(() => users.uuid, DEFAULT_OPERATION),
   remarks: text('remarks'),
   bkash: text('bkash').notNull(),
+  birth_certificate_number: text('birth_certificate_number').default(sql`null`),
+  nid_number: text('nid_number').default(sql`null`),
+  hsc_roll_number: text('hsc_roll_number').default(sql`null`),
+  hsc_registration_number: text('hsc_registration_number').default(sql`null`),
+  ssc_roll_number: text('ssc_roll_number').default(sql`null`),
+  ssc_registration_number: text('ssc_registration_number').default(sql`null`),
 });
 
 //* faculty
