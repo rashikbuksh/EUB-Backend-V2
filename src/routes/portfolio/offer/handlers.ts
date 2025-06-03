@@ -1,6 +1,6 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 // import { alias } from 'drizzle-orm/pg-core';
 import * as HSCode from 'stoker/http-status-codes';
 
@@ -17,7 +17,7 @@ import type {
   RemoveRoute,
 } from './routes';
 
-import { offer } from '../schema';
+import { info, offer } from '../schema';
 
 // const user_information = alias(hrSchema.users, 'user_information');
 
@@ -138,13 +138,40 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     created_by: offer.created_by,
     created_by_name: hrSchema.users.name,
     remarks: offer.remarks,
+    type: sql`'offer'`,
   })
     .from(offer)
     .leftJoin(hrSchema.users, eq(offer.created_by, hrSchema.users.uuid));
 
-  const data = await resultPromise;
+  const infoPromise = db.select({
+    id: info.id,
+    uuid: info.uuid,
+    serial: sql`null as serial`,
+    title: info.description,
+    subtitle: sql`null as subtitle`,
+    file: info.file,
+    deadline: sql`null as deadline`,
+    created_at: info.created_at,
+    updated_at: info.updated_at,
+    created_by: info.created_by,
+    created_by_name: hrSchema.users.name,
+    remarks: info.remarks,
+    type: sql`'info'`,
+  })
+    .from(info)
+    .leftJoin(hrSchema.users, eq(info.created_by, hrSchema.users.uuid))
+    .where(eq(info.is_offer, true));
 
-  return c.json(data || [], HSCode.OK);
+  // Combine both queries using Promise.all
+  const [offerData, infoData] = await Promise.all([resultPromise, infoPromise]);
+  // Combine the results
+  const combinedData = [...offerData, ...infoData];
+
+  // Sort by created_at in descending order
+
+  // const data = await resultPromise;
+
+  return c.json(combinedData || [], HSCode.OK);
 };
 
 export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {

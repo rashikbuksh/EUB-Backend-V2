@@ -240,6 +240,8 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     created_by_name: hrSchema.users.name,
     created_at: info.created_at,
     updated_at: info.updated_at,
+    remarks: info.remarks,
+    is_offer: info.is_offer,
   })
     .from(info)
     .leftJoin(hrSchema.users, eq(info.created_by, hrSchema.users.uuid))
