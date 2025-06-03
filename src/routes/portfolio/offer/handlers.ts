@@ -125,6 +125,8 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   // const data = await db.query.offer.findMany();
 
+  const { is_offer } = c.req.valid('query');
+
   const resultPromise = db.select({
     id: offer.id,
     uuid: offer.uuid,
@@ -143,35 +145,61 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     .from(offer)
     .leftJoin(hrSchema.users, eq(offer.created_by, hrSchema.users.uuid));
 
-  const infoPromise = db.select({
-    id: info.id,
-    uuid: info.uuid,
-    serial: sql`null as serial`,
-    title: info.description,
-    subtitle: sql`null as subtitle`,
-    file: info.file,
-    deadline: sql`null as deadline`,
-    created_at: info.created_at,
-    updated_at: info.updated_at,
-    created_by: info.created_by,
-    created_by_name: hrSchema.users.name,
-    remarks: info.remarks,
-    type: sql`'info'`,
-  })
-    .from(info)
-    .leftJoin(hrSchema.users, eq(info.created_by, hrSchema.users.uuid))
-    .where(eq(info.is_offer, true));
+  // const infoPromise = db.select({
+  //   id: info.id,
+  //   uuid: info.uuid,
+  //   serial: sql`null as serial`,
+  //   title: info.description,
+  //   subtitle: sql`null as subtitle`,
+  //   file: info.file,
+  //   deadline: sql`null as deadline`,
+  //   created_at: info.created_at,
+  //   updated_at: info.updated_at,
+  //   created_by: info.created_by,
+  //   created_by_name: hrSchema.users.name,
+  //   remarks: info.remarks,
+  //   type: sql`'info'`,
+  // })
+  //   .from(info)
+  //   .leftJoin(hrSchema.users, eq(info.created_by, hrSchema.users.uuid))
+  //   .where(eq(info.is_offer, true));
 
-  // Combine both queries using Promise.all
-  const [offerData, infoData] = await Promise.all([resultPromise, infoPromise]);
-  // Combine the results
-  const combinedData = [...offerData, ...infoData];
+  // const [offerData, infoData] = await Promise.all([resultPromise, infoPromise]);
 
-  // Sort by created_at in descending order
+  // const combinedData = [...offerData, ...infoData];
 
-  // const data = await resultPromise;
+  // return c.json(combinedData || [], HSCode.OK);
 
-  return c.json(combinedData || [], HSCode.OK);
+  let infoData: any[] = [];
+  if (is_offer) {
+    const infoPromise = db.select({
+      id: info.id,
+      uuid: info.uuid,
+      serial: sql`null as serial`,
+      title: info.description,
+      subtitle: sql`null as subtitle`,
+      file: info.file,
+      deadline: sql`null as deadline`,
+      created_at: info.created_at,
+      updated_at: info.updated_at,
+      created_by: info.created_by,
+      created_by_name: hrSchema.users.name,
+      remarks: info.remarks,
+      type: sql`'info'`,
+    })
+      .from(info)
+      .leftJoin(hrSchema.users, eq(info.created_by, hrSchema.users.uuid))
+      .where(eq(info.is_offer, true));
+
+    const [offerData, infoResult] = await Promise.all([resultPromise, infoPromise]);
+    infoData = infoResult;
+    const combinedData = [...offerData, ...infoData];
+    return c.json(combinedData || [], HSCode.OK);
+  }
+  else {
+    const offerData = await resultPromise;
+    return c.json(offerData || [], HSCode.OK);
+  }
 };
 
 export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
