@@ -12,7 +12,7 @@ export const insertSchema = createInsertSchema(
   {
     uuid: schema => schema.uuid.length(21),
     title: schema => schema.title.min(1),
-    faculty_uuid: schema => schema.faculty_uuid.length(21),
+    // faculty_uuid: schema => schema.faculty_uuid.length(21),
     category: schema => schema.category.min(1),
     location: schema => schema.location.min(1),
     file: schema => schema.file.min(1),
@@ -27,7 +27,7 @@ export const insertSchema = createInsertSchema(
 ).required({
   uuid: true,
   title: true,
-  faculty_uuid: true,
+  // faculty_uuid: true,
   category: true,
   location: true,
   file: true,

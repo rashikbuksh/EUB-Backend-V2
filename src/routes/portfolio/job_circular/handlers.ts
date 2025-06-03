@@ -29,7 +29,7 @@ export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
   const value = {
     uuid: formData.uuid,
     title: formData.title,
-    faculty_uuid: formData.faculty_uuid,
+    // faculty_uuid: formData.faculty_uuid,
     category: formData.category,
     location: formData.location,
     file: filePath,
@@ -119,8 +119,8 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   const resultPromise = db.select({
     title: job_circular.title,
     uuid: job_circular.uuid,
-    faculty_uuid: job_circular.faculty_uuid,
-    faculty_name: faculty.name,
+    // faculty_uuid: job_circular.faculty_uuid,
+    // faculty_name: faculty.name,
     category: job_circular.category,
     location: job_circular.location,
     file: job_circular.file,
@@ -132,7 +132,6 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     remarks: job_circular.remarks,
   })
     .from(job_circular)
-    .leftJoin(faculty, eq(job_circular.faculty_uuid, faculty.uuid))
     .leftJoin(hrSchema.users, eq(job_circular.created_by, hrSchema.users.uuid));
 
   const resultPromiseForCount = await resultPromise;
@@ -172,8 +171,8 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
   const resultPromise = db.select({
     title: job_circular.title,
     uuid: job_circular.uuid,
-    faculty_uuid: job_circular.faculty_uuid,
-    faculty_name: faculty.name,
+    // faculty_uuid: job_circular.faculty_uuid,
+    // faculty_name: faculty.name,
     category: job_circular.category,
     location: job_circular.location,
     file: job_circular.file,
@@ -185,7 +184,6 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     remarks: job_circular.remarks,
   })
     .from(job_circular)
-    .leftJoin(faculty, eq(job_circular.faculty_uuid, faculty.uuid))
     .leftJoin(hrSchema.users, eq(job_circular.created_by, hrSchema.users.uuid))
     .where(eq(job_circular.uuid, uuid));
 
