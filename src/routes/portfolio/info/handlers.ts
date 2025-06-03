@@ -1,6 +1,6 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { and, eq, inArray, sql } from 'drizzle-orm';
+import { and, desc, eq, inArray, sql } from 'drizzle-orm';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
@@ -140,7 +140,8 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     .where(and(
       page_name ? eq(info.page_name, page_name) : sql`true`,
       accessArray.length > 0 ? inArray(info.page_name, accessArray) : sql`true`,
-    ));
+    ))
+    .orderBy(desc(info.created_at));
 
   let routineResultPromise = null;
 
@@ -172,7 +173,8 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
       .where(and(
         eq(routine.type, page_name),
         eq(routine.is_global, true),
-      ));
+      ))
+      .orderBy(desc(routine.created_at));
   }
 
   const limit = Number.parseInt(c.req.valid('query').limit);
