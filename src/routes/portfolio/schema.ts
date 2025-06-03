@@ -242,7 +242,7 @@ export const job_circular = portfolio.table('job_circular', {
   id: integer('id').default(sql`nextval('portfolio.job_circular_id')`),
   uuid: uuid_primary,
   title: text('title').notNull(),
-  faculty_uuid: defaultUUID('faculty_uuid').notNull().references(() => faculty.uuid, DEFAULT_OPERATION),
+  // faculty_uuid: defaultUUID('faculty_uuid').notNull().references(() => faculty.uuid, DEFAULT_OPERATION),
   category: text('category').notNull(),
   location: text('location').default(sql`null`),
   file: text('file').default(sql`null`),
@@ -799,10 +799,10 @@ export const portfolio_faculty_rel = relations(faculty, ({ one }) => ({
 }));
 
 export const portfolio_job_circular_rel = relations(job_circular, ({ one }) => ({
-  faculty: one(faculty, {
-    fields: [job_circular.faculty_uuid],
-    references: [faculty.uuid],
-  }),
+  // faculty: one(faculty, {
+  //   fields: [job_circular.faculty_uuid],
+  //   references: [faculty.uuid],
+  // }),
   created_by: one(users, {
     fields: [job_circular.created_by],
     references: [users.uuid],
