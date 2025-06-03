@@ -142,11 +142,13 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     .from(feature)
     .leftJoin(hrSchema.users, eq(feature.created_by, hrSchema.users.uuid));
 
-  if (feature_type) {
+  if (feature_type && (is_active === 'true' || is_active === 'false')) {
     resultPromise.where(eq(feature.type, feature_type));
   }
-
-  if (is_active === 'true' || is_active === 'false') {
+  else if (feature_type) {
+    resultPromise.where(eq(feature.type, feature_type));
+  }
+  else if (is_active === 'true' || is_active === 'false') {
     resultPromise.where(eq(feature.is_active, is_active));
   }
 
