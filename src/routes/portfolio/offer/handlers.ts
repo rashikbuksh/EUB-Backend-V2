@@ -1,6 +1,6 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { eq, sql } from 'drizzle-orm';
+import { desc, eq, sql } from 'drizzle-orm';
 // import { alias } from 'drizzle-orm/pg-core';
 import * as HSCode from 'stoker/http-status-codes';
 
@@ -143,7 +143,8 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     type: sql`'offer'`,
   })
     .from(offer)
-    .leftJoin(hrSchema.users, eq(offer.created_by, hrSchema.users.uuid));
+    .leftJoin(hrSchema.users, eq(offer.created_by, hrSchema.users.uuid))
+    .orderBy(desc(offer.created_at));
 
   // const infoPromise = db.select({
   //   id: info.id,
@@ -189,7 +190,8 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     })
       .from(info)
       .leftJoin(hrSchema.users, eq(info.created_by, hrSchema.users.uuid))
-      .where(eq(info.is_offer, true));
+      .where(eq(info.is_offer, true))
+      .orderBy(desc(info.created_at));
 
     const [offerData, infoResult] = await Promise.all([resultPromise, infoPromise]);
     infoData = infoResult;
