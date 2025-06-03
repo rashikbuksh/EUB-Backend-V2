@@ -104,6 +104,12 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     created_by_name: hrSchema.users.name,
     remarks: online_admission.remarks,
     bkash: online_admission.bkash,
+    birth_certificate_number: online_admission.birth_certificate_number,
+    nid_number: online_admission.nid_number,
+    hsc_roll_number: online_admission.hsc_roll_number,
+    hsc_registration_number: online_admission.hsc_registration_number,
+    ssc_roll_number: online_admission.ssc_roll_number,
+    ssc_registration_number: online_admission.ssc_registration_number,
   })
     .from(online_admission)
     .leftJoin(program, eq(online_admission.program_uuid, program.uuid))
@@ -170,6 +176,12 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     summer: sql`CASE WHEN ${online_admission.semester} = 'summer' THEN true ELSE false END`,
     fall: sql`CASE WHEN ${online_admission.semester} = 'fall' THEN true ELSE false END`,
     bkash: online_admission.bkash,
+    birth_certificate_number: online_admission.birth_certificate_number,
+    nid_number: online_admission.nid_number,
+    hsc_roll_number: online_admission.hsc_roll_number,
+    hsc_registration_number: online_admission.hsc_registration_number,
+    ssc_roll_number: online_admission.ssc_roll_number,
+    ssc_registration_number: online_admission.ssc_registration_number,
   })
     .from(online_admission)
     .leftJoin(program, eq(online_admission.program_uuid, program.uuid))

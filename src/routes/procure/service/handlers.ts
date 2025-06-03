@@ -183,10 +183,13 @@ export const getOneDetails: AppRouteHandler<GetOneDetailsRoute> = async (c: any)
           'created_at', ${service_payment.created_at},
           'updated_at', ${service_payment.updated_at},
           'remarks', ${service_payment.remarks}
+          'next_due_date', ${service_payment.next_due_date
+          }
           )
           )
           FROM ${service_payment}
           WHERE ${service_payment.service_uuid} = ${uuid}
+          ORDER BY ${service_payment.next_due_date} ASC
         )`.as('service_payment'),
   })
     .from(service)

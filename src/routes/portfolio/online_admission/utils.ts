@@ -67,6 +67,12 @@ export const insertSchema = createInsertSchema(
   hsc_institute: true,
   created_at: true,
   bkash: true,
+  birth_certificate_number: true,
+  nid_number: true,
+  hsc_roll_number: true,
+  hsc_registration_number: true,
+  ssc_roll_number: true,
+  ssc_registration_number: true,
 }).partial({
   phone_number: true,
   bsc_name: true,
