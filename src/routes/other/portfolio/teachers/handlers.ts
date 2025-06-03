@@ -11,7 +11,7 @@ import { department, department_teachers, faculty, teachers } from '@/routes/por
 import type { ValueLabelRoute, ValueLabelRouteForPublication } from './routes';
 
 export const valueLabelForPublication: AppRouteHandler<ValueLabelRouteForPublication> = async (c: any) => {
-  const { is_pagination, field_name, field_value } = c.req.valid('query');
+  const { is_pagination, field_name, field_value, filter } = c.req.valid('query');
 
   const resultPromise = db.select({
     value: teachers.publication,
@@ -22,6 +22,12 @@ export const valueLabelForPublication: AppRouteHandler<ValueLabelRouteForPublica
     .leftJoin(department_teachers, eq(teachers.uuid, department_teachers.teachers_uuid))
     .leftJoin(department, eq(department_teachers.department_uuid, department.uuid))
     .leftJoin(faculty, eq(department.faculty_uuid, faculty.uuid));
+
+  if (filter) {
+    resultPromise.where(
+      sql`${faculty.name} LIKE ${`%${filter}%`}`,
+    );
+  }
 
   const resultPromiseForCount = await resultPromise;
 
