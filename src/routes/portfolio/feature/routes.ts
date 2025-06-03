@@ -24,6 +24,7 @@ export const list = createRoute({
       field_name: z.string().optional(),
       field_value: z.string().optional(),
       feature_type: z.string().optional(),
+      is_active: z.string().optional(),
     }),
   },
   tags,

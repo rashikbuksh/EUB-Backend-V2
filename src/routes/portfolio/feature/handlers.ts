@@ -123,7 +123,7 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   // const data = await db.query.feature.findMany();
 
-  const { is_pagination, field_name, field_value, feature_type } = c.req.valid('query');
+  const { is_pagination, field_name, field_value, feature_type, is_active } = c.req.valid('query');
 
   const resultPromise = db.select({
     uuid: feature.uuid,
@@ -144,6 +144,10 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
 
   if (feature_type) {
     resultPromise.where(eq(feature.type, feature_type));
+  }
+
+  if (is_active === 'true' || is_active === 'false') {
+    resultPromise.where(eq(feature.is_active, is_active));
   }
 
   const resultPromiseForCount = await resultPromise;
