@@ -20,14 +20,14 @@ export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
   const formData = await c.req.parseBody();
 
   // const quotation_file = formData.quotation_file;
-  const cs_file = formData.cs_file;
-  const monthly_meeting_file = formData.monthly_meeting_file;
+  // const cs_file = formData.cs_file;
+  // const monthly_meeting_file = formData.monthly_meeting_file;
   const work_order_file = formData.work_order_file;
   const delivery_statement_file = formData.delivery_statement_file;
 
   // const quotationFilePath = quotation_file ? await insertFile(quotation_file, 'public/capital/quotation') : null;
-  const csFilePath = cs_file ? await insertFile(cs_file, 'public/capital/cs') : null;
-  const monthlyMeetingFilePath = monthly_meeting_file ? await insertFile(monthly_meeting_file, 'public/capital/monthly-meeting') : null;
+  // const csFilePath = cs_file ? await insertFile(cs_file, 'public/capital/cs') : null;
+  // const monthlyMeetingFilePath = monthly_meeting_file ? await insertFile(monthly_meeting_file, 'public/capital/monthly-meeting') : null;
   const workOrderFilePath = work_order_file ? await insertFile(work_order_file, 'public/capital/work-order') : null;
   const deliveryStatementFilePath = delivery_statement_file ? await insertFile(delivery_statement_file, 'public/capital/delivery-statement') : null;
 
@@ -54,8 +54,8 @@ export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
     created_by: formData.created_by,
     remarks: formData.remarks ? formData.remarks : null,
     // quotation_file: quotationFilePath,
-    cs_file: csFilePath,
-    monthly_meeting_file: monthlyMeetingFilePath,
+    // cs_file: csFilePath,
+    // monthly_meeting_file: monthlyMeetingFilePath,
     work_order_file: workOrderFilePath,
     delivery_statement_file: deliveryStatementFilePath,
     quotation_date: formData.quotation_date ? formData.quotation_date : null,
@@ -87,8 +87,8 @@ export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
   // Handle file fields
   const fileFields = [
     // { key: 'quotation_file', path: 'public/capital/quotation' },
-    { key: 'cs_file', path: 'public/capital/cs' },
-    { key: 'monthly_meeting_file', path: 'public/capital/monthly-meeting' },
+    // { key: 'cs_file', path: 'public/capital/cs' },
+    // { key: 'monthly_meeting_file', path: 'public/capital/monthly-meeting' },
     { key: 'work_order_file', path: 'public/capital/work_order' },
     { key: 'delivery_statement_file', path: 'public/capital/delivery-statement' },
   ];
@@ -136,8 +136,8 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
   if (capitalData) {
     const fileFields = [
       // 'quotation_file',
-      'cs_file',
-      'monthly_meeting_file',
+      // 'cs_file',
+      // 'monthly_meeting_file',
       'work_order_file',
       'delivery_statement_file',
     ];
@@ -191,8 +191,8 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     created_by_name: hrSchema.users.name,
     remarks: capital.remarks,
     // quotation_file: capital.quotation_file,
-    cs_file: capital.cs_file,
-    monthly_meeting_file: capital.monthly_meeting_file,
+    // cs_file: capital.cs_file,
+    // monthly_meeting_file: capital.monthly_meeting_file,
     work_order_file: capital.work_order_file,
     delivery_statement_file: capital.delivery_statement_file,
     quotation_date: capital.quotation_date,
@@ -310,8 +310,8 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     created_by_name: hrSchema.users.name,
     remarks: capital.remarks,
     // quotation_file: capital.quotation_file,
-    cs_file: capital.cs_file,
-    monthly_meeting_file: capital.monthly_meeting_file,
+    // cs_file: capital.cs_file,
+    // monthly_meeting_file: capital.monthly_meeting_file,
     work_order_file: capital.work_order_file,
     delivery_statement_file: capital.delivery_statement_file,
     quotation_date: capital.quotation_date,
