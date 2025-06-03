@@ -334,6 +334,7 @@ export const info = portfolio.table('info', {
     DEFAULT_OPERATION,
   ),
   remarks: text('remarks'),
+  is_offer: boolean('is_offer').default(false),
 });
 
 // *  teachers
