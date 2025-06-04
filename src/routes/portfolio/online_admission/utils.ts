@@ -14,10 +14,10 @@ export const insertSchema = createInsertSchema(
   {
     uuid: schema => schema.uuid.length(21),
     program_uuid: schema => schema.program_uuid.length(21),
-    applicant_name: schema => schema.applicant_name.min(5),
-    father_name: schema => schema.father_name.min(5),
-    mother_name: schema => schema.mother_name.min(5),
-    local_guardian: schema => schema.local_guardian.min(5),
+    applicant_name: schema => schema.applicant_name.min(1),
+    father_name: schema => schema.father_name.min(1),
+    mother_name: schema => schema.mother_name.min(1),
+    local_guardian: schema => schema.local_guardian.min(1),
     date_of_birth: schema => schema.date_of_birth.regex(datePattern, {
       message: 'date_of_birth must be in the format "YYYY-MM-DD"',
     }),
