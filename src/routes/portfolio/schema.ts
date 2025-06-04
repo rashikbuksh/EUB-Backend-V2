@@ -232,6 +232,7 @@ export const online_admission = portfolio.table('online_admission', {
   parents_phone: text('parents_phone').default(sql`null`),
   student_id: text('student_id').default(sql`null`),
   is_admitted: boolean('is_admitted').default(false),
+  commencement_date: DateTime('commencement_date').default(sql`null`),
 });
 
 //* faculty
