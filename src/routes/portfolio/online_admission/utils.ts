@@ -33,6 +33,11 @@ export const insertSchema = createInsertSchema(
     ssc_gpa: z.number(),
     hsc_gpa: z.number(),
     bsc_cgpa: z.number().optional(),
+    year: z.number(),
+    local_guardian_phone: schema => schema.local_guardian_phone.optional(),
+    parents_phone: schema => schema.parents_phone.optional(),
+    student_id: schema => schema.student_id.optional(),
+    is_admitted: schema => schema.is_admitted.optional(),
   },
 ).required({
   uuid: true,
@@ -73,6 +78,7 @@ export const insertSchema = createInsertSchema(
   hsc_registration_number: true,
   ssc_roll_number: true,
   ssc_registration_number: true,
+  year: true,
 }).partial({
   phone_number: true,
   bsc_name: true,
@@ -81,6 +87,10 @@ export const insertSchema = createInsertSchema(
   bsc_institute: true,
   updated_at: true,
   remarks: true,
+  local_guardian_phone: true,
+  parents_phone: true,
+  student_id: true,
+  is_admitted: true,
 });
 
 export const patchSchema = insertSchema.partial();

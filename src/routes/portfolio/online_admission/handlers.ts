@@ -110,6 +110,11 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     hsc_registration_number: online_admission.hsc_registration_number,
     ssc_roll_number: online_admission.ssc_roll_number,
     ssc_registration_number: online_admission.ssc_registration_number,
+    year: online_admission.year,
+    local_guardian_phone: online_admission.local_guardian_phone,
+    parents_phone: online_admission.parents_phone,
+    student_id: online_admission.student_id,
+    is_admitted: online_admission.is_admitted,
   })
     .from(online_admission)
     .leftJoin(program, eq(online_admission.program_uuid, program.uuid))
@@ -182,6 +187,11 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     hsc_registration_number: online_admission.hsc_registration_number,
     ssc_roll_number: online_admission.ssc_roll_number,
     ssc_registration_number: online_admission.ssc_registration_number,
+    year: online_admission.year,
+    local_guardian_phone: online_admission.local_guardian_phone,
+    parents_phone: online_admission.parents_phone,
+    student_id: online_admission.student_id,
+    is_admitted: online_admission.is_admitted,
   })
     .from(online_admission)
     .leftJoin(program, eq(online_admission.program_uuid, program.uuid))

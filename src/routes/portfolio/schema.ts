@@ -218,6 +218,11 @@ export const online_admission = portfolio.table('online_admission', {
   hsc_registration_number: text('hsc_registration_number').default(sql`null`),
   ssc_roll_number: text('ssc_roll_number').default(sql`null`),
   ssc_registration_number: text('ssc_registration_number').default(sql`null`),
+  year: integer('year').default(0),
+  local_guardian_phone: text('local_guardian_phone').default(sql`null`),
+  parents_phone: text('parents_phone').default(sql`null`),
+  student_id: text('student_id').default(sql`null`),
+  is_admitted: boolean('is_admitted').default(false),
 });
 
 //* faculty
