@@ -1,4 +1,5 @@
 import capital from './capital';
+import capital_item from './capital_item';
 import capital_vendor from './capital_vendor';
 import category from './category';
 import form from './form';
@@ -40,4 +41,5 @@ export default [
   item_requisition,
   item_transfer,
   sub_purchase_cost_center,
+  capital_item,
 ];

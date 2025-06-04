@@ -219,6 +219,17 @@ export const item_work_order_entry = procure.table('item_work_order_entry', {
 
 });
 
+export const capital_item = procure.table('capital_item', {
+  uuid: uuid_primary,
+  capital_uuid: defaultUUID('capital_uuid').references(() => capital.uuid, DEFAULT_OPERATION),
+  item_uuid: defaultUUID('item_uuid').references(() => item.uuid, DEFAULT_OPERATION),
+  quantity: PG_DECIMAL('quantity').default(sql`0`),
+  created_by: defaultUUID('created_by').references(() => users.uuid, DEFAULT_OPERATION),
+  created_at: DateTime('created_at').notNull(),
+  updated_at: DateTime('updated_at'),
+  remarks: text('remarks'),
+});
+
 export const service_id = procure.sequence('service_id', DEFAULT_SEQUENCE);
 
 export const service_frequency = procure.enum('service_frequency', ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12']);
