@@ -1,3 +1,4 @@
+import fde from './fde';
 import hr from './hr';
 import lib from './lib';
 import portfolio from './portfolio';
@@ -8,6 +9,7 @@ const other = [
   ...portfolio,
   ...procure,
   ...lib,
+  ...fde,
 ];
 
 export default other;
