@@ -4,6 +4,7 @@ import { eq } from 'drizzle-orm';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
+import { PG_DECIMAL_TO_FLOAT } from '@/lib/variables';
 import { users } from '@/routes/hr/schema';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 
@@ -62,7 +63,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     uuid: qns_category.uuid,
     name: qns_category.name,
     index: qns_category.index,
-    min_percentage: qns_category.min_percentage,
+    min_percentage: PG_DECIMAL_TO_FLOAT(qns_category.min_percentage),
     created_by: qns_category.created_by,
     created_by_name: users.name,
     created_at: qns_category.created_at,
@@ -84,7 +85,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     uuid: qns_category.uuid,
     name: qns_category.name,
     index: qns_category.index,
-    min_percentage: qns_category.min_percentage,
+    min_percentage: PG_DECIMAL_TO_FLOAT(qns_category.min_percentage),
     created_by: qns_category.created_by,
     created_by_name: users.name,
     created_at: qns_category.created_at,
