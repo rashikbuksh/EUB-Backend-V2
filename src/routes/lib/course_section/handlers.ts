@@ -1,6 +1,6 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
@@ -82,11 +82,52 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
 export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
 
-  const data = await db.query.course_section.findFirst({
-    where(fields, operators) {
-      return operators.eq(fields.uuid, uuid);
-    },
-  });
+  // const data = await db.query.course_section.findFirst({
+  //   where(fields, operators) {
+  //     return operators.eq(fields.uuid, uuid);
+  //   },
+  // });
+  const resultPromise = db.select({
+    uuid: course_section.uuid,
+    name: course_section.name,
+    course_uuid: course_section.course_uuid,
+    course_name: course.name,
+    course_code: course.code,
+    created_by: course_section.created_by,
+    created_by_name: users.name,
+    created_at: course_section.created_at,
+    updated_at: course_section.updated_at,
+    remarks: course_section.remarks,
+    sem_crs_thr_entry: sql`COALESCE(ARRAY(
+          SELECT jsonb_build_object(
+            'uuid', sem_crs_thr_entry.uuid,
+            'semester_uuid', sem_crs_thr_entry.semester_uuid,
+            'course_section_uuid', sem_crs_thr_entry.course_section_uuid,
+            'teachers_uuid', sem_crs_thr_entry.teachers_uuid,
+            'teacher_uuid', teachers.teacher_uuid,
+            'teachers_name', teacherUser.name,
+            'class_size', sem_crs_thr_entry.class_size,
+            'is_mid_evaluation_complete', sem_crs_thr_entry.is_mid_evaluation_complete,
+            'is_final_evaluation_complete', sem_crs_thr_entry.is_final_evaluation_complete,
+            'created_by', sem_crs_thr_entry.created_by,
+            'created_by_name', users.name,
+            'created_at', sem_crs_thr_entry.created_at,
+            'updated_at', sem_crs_thr_entry.updated_at
+          )
+          FROM lib.sem_crs_thr_entry
+          LEFT JOIN portfolio.teachers ON teachers.uuid = sem_crs_thr_entry.teachers_uuid
+          LEFT JOIN hr.users teacherUser ON teacherUser.uuid = teachers.teacher_uuid
+          LEFT JOIN hr.users ON users.uuid = sem_crs_thr_entry.created_by
+          WHERE sem_crs_thr_entry.course_section_uuid = ${course_section.uuid}
+          ORDER BY sem_crs_thr_entry.created_at DESC
+        ), ARRAY[]::jsonb[])`.as('sem_crs_thr_entry'),
+  })
+    .from(course_section)
+    .leftJoin(course, eq(course.uuid, course_section.course_uuid))
+    .leftJoin(users, eq(users.uuid, course_section.created_by))
+    .where(eq(course_section.uuid, uuid));
+
+  const data = await resultPromise;
 
   if (!data)
     return DataNotFound(c);
