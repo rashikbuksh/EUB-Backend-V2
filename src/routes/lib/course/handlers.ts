@@ -155,24 +155,17 @@ export const getCourseAndSectionDetails: AppRouteHandler<GetCourseAndSectionDeta
     is_final_evaluation_complete: sem_crs_thr_entry.is_final_evaluation_complete,
   })
     .from(course_section)
-    .leftJoin(sem_crs_thr_entry, eq(sem_crs_thr_entry.course_section_uuid, course_section.uuid))
+    .leftJoin(
+      sem_crs_thr_entry,
+      and(
+        eq(sem_crs_thr_entry.course_section_uuid, course_section.uuid),
+        semester_uuid ? eq(sem_crs_thr_entry.semester_uuid, semester_uuid) : sql`true`,
+      ),
+    )
     .leftJoin(teachers, eq(teachers.uuid, sem_crs_thr_entry.teachers_uuid))
     .leftJoin(teacherUser, eq(teacherUser.uuid, teachers.teacher_uuid))
     .leftJoin(users, eq(users.uuid, course_section.created_by))
-    .where(
-      semester_uuid
-        ? sem_crs_thr_entry.semester_uuid
-          ? and(
-              eq(sem_crs_thr_entry.semester_uuid, semester_uuid),
-              eq(course_section.course_uuid, uuid),
-            )
-          : and(
-              eq(sem_crs_thr_entry.semester_uuid, null),
-              eq(course_section.course_uuid, uuid),
-            )
-        : eq(course_section.course_uuid, uuid),
-
-    );
+    .where(eq(course_section.course_uuid, uuid));
 
   const data = await resultPromise;
   const response = {
