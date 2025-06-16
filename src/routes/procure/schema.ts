@@ -203,7 +203,7 @@ export const item_work_order = procure.table('item_work_order', {
   remarks: text('remarks'),
   id: integer('id'),
 });
-
+//* deleted from drawio and no need this table *//
 export const item_work_order_entry = procure.table('item_work_order_entry', {
   uuid: uuid_primary,
   item_uuid: defaultUUID('item_uuid').references(() => item.uuid, DEFAULT_OPERATION),
