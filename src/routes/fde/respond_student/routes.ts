@@ -117,8 +117,32 @@ export const remove = createRoute({
   },
 });
 
+export const getRespondStudentDetailsWithEvaluation = createRoute({
+  path: '/fde/respond-student-details-with-evaluation/{uuid}',
+  method: 'get',
+  request: {
+    params: param.uuid,
+  },
+  tags,
+  responses: {
+    [HSCode.OK]: jsonContent(
+      selectSchema,
+      'The requested respond student',
+    ),
+    [HSCode.NOT_FOUND]: jsonContent(
+      notFoundSchema,
+      'respond student not found',
+    ),
+    [HSCode.UNPROCESSABLE_ENTITY]: jsonContent(
+      createErrorSchema(param.uuid),
+      'Invalid id error',
+    ),
+  },
+});
+
 export type ListRoute = typeof list;
 export type CreateRoute = typeof create;
 export type GetOneRoute = typeof getOne;
 export type PatchRoute = typeof patch;
 export type RemoveRoute = typeof remove;
+export type GetRespondStudentDetailsWithEvaluationRoute = typeof getRespondStudentDetailsWithEvaluation;
