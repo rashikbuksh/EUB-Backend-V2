@@ -144,7 +144,7 @@ export const getCourseAndSectionDetails: AppRouteHandler<GetCourseAndSectionDeta
     updated_at: course_section.updated_at,
     remarks: course_section.remarks,
     class_size: sql`COALESCE( ${sem_crs_thr_entry.class_size}, 0)`,
-    teachers_uuid: sem_crs_thr_entry.teachers_uuid,
+    teachers_uuid: sql`COALESCE( ${sem_crs_thr_entry.teachers_uuid}, '')`,
     teacher_uuid: teachers.teacher_uuid,
     teacher_name: teacherUser.name,
     teacher_email: teachers.teacher_email,
