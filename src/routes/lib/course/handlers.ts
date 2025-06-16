@@ -133,8 +133,10 @@ export const getCourseAndSectionDetails: AppRouteHandler<GetCourseAndSectionDeta
   const { uuid } = c.req.valid('param');
 
   const resultPromise = db.select({
-    uuid: course_section.uuid,
-    name: course_section.name,
+    uuid: sem_crs_thr_entry.uuid,
+    semester_uuid: sem_crs_thr_entry.semester_uuid,
+    course_section_uuid: course_section.uuid,
+    course_section_name: course_section.name,
     course_uuid: course_section.course_uuid,
     created_by: course_section.created_by,
     created_by_name: users.name,
@@ -147,6 +149,8 @@ export const getCourseAndSectionDetails: AppRouteHandler<GetCourseAndSectionDeta
     teacher_name: teacherUser.name,
     teacher_email: teachers.teacher_email,
     teacher_phone: teachers.teacher_phone,
+    is_mid_evaluation_complete: sem_crs_thr_entry.is_mid_evaluation_complete,
+    is_final_evaluation_complete: sem_crs_thr_entry.is_final_evaluation_complete,
   })
     .from(course_section)
     .leftJoin(sem_crs_thr_entry, eq(sem_crs_thr_entry.course_section_uuid, course_section.uuid))
@@ -156,9 +160,12 @@ export const getCourseAndSectionDetails: AppRouteHandler<GetCourseAndSectionDeta
     .where(eq(course_section.course_uuid, uuid));
 
   const data = await resultPromise;
+  const response = {
+    sem_crs_thr_entry: data || [],
+  };
 
   if (!data)
     return DataNotFound(c);
 
-  return c.json(data || [], HSCode.OK);
+  return c.json(response, HSCode.OK);
 };
