@@ -26,8 +26,8 @@ export const insertSchema = createInsertSchema(
   id: true,
   evaluation_time: true,
   created_at: true,
-  created_by: true,
 }).partial({
+  created_by: true,
   updated_at: true,
   remarks: true,
 });
