@@ -122,6 +122,9 @@ export const getCourseAndSectionDetails = createRoute({
   method: 'get',
   request: {
     params: param.uuid,
+    query: z.object({
+      semester_uuid: z.string().optional(),
+    }),
   },
   tags,
   responses: {

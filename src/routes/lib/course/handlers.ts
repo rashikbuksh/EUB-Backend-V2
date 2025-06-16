@@ -1,6 +1,6 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { eq, sql } from 'drizzle-orm';
+import { and, eq, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import * as HSCode from 'stoker/http-status-codes';
 
@@ -132,6 +132,8 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
 export const getCourseAndSectionDetails: AppRouteHandler<GetCourseAndSectionDetailsRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
 
+  const { semester_uuid } = c.req.valid('query');
+
   const resultPromise = db.select({
     uuid: sql`COALESCE(${sem_crs_thr_entry.uuid}, '')`,
     semester_uuid: sql`COALESCE(${sem_crs_thr_entry.semester_uuid}, '')`,
@@ -157,7 +159,14 @@ export const getCourseAndSectionDetails: AppRouteHandler<GetCourseAndSectionDeta
     .leftJoin(teachers, eq(teachers.uuid, sem_crs_thr_entry.teachers_uuid))
     .leftJoin(teacherUser, eq(teacherUser.uuid, teachers.teacher_uuid))
     .leftJoin(users, eq(users.uuid, course_section.created_by))
-    .where(eq(course_section.course_uuid, uuid));
+    .where(
+      semester_uuid
+        ? and(
+            eq(sem_crs_thr_entry.semester_uuid, semester_uuid),
+            eq(course_section.course_uuid, uuid),
+          )
+        : eq(course_section.course_uuid, uuid),
+    );
 
   const data = await resultPromise;
   const response = {
