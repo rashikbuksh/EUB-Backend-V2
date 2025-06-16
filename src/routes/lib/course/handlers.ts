@@ -161,11 +161,14 @@ export const getCourseAndSectionDetails: AppRouteHandler<GetCourseAndSectionDeta
     .leftJoin(users, eq(users.uuid, course_section.created_by))
     .where(
       semester_uuid
-        ? and(
-            eq(sem_crs_thr_entry.semester_uuid, semester_uuid),
-            eq(course_section.course_uuid, uuid),
-          )
+        ? sem_crs_thr_entry.semester_uuid
+          ? and(
+              eq(sem_crs_thr_entry.semester_uuid, semester_uuid),
+              eq(course_section.course_uuid, uuid),
+            )
+          : eq(course_section.course_uuid, uuid)
         : eq(course_section.course_uuid, uuid),
+
     );
 
   const data = await resultPromise;
