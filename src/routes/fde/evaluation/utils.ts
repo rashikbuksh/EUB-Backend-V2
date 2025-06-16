@@ -27,8 +27,8 @@ export const insertSchema = createInsertSchema(
   qns_uuid: true,
   rating: true,
   created_at: true,
-  created_by: true,
 }).partial({
+  created_by: true,
   updated_at: true,
   remarks: true,
 });
