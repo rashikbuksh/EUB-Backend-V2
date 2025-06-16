@@ -1,16 +1,20 @@
 import type { AppRouteHandler } from '@/lib/types';
 
 import { eq, sql } from 'drizzle-orm';
+import { alias } from 'drizzle-orm/pg-core';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
 import { users } from '@/routes/hr/schema';
-import { sem_crs_thr_entry } from '@/routes/lib/schema';
+import { course, course_section, sem_crs_thr_entry, semester } from '@/routes/lib/schema';
+import { teachers } from '@/routes/portfolio/schema';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 
 import type { CreateRoute, GetOneRoute, GetRespondStudentDetailsWithEvaluationRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
 
 import { respond_student } from './../schema';
+
+const teacherUser = alias(users, 'teacherUser');
 
 export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
   const value = c.req.valid('json');
@@ -69,9 +73,23 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     created_at: respond_student.created_at,
     updated_at: respond_student.updated_at,
     remarks: respond_student.remarks,
+    semester_uuid: sem_crs_thr_entry.semester_uuid,
+    semester_name: semester.name,
+    course_section_uuid: sem_crs_thr_entry.course_section_uuid,
+    course_section_name: course_section.name,
+    course_uuid: course.uuid,
+    course_name: course.name,
+    teacher_uuid: teacherUser.uuid,
+    teacher_name: teacherUser.name,
+
   })
     .from(respond_student)
     .leftJoin(sem_crs_thr_entry, eq(sem_crs_thr_entry.uuid, respond_student.sem_crs_thr_entry_uuid))
+    .leftJoin(semester, eq(semester.uuid, sem_crs_thr_entry.semester_uuid))
+    .leftJoin(course_section, eq(course_section.uuid, sem_crs_thr_entry.course_section_uuid))
+    .leftJoin(course, eq(course.uuid, course_section.course_uuid))
+    .leftJoin(teachers, eq(teachers.uuid, sem_crs_thr_entry.teachers_uuid))
+    .leftJoin(teacherUser, eq(teacherUser.uuid, teachers.teacher_uuid))
     .leftJoin(users, eq(users.uuid, respond_student.created_by));
 
   const data = await resultPromise;
