@@ -166,7 +166,10 @@ export const getCourseAndSectionDetails: AppRouteHandler<GetCourseAndSectionDeta
               eq(sem_crs_thr_entry.semester_uuid, semester_uuid),
               eq(course_section.course_uuid, uuid),
             )
-          : eq(course_section.course_uuid, uuid)
+          : and(
+              eq(sem_crs_thr_entry.semester_uuid, null),
+              eq(course_section.course_uuid, uuid),
+            )
         : eq(course_section.course_uuid, uuid),
 
     );
