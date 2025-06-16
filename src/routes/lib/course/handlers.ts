@@ -110,7 +110,6 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
           FROM lib.course_section
           LEFT JOIN lib.course ON course.uuid = course_section.course_uuid
           LEFT JOIN hr.users ON users.uuid = course_section.created_by
-          WHERE course_section.course_uuid = ${course.uuid}
   ), ARRAY[]::jsonb[])`.as('course_section'),
   })
     .from(course)
