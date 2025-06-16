@@ -1,15 +1,22 @@
 import type { AppRouteHandler } from '@/lib/types';
 
 import { eq, sql } from 'drizzle-orm';
+import { alias } from 'drizzle-orm/pg-core';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
 import { users } from '@/routes/hr/schema';
+import * as hrSchema from '@/routes/hr/schema';
+import { teachers } from '@/routes/portfolio/schema';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 
 import type { CreateRoute, GetCourseAndSectionDetailsRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
 
-import { course, course_section } from '../schema';
+import { course, course_section, sem_crs_thr_entry } from '../schema';
+
+;
+
+const teacherUser = alias(hrSchema.users, 'teacherUser');
 
 export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
   const value = c.req.valid('json');
@@ -126,26 +133,27 @@ export const getCourseAndSectionDetails: AppRouteHandler<GetCourseAndSectionDeta
   const { uuid } = c.req.valid('param');
 
   const resultPromise = db.select({
-    uuid: course.uuid,
-    name: course.name,
-    code: course.code,
-    course_section_uuid: course_section.uuid,
-    course_section_name: course_section.name,
-    class_size: sql`0`,
-    teacher_uuid: sql`NULL`,
-    created_by: course.created_by,
+    uuid: course_section.uuid,
+    name: course_section.name,
+    course_uuid: course_section.course_uuid,
+    created_by: course_section.created_by,
     created_by_name: users.name,
-    created_at: course.created_at,
-    updated_at: course.updated_at,
-    remarks: course.remarks,
+    created_at: course_section.created_at,
+    updated_at: course_section.updated_at,
+    remarks: course_section.remarks,
+    class_size: sql`COALESCE( ${sem_crs_thr_entry.class_size}, 0)`,
+    teachers_uuid: sem_crs_thr_entry.teachers_uuid,
+    teacher_uuid: teachers.teacher_uuid,
+    teacher_name: teacherUser.name,
+    teacher_email: teachers.teacher_email,
+    teacher_phone: teachers.teacher_phone,
   })
-    .from(course)
-    .leftJoin(
-      course_section,
-      eq(course_section.course_uuid, course.uuid),
-    )
-    .leftJoin(users, eq(users.uuid, course.created_by))
-    .where(eq(course.uuid, uuid));
+    .from(course_section)
+    .leftJoin(sem_crs_thr_entry, eq(sem_crs_thr_entry.course_section_uuid, course_section.uuid))
+    .leftJoin(teachers, eq(teachers.uuid, sem_crs_thr_entry.teachers_uuid))
+    .leftJoin(teacherUser, eq(teacherUser.uuid, teachers.teacher_uuid))
+    .leftJoin(users, eq(users.uuid, course_section.created_by))
+    .where(eq(course_section.course_uuid, uuid));
 
   const data = await resultPromise;
 
