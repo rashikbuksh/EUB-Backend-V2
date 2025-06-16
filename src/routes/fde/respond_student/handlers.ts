@@ -107,8 +107,6 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
 export const getRespondStudentDetailsWithEvaluation: AppRouteHandler<GetRespondStudentDetailsWithEvaluationRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
 
-  console.log('getRespondStudentDetailsWithEvaluation', uuid);
-
   const resultPromise = await db.select({
     uuid: respond_student.uuid,
     sem_crs_thr_entry_uuid: respond_student.sem_crs_thr_entry_uuid,
