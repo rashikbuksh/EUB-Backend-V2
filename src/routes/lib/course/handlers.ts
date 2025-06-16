@@ -133,7 +133,7 @@ export const getCourseAndSectionDetails: AppRouteHandler<GetCourseAndSectionDeta
   const { uuid } = c.req.valid('param');
 
   const resultPromise = db.select({
-    uuid: sql`COALESCE(${course.uuid}, '')`,
+    uuid: sql`COALESCE(${sem_crs_thr_entry.uuid}, '')`,
     semester_uuid: sql`COALESCE(${sem_crs_thr_entry.semester_uuid}, '')`,
     course_section_uuid: course_section.uuid,
     course_section_name: course_section.name,
