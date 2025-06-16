@@ -63,6 +63,8 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   // const data = await db.query.sem_crs_thr_entry.findMany();
+  const { user_uuid } = c.req.valid('query');
+
   const resultPromise = db.select({
     uuid: sem_crs_thr_entry.uuid,
     semester_uuid: sem_crs_thr_entry.semester_uuid,
@@ -94,6 +96,10 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     .leftJoin(teachers, eq(teachers.uuid, sem_crs_thr_entry.teachers_uuid))
     .leftJoin(teacherUser, eq(teacherUser.uuid, teachers.teacher_uuid))
     .leftJoin(users, eq(users.uuid, sem_crs_thr_entry.created_by));
+
+  if (user_uuid) {
+    resultPromise.where(eq(teachers.teacher_uuid, user_uuid));
+  }
 
   const data = await resultPromise;
 
