@@ -1,6 +1,6 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import * as HSCode from 'stoker/http-status-codes';
 
@@ -88,6 +88,18 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     created_at: sem_crs_thr_entry.created_at,
     updated_at: sem_crs_thr_entry.updated_at,
     remarks: sem_crs_thr_entry.remarks,
+    mid_evaluation_response: sql`(
+      SELECT COUNT(*)::float8 
+      FROM fde.respond_student 
+      WHERE respond_student.sem_crs_thr_entry_uuid = ${sem_crs_thr_entry.uuid} 
+        AND respond_student.evaluation_time = 'mid'
+    )`,
+    final_evaluation_response: sql`(
+      SELECT COUNT(*) ::float8
+      FROM fde.respond_student 
+      WHERE respond_student.sem_crs_thr_entry_uuid = ${sem_crs_thr_entry.uuid} 
+        AND respond_student.evaluation_time = 'final'
+    )`,
   })
     .from(sem_crs_thr_entry)
     .leftJoin(semester, eq(semester.uuid, sem_crs_thr_entry.semester_uuid))
