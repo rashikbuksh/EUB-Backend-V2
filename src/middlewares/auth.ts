@@ -37,6 +37,7 @@ export function isPublicRoute(url: string, method: string) {
     { url: '/v1/fde/qns-category', method: 'GET' },
     { url: '/v1/fde/respond-student', method: 'POST' },
     { url: '/v1/fde/evaluation', method: 'POST' },
+    { url: '/v1/lib/sem-crs-thr-entry/', method: 'GET' },
   ];
 
   return publicUrls.some(route => url.startsWith(route.url) && route.method === method);
