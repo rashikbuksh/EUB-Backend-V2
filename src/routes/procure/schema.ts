@@ -191,33 +191,33 @@ export const capital_vendor = procure.table('capital_vendor', {
   quotation_file: text('quotation_file').default(sql`null`),
 });
 
-export const item_work_order_status = procure.enum('item_work_order_status', ['pending', 'accept', 'rejected']);
+// export const item_work_order_status = procure.enum('item_work_order_status', ['pending', 'accept', 'rejected']);
 
-export const item_work_order = procure.table('item_work_order', {
-  uuid: uuid_primary,
-  vendor_uuid: defaultUUID('vendor_uuid').references(() => vendor.uuid, DEFAULT_OPERATION),
-  status: item_work_order_status('status').default('pending'),
-  created_by: defaultUUID('created_by').references(() => users.uuid, DEFAULT_OPERATION),
-  created_at: DateTime('created_at').notNull(),
-  updated_at: DateTime('updated_at'),
-  remarks: text('remarks'),
-  id: integer('id'),
-});
-//* deleted from drawio and no need this table *//
-export const item_work_order_entry = procure.table('item_work_order_entry', {
-  uuid: uuid_primary,
-  item_uuid: defaultUUID('item_uuid').references(() => item.uuid, DEFAULT_OPERATION),
-  quantity: PG_DECIMAL('quantity').default(sql`0`),
-  unit_price: PG_DECIMAL('unit_price').default(sql`0`),
-  is_received: boolean('is_received').notNull().default(false),
-  received_date: DateTime('received_date').default(sql`null`),
-  created_by: defaultUUID('created_by').references(() => users.uuid, DEFAULT_OPERATION),
-  created_at: DateTime('created_at').notNull(),
-  updated_at: DateTime('updated_at'),
-  remarks: text('remarks'),
-  capital_uuid: defaultUUID('capital_uuid').references(() => capital.uuid, DEFAULT_OPERATION),
+// export const item_work_order = procure.table('item_work_order', {
+//   uuid: uuid_primary,
+//   vendor_uuid: defaultUUID('vendor_uuid').references(() => vendor.uuid, DEFAULT_OPERATION),
+//   status: item_work_order_status('status').default('pending'),
+//   created_by: defaultUUID('created_by').references(() => users.uuid, DEFAULT_OPERATION),
+//   created_at: DateTime('created_at').notNull(),
+//   updated_at: DateTime('updated_at'),
+//   remarks: text('remarks'),
+//   id: integer('id'),
+// });
+// //* deleted from drawio and no need this table *//
+// export const item_work_order_entry = procure.table('item_work_order_entry', {
+//   uuid: uuid_primary,
+//   item_uuid: defaultUUID('item_uuid').references(() => item.uuid, DEFAULT_OPERATION),
+//   quantity: PG_DECIMAL('quantity').default(sql`0`),
+//   unit_price: PG_DECIMAL('unit_price').default(sql`0`),
+//   is_received: boolean('is_received').notNull().default(false),
+//   received_date: DateTime('received_date').default(sql`null`),
+//   created_by: defaultUUID('created_by').references(() => users.uuid, DEFAULT_OPERATION),
+//   created_at: DateTime('created_at').notNull(),
+//   updated_at: DateTime('updated_at'),
+//   remarks: text('remarks'),
+//   capital_uuid: defaultUUID('capital_uuid').references(() => capital.uuid, DEFAULT_OPERATION),
 
-});
+// });
 
 export const capital_item = procure.table('capital_item', {
   uuid: uuid_primary,
@@ -351,6 +351,45 @@ export const item_transfer = procure.table('item_transfer', {
   remarks: text('remarks'),
 });
 
+export const bank = procure.table('bank', {
+  uuid: uuid_primary,
+  name: text('name').notNull(),
+  swift_code: text('swift_code').notNull(),
+  address: text('address').default(sql`null`),
+  routing_no: text('routing_number').default(sql`null`),
+  account_no: text('account_number').default(sql`null`),
+  created_by: defaultUUID('created_by').references(() => users.uuid, DEFAULT_OPERATION),
+  created_at: DateTime('created_at').notNull(),
+  updated_at: DateTime('updated_at'),
+  remarks: text('remarks').default(sql`null`),
+});
+
+export const bill_id = procure.sequence('bill_id', DEFAULT_SEQUENCE);
+
+export const bill = procure.table('bill', {
+  uuid: uuid_primary,
+  id: integer('id').default(sql`nextval('procure.bill_id')`),
+  bank_uuid: defaultUUID('bank_uuid').references(() => bank.uuid, DEFAULT_OPERATION),
+  vendor_uuid: defaultUUID('vendor_uuid').references(() => vendor.uuid, DEFAULT_OPERATION),
+  created_by: defaultUUID('created_by').references(() => users.uuid, DEFAULT_OPERATION),
+  created_at: DateTime('created_at').notNull(),
+  updated_at: DateTime('updated_at'),
+  remarks: text('remarks').default(sql`null`),
+});
+
+export const bill_payment_type = procure.enum('bill_payment_type', ['partial', 'full']);
+
+export const bill_payment = procure.table('bill_payment', {
+  uuid: uuid_primary,
+  bill_uuid: defaultUUID('bill_uuid').references(() => bill.uuid, DEFAULT_OPERATION),
+  type: bill_payment_type('type').notNull().default('full'),
+  amount: PG_DECIMAL('amount').notNull(),
+  created_by: defaultUUID('created_by').references(() => users.uuid, DEFAULT_OPERATION),
+  created_at: DateTime('created_at').notNull(),
+  updated_at: DateTime('updated_at'),
+  remarks: text('remarks').default(sql`null`),
+});
+
 //* Relations *//
 
 export const procure_category_rel = relations (category, ({ one }) => ({
@@ -471,28 +510,28 @@ export const procure_capital_vendor_rel = relations (capital_vendor, ({ one }) =
   }),
 }));
 
-export const procure_item_work_order_rel = relations (item_work_order, ({ one, many }) => ({
-  item_work_order_entry: many(item_work_order_entry),
-  created_by: one(users, {
-    fields: [item_work_order.created_by],
-    references: [users.uuid],
-  }),
-  vendor: one(vendor, {
-    fields: [item_work_order.vendor_uuid],
-    references: [vendor.uuid],
-  }),
-}));
+// export const procure_item_work_order_rel = relations (item_work_order, ({ one, many }) => ({
+//   item_work_order_entry: many(item_work_order_entry),
+//   created_by: one(users, {
+//     fields: [item_work_order.created_by],
+//     references: [users.uuid],
+//   }),
+//   vendor: one(vendor, {
+//     fields: [item_work_order.vendor_uuid],
+//     references: [vendor.uuid],
+//   }),
+// }));
 
-export const procure_item_work_order_entry_rel = relations (item_work_order_entry, ({ one }) => ({
-  created_by: one(users, {
-    fields: [item_work_order_entry.created_by],
-    references: [users.uuid],
-  }),
-  item: one(item, {
-    fields: [item_work_order_entry.item_uuid],
-    references: [item.uuid],
-  }),
-}));
+// export const procure_item_work_order_entry_rel = relations (item_work_order_entry, ({ one }) => ({
+//   created_by: one(users, {
+//     fields: [item_work_order_entry.created_by],
+//     references: [users.uuid],
+//   }),
+//   item: one(item, {
+//     fields: [item_work_order_entry.item_uuid],
+//     references: [item.uuid],
+//   }),
+// }));
 
 export const procure_service_rel = relations (service, ({ one, many }) => ({
   created_by: one(users, {
@@ -573,6 +612,39 @@ export const procure_item_transfer_rel = relations (item_transfer, ({ one }) => 
   item: one(item, {
     fields: [item_transfer.item_uuid],
     references: [item.uuid],
+  }),
+}));
+
+export const procure_bank_rel = relations (bank, ({ one }) => ({
+  created_by: one(users, {
+    fields: [bank.created_by],
+    references: [users.uuid],
+  }),
+}));
+
+export const procure_bill_rel = relations (bill, ({ one }) => ({
+  created_by: one(users, {
+    fields: [bill.created_by],
+    references: [users.uuid],
+  }),
+  bank: one(bank, {
+    fields: [bill.bank_uuid],
+    references: [bank.uuid],
+  }),
+  vendor: one(vendor, {
+    fields: [bill.vendor_uuid],
+    references: [vendor.uuid],
+  }),
+}));
+
+export const procure_bill_payment_rel = relations (bill_payment, ({ one }) => ({
+  created_by: one(users, {
+    fields: [bill_payment.created_by],
+    references: [users.uuid],
+  }),
+  bill: one(bill, {
+    fields: [bill_payment.bill_uuid],
+    references: [bill.uuid],
   }),
 }));
 
