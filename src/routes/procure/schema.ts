@@ -390,6 +390,39 @@ export const bill_payment = procure.table('bill_payment', {
   remarks: text('remarks').default(sql`null`),
 });
 
+export const item_work_order_id = procure.sequence('item_work_order_id', DEFAULT_SEQUENCE);
+
+export const item_work_order = procure.table('item_work_order', {
+  uuid: uuid_primary,
+  id: integer('id').default(sql`nextval('procure.item_work_order_id')`),
+  bill_uuid: defaultUUID('bill_uuid').references(() => bill.uuid, DEFAULT_OPERATION),
+  vendor_uuid: defaultUUID('vendor_uuid').references(() => vendor.uuid, DEFAULT_OPERATION),
+  work_order_file: text('work_order_file').default(sql`null`),
+  work_order_remarks: text('work_order_remarks').notNull(),
+  is_delivery_statement: boolean('is_delivery_statement').notNull().default(false),
+  delivery_statement_date: DateTime('delivery_statement_date').default(sql`null`),
+  delivery_statement_file: text('delivery_statement_file').default(sql`null`),
+  delivery_statement_remarks: text('delivery_statement_remarks').notNull(),
+  done: boolean('done').notNull().default(false),
+  done_date: DateTime('done_date').default(sql`null`),
+  created_by: defaultUUID('created_by').references(() => users.uuid, DEFAULT_OPERATION),
+  created_at: DateTime('created_at').notNull(),
+  updated_at: DateTime('updated_at'),
+  remarks: text('remarks').default(sql`null`),
+});
+
+export const item_work_order_entry = procure.table('item_work_order_entry', {
+  uuid: uuid_primary,
+  item_work_order_uuid: defaultUUID('item_work_order_uuid').references(() => item_work_order.uuid, DEFAULT_OPERATION),
+  request_quantity: PG_DECIMAL('request_quantity').notNull(),
+  provided_quantity: PG_DECIMAL('provided_quantity').default(sql`0`),
+  unit_price: PG_DECIMAL('unit_price').default(sql`0`),
+  created_by: defaultUUID('created_by').references(() => users.uuid, DEFAULT_OPERATION),
+  created_at: DateTime('created_at').notNull(),
+  updated_at: DateTime('updated_at'),
+  remarks: text('remarks').default(sql`null`),
+});
+
 //* Relations *//
 
 export const procure_category_rel = relations (category, ({ one }) => ({
@@ -648,4 +681,25 @@ export const procure_bill_payment_rel = relations (bill_payment, ({ one }) => ({
   }),
 }));
 
+export const procure_item_work_order_rel = relations (item_work_order, ({ one }) => ({
+  created_by: one(users, {
+    fields: [item_work_order.created_by],
+    references: [users.uuid],
+  }),
+  vendor: one(vendor, {
+    fields: [item_work_order.vendor_uuid],
+    references: [vendor.uuid],
+  }),
+}));
+
+export const procure_item_work_order_entry_rel = relations (item_work_order_entry, ({ one }) => ({
+  created_by: one(users, {
+    fields: [item_work_order_entry.created_by],
+    references: [users.uuid],
+  }),
+  item_work_order: one(item_work_order, {
+    fields: [item_work_order_entry.item_work_order_uuid],
+    references: [item_work_order.uuid],
+  }),
+}));
 export default procure;

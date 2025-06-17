@@ -1,3 +1,5 @@
+import bank from './bank';
+import bill from './bill';
 import capital from './capital';
 import capital_item from './capital_item';
 import capital_vendor from './capital_vendor';
@@ -42,4 +44,6 @@ export default [
   item_transfer,
   sub_purchase_cost_center,
   capital_item,
+  bank,
+  bill,
 ];

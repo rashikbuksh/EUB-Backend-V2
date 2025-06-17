@@ -249,7 +249,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     .leftJoin(hrSchema.users, eq(capital.created_by, hrSchema.users.uuid))
     .leftJoin(sub_category, eq(capital.sub_category_uuid, sub_category.uuid))
     .leftJoin(capital_vendor, eq(capital_vendor.capital_uuid, capital.uuid))
-    .leftJoin(item_work_order_entry, eq(item_work_order_entry.capital_uuid, capital.uuid))
+    // .leftJoin(item_work_order_entry, eq(item_work_order_entry.capital_uuid, capital.uuid))
     .leftJoin(vendor, eq(capital.vendor_uuid, vendor.uuid))
     .groupBy(
       capital.id,
@@ -435,7 +435,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     .leftJoin(capital_vendor, eq(capital_vendor.capital_uuid, capital.uuid))
     .leftJoin(vendor, eq(capital.vendor_uuid, vendor.uuid))
     .leftJoin(sv_vendor, eq(capital_vendor.vendor_uuid, sv_vendor.uuid))
-    .leftJoin(item_work_order_entry, eq(item_work_order_entry.capital_uuid, capital.uuid))
+  // .leftJoin(item_work_order_entry, eq(item_work_order_entry.capital_uuid, capital.uuid))
     .where(eq(capital.uuid, uuid))
     .groupBy(
       capital.index,
