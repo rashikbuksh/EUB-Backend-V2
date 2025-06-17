@@ -111,6 +111,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
             'created_at', course_section.created_at,
             'updated_at', course_section.updated_at,
             'remarks', course_section.remarks
+            'index', course_section.index
           )
           FROM lib.course_section
           LEFT JOIN hr.users ON users.uuid = course_section.created_by
