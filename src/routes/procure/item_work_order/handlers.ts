@@ -8,6 +8,7 @@ import db from '@/db';
 import { generateDynamicId } from '@/lib/dynamic_id';
 import * as hrSchema from '@/routes/hr/schema';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
+import { deleteFile, insertFile, updateFile } from '@/utils/upload_file';
 
 import type { CreateRoute, GetOneRoute, GetWorkOrderDEtailsByWorkOrderUuidRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
 
@@ -16,9 +17,35 @@ import { item_work_order, vendor } from '../schema';
 // const created_user = alias(hrSchema.users, 'created_user');
 
 export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
-  const value = c.req.valid('json');
+  // const value = c.req.valid('json');
+
+  const formData = await c.req.parseBody();
+
+  const work_order_file = formData.work_order_file;
+  const delivery_statement_file = formData.delivery_statement_file;
+
+  const workOrderFilePath = work_order_file ? await insertFile(work_order_file, 'public/item-work-order/work-order') : null;
+  const deliveryStatementFilePath = delivery_statement_file ? await insertFile(delivery_statement_file, 'public/item-work-order/delivery-statement') : null;
 
   const newId = await generateDynamicId(item_work_order, item_work_order.id, item_work_order.created_at);
+
+  const value = {
+    uuid: formData.uuid,
+    bill_uuid: formData.bill_uuid,
+    vendor_uuid: formData.vendor_uuid,
+    work_order_file: workOrderFilePath,
+    work_order_remarks: formData.work_order_remarks,
+    is_delivery_statement: formData.is_delivery_statement || false,
+    delivery_statement_date: formData.delivery_statement_date,
+    delivery_statement_file: deliveryStatementFilePath,
+    delivery_statement_remarks: formData.delivery_statement_remarks,
+    done: formData.done || false,
+    done_date: formData.done_date,
+    created_by: formData.created_by,
+    created_at: formData.created_at,
+    updated_at: formData.updated_at,
+    remarks: formData.remarks,
+  };
 
   const [data] = await db.insert(item_work_order).values({
     id: newId,
@@ -32,7 +59,36 @@ export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
 
 export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
-  const updates = c.req.valid('json');
+
+  const formData = await c.req.parseBody();
+
+  const [existingItemWorkOrder] = await db.select()
+    .from(item_work_order)
+    .where(eq(item_work_order.uuid, uuid));
+
+  // Handle file fields
+  const fileFields = [
+    { key: 'work_order_file', path: 'public/item-work-order/work-order' },
+    { key: 'delivery_statement_file', path: 'public/item-work-order/delivery-statement' },
+  ];
+
+  const existingItemWorkOrderObj = existingItemWorkOrder as Record<string, any>;
+
+  for (const { key, path } of fileFields) {
+    if (formData[key] && typeof formData[key] === 'object') {
+      if (existingItemWorkOrderObj && existingItemWorkOrderObj[key]) {
+        formData[key] = await updateFile(formData[key], existingItemWorkOrderObj[key], path);
+      }
+      else {
+        formData[key] = await insertFile(formData[key], path);
+      }
+    }
+  }
+
+  // Build updates object, only including fields present in formData
+  const updates = Object.fromEntries(
+    Object.entries(formData).filter(([_, v]) => v !== undefined),
+  );
 
   if (Object.keys(updates).length === 0)
     return ObjectNotFound(c);
@@ -52,6 +108,25 @@ export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
 
 export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
+
+  const [ItemWorkOrderData] = await db.select()
+    .from(item_work_order)
+    .where(eq(item_work_order.uuid, uuid));
+
+  if (ItemWorkOrderData) {
+    const fileFields = [
+      'work_order_file',
+      'delivery_statement_file',
+    ];
+
+    const ItemWorkOrderDataObj = ItemWorkOrderData as Record<string, any>;
+
+    for (const key of fileFields) {
+      if (ItemWorkOrderDataObj[key]) {
+        await deleteFile(ItemWorkOrderDataObj[key]);
+      }
+    }
+  }
 
   const [data] = await db.delete(item_work_order)
     .where(eq(item_work_order.uuid, uuid))
@@ -74,7 +149,14 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     uuid: item_work_order.uuid,
     vendor_uuid: item_work_order.vendor_uuid,
     vendor_name: vendor.name,
-    // status: item_work_order.status,
+    work_order_file: item_work_order.work_order_file,
+    work_order_remarks: item_work_order.work_order_remarks,
+    is_delivery_statement: item_work_order.is_delivery_statement,
+    delivery_statement_date: item_work_order.delivery_statement_date,
+    delivery_statement_file: item_work_order.delivery_statement_file,
+    delivery_statement_remarks: item_work_order.delivery_statement_remarks,
+    done: item_work_order.done,
+    done_date: item_work_order.done_date,
     created_at: item_work_order.created_at,
     updated_at: item_work_order.updated_at,
     created_by: item_work_order.created_by,
@@ -98,7 +180,14 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     uuid: item_work_order.uuid,
     vendor_uuid: item_work_order.vendor_uuid,
     vendor_name: vendor.name,
-    // status: item_work_order.status,
+    work_order_file: item_work_order.work_order_file,
+    work_order_remarks: item_work_order.work_order_remarks,
+    is_delivery_statement: item_work_order.is_delivery_statement,
+    delivery_statement_date: item_work_order.delivery_statement_date,
+    delivery_statement_file: item_work_order.delivery_statement_file,
+    delivery_statement_remarks: item_work_order.delivery_statement_remarks,
+    done: item_work_order.done,
+    done_date: item_work_order.done_date,
     created_at: item_work_order.created_at,
     updated_at: item_work_order.updated_at,
     created_by: item_work_order.created_by,
@@ -141,7 +230,16 @@ export const getWorkOrderDEtailsByWorkOrderUuid: AppRouteHandler<GetWorkOrderDEt
     uuid: item_work_order.uuid,
     vendor_uuid: item_work_order.vendor_uuid,
     vendor_name: vendor.name,
-    // status: item_work_order.status,
+    work_order_file: item_work_order.work_order_file,
+    work_order_remarks: item_work_order.work_order_remarks,
+    is_delivery_statement: item_work_order.is_delivery_statement,
+    delivery_statement_date: item_work_order.delivery_statement_date,
+    delivery_statement_file: item_work_order.delivery_statement_file,
+    delivery_statement_remarks: item_work_order.delivery_statement_remarks,
+    done: item_work_order.done,
+    done_date: item_work_order.done_date,
+    id: item_work_order.id,
+    item_work_order_id: sql`CONCAT('IWOI', TO_CHAR(${item_work_order.created_at}::timestamp, 'YY'), '-',  TO_CHAR(${item_work_order.created_at}::timestamp, 'MM'), '-',  TO_CHAR(${item_work_order.id}, 'FM0000'))`,
     created_at: item_work_order.created_at,
     updated_at: item_work_order.updated_at,
     created_by: item_work_order.created_by,
@@ -150,19 +248,15 @@ export const getWorkOrderDEtailsByWorkOrderUuid: AppRouteHandler<GetWorkOrderDEt
     item_work_order_entry: sql`COALESCE(ARRAY(SELECT json_build_object(
         'uuid', item_work_order_entry.uuid,
         'item_work_uuid', item_work_order_entry.item_work_order_uuid,
-        'item_uuid', item_work_order_entry.item_uuid,
-        'item_name', item.name,
-        'quantity', item_work_order_entry.quantity::float8,
+        'request_quantity', item_work_order_entry.request_quantity::float8,
+        'provided_quantity', item_work_order_entry.provided_quantity::float8,
         'unit_price', item_work_order_entry.unit_price::float8,
-        'is_received', item_work_order_entry.is_received,
-        'received_date', item_work_order_entry.received_date,
         'created_by', item_work_order_entry.created_by,
         'created_at', item_work_order_entry.created_at,
         'updated_at', item_work_order_entry.updated_at,
         'remarks', item_work_order_entry.remarks
       )
       FROM procure.item_work_order_entry
-      LEFT JOIN procure.item ON item_work_order_entry.item_uuid = item.uuid
       WHERE item_work_order_entry.item_work_order_uuid = ${item_work_order.uuid}
       ORDER BY item_work_order_entry.created_at ASC), '{}')`,
   })

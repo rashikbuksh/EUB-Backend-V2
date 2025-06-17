@@ -65,24 +65,18 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
 
   const resultPromise = db.select({
     uuid: item_work_order_entry.uuid,
-    // item_uuid: item_work_order_entry.item_uuid,
-    // item_name: item.name,
-    // quantity: PG_DECIMAL_TO_FLOAT(item_work_order_entry.quantity),
+    item_work_order_uuid: item_work_order_entry.item_work_order_uuid,
+    request_quantity: PG_DECIMAL_TO_FLOAT(item_work_order_entry.request_quantity),
+    provided_quantity: PG_DECIMAL_TO_FLOAT(item_work_order_entry.provided_quantity),
     unit_price: PG_DECIMAL_TO_FLOAT(item_work_order_entry.unit_price),
-    // is_received: item_work_order_entry.is_received,
     created_at: item_work_order_entry.created_at,
     updated_at: item_work_order_entry.updated_at,
     created_by: item_work_order_entry.created_by,
     created_by_name: hrSchema.users.name,
     remarks: item_work_order_entry.remarks,
-    // received_date: item_work_order_entry.received_date,
-    //  capital_uuid: item_work_order_entry.capital_uuid,
-    // capital_name: capital.name,
   })
     .from(item_work_order_entry)
     .leftJoin(hrSchema.users, eq(item_work_order_entry.created_by, hrSchema.users.uuid));
-  // .leftJoin(item, eq(item_work_order_entry.item_uuid, item.uuid))
-    // .leftJoin(capital, eq(item_work_order_entry.capital_uuid, capital.uuid));
 
   const data = await resultPromise;
 
@@ -94,24 +88,18 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
 
   const resultPromise = db.select({
     uuid: item_work_order_entry.uuid,
-    // item_uuid: item_work_order_entry.item_uuid,
-    // item_name: item.name,
-    // quantity: PG_DECIMAL_TO_FLOAT(item_work_order_entry.quantity),
+    item_work_order_uuid: item_work_order_entry.item_work_order_uuid,
+    request_quantity: PG_DECIMAL_TO_FLOAT(item_work_order_entry.request_quantity),
+    provided_quantity: PG_DECIMAL_TO_FLOAT(item_work_order_entry.provided_quantity),
     unit_price: PG_DECIMAL_TO_FLOAT(item_work_order_entry.unit_price),
-    // is_received: item_work_order_entry.is_received,
     created_at: item_work_order_entry.created_at,
     updated_at: item_work_order_entry.updated_at,
     created_by: item_work_order_entry.created_by,
     created_by_name: hrSchema.users.name,
     remarks: item_work_order_entry.remarks,
-    // received_date: item_work_order_entry.received_date,
-    // capital_uuid: item_work_order_entry.capital_uuid,
-    // capital_name: capital.name,
   })
     .from(item_work_order_entry)
     .leftJoin(hrSchema.users, eq(item_work_order_entry.created_by, hrSchema.users.uuid))
-  // .leftJoin(item, eq(item_work_order_entry.item_uuid, item.uuid))
-    // .leftJoin(capital, eq(item_work_order_entry.capital_uuid, capital.uuid))
     .where(eq(item_work_order_entry.uuid, uuid));
 
   const data = await resultPromise;
@@ -127,24 +115,18 @@ export const getAllByUuid: AppRouteHandler<GetAllByUuidRoute> = async (c: any) =
 
   const resultPromise = db.select({
     uuid: item_work_order_entry.uuid,
-    // item_uuid: item_work_order_entry.item_uuid,
-    // item_name: item.name,
-    // quantity: PG_DECIMAL_TO_FLOAT(item_work_order_entry.quantity),
+    item_work_order_uuid: item_work_order_entry.item_work_order_uuid,
+    request_quantity: PG_DECIMAL_TO_FLOAT(item_work_order_entry.request_quantity),
+    provided_quantity: PG_DECIMAL_TO_FLOAT(item_work_order_entry.provided_quantity),
     unit_price: PG_DECIMAL_TO_FLOAT(item_work_order_entry.unit_price),
-    // is_received: item_work_order_entry.is_received,
     created_at: item_work_order_entry.created_at,
     updated_at: item_work_order_entry.updated_at,
     created_by: item_work_order_entry.created_by,
     created_by_name: hrSchema.users.name,
     remarks: item_work_order_entry.remarks,
-    // received_date: item_work_order_entry.received_date,
-    // capital_uuid: item_work_order_entry.capital_uuid,
-    // capital_name: capital.name,
   })
     .from(item_work_order_entry)
     .leftJoin(hrSchema.users, eq(item_work_order_entry.created_by, hrSchema.users.uuid))
-    // .leftJoin(item, eq(item_work_order_entry.item_uuid, item.uuid))
-    // .leftJoin(capital, eq(item_work_order_entry.capital_uuid, capital.uuid))
     .where(eq(item_work_order_entry.uuid, item_work_order_uuid));
 
   const data = await resultPromise;

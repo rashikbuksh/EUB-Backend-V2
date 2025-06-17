@@ -1,6 +1,6 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { eq, sql } from 'drizzle-orm';
+import { and, eq, or, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import * as HSCode from 'stoker/http-status-codes';
 
@@ -63,7 +63,7 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   // const data = await db.query.sem_crs_thr_entry.findMany();
-  const { user_uuid } = c.req.valid('query');
+  const { user_uuid, status } = c.req.valid('query');
 
   const resultPromise = db.select({
     uuid: sem_crs_thr_entry.uuid,
@@ -113,6 +113,20 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     resultPromise.where(eq(teachers.teacher_uuid, user_uuid));
   }
 
+  if (status) {
+    if (status === 'complete') {
+      and(
+        eq(sem_crs_thr_entry.is_mid_evaluation_complete, true),
+        eq(sem_crs_thr_entry.is_final_evaluation_complete, true),
+      );
+    }
+    else if (status === 'pending') {
+      or(
+        eq(sem_crs_thr_entry.is_mid_evaluation_complete, false),
+        eq(sem_crs_thr_entry.is_final_evaluation_complete, false),
+      );
+    }
+  }
   const data = await resultPromise;
 
   return c.json(data || [], HSCode.OK);
