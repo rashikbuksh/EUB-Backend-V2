@@ -110,7 +110,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
             'created_by_name', users.name,
             'created_at', course_section.created_at,
             'updated_at', course_section.updated_at,
-            'remarks', course_section.remarks
+            'remarks', course_section.remarks,
             'index', course_section.index
           )
           FROM lib.course_section
