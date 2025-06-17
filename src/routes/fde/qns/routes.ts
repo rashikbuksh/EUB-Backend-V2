@@ -14,6 +14,11 @@ export const list = createRoute({
   path: '/fde/qns',
   method: 'get',
   tags,
+  request: {
+    query: z.object({
+      is_active: z.string().optional(),
+    }),
+  },
   responses: {
     [HSCode.OK]: jsonContent(
       z.array(selectSchema),

@@ -58,6 +58,8 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   // const data = await db.query.qns.findMany();
+  const { is_active } = c.req.valid('query');
+
   const resultPromise = db.select({
     uuid: qns.uuid,
     qns_category_uuid: qns.qns_category_uuid,
@@ -74,6 +76,10 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     .from(qns)
     .leftJoin(qns_category, eq(qns_category.uuid, qns.qns_category_uuid))
     .leftJoin(users, eq(users.uuid, qns.created_by));
+
+  if (is_active !== undefined) {
+    resultPromise.where(eq(qns.active, is_active));
+  }
 
   const data = await resultPromise;
 
