@@ -53,6 +53,7 @@ export const course_section = lib.table('course_section', {
   created_at: DateTime('created_at').notNull(),
   updated_at: DateTime('updated_at'),
   remarks: text('remarks'),
+  index: integer('index').notNull().default(0),
 }, table => [
   unique('course_section_course_uuid_name_unique').on(table.course_uuid, table.name),
 ]);

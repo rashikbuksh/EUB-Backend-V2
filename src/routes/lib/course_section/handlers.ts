@@ -1,6 +1,6 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { eq, sql } from 'drizzle-orm';
+import { asc, eq, sql } from 'drizzle-orm';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
@@ -69,10 +69,12 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     created_at: course_section.created_at,
     updated_at: course_section.updated_at,
     remarks: course_section.remarks,
+    index: course_section.index,
   })
     .from(course_section)
     .leftJoin(course, eq(course.uuid, course_section.course_uuid))
-    .leftJoin(users, eq(users.uuid, course_section.created_by));
+    .leftJoin(users, eq(users.uuid, course_section.created_by))
+    .orderBy(asc(course_section.index));
 
   const data = await resultPromise;
 
@@ -98,6 +100,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     created_at: course_section.created_at,
     updated_at: course_section.updated_at,
     remarks: course_section.remarks,
+    index: course_section.index,
     sem_crs_thr_entry: sql`COALESCE(ARRAY(
           SELECT jsonb_build_object(
             'uuid', sem_crs_thr_entry.uuid,

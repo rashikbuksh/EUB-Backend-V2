@@ -27,6 +27,7 @@ export const insertSchema = createInsertSchema(
   course_uuid: true,
   created_at: true,
   created_by: true,
+  index: true,
 }).partial({
   updated_at: true,
   remarks: true,
