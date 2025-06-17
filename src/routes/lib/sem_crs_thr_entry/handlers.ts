@@ -65,9 +65,6 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   // const data = await db.query.sem_crs_thr_entry.findMany();
   const { user_uuid, status } = c.req.valid('query');
 
-  console.log('user_uuid', user_uuid);
-  console.log('status', status);
-
   const resultPromise = db.select({
     uuid: sem_crs_thr_entry.uuid,
     semester_uuid: sem_crs_thr_entry.semester_uuid,
