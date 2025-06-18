@@ -24,11 +24,11 @@ export const insertSchema = createInsertSchema(
 ).required({
   uuid: true,
   vendor_uuid: true,
-  work_order_remarks: true,
-  delivery_statement_remarks: true,
   created_at: true,
   created_by: true,
 }).partial({
+  work_order_remarks: true,
+  delivery_statement_remarks: true,
   bill_uuid: true,
   work_order_file: true,
   is_delivery_statement: true,
