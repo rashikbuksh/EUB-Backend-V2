@@ -11,7 +11,7 @@ import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 
 import type { CreateRoute, GetAllByUuidRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
 
-import { item_work_order_entry } from '../schema';
+import { item, item_work_order_entry } from '../schema';
 
 // const created_user = alias(hrSchema.users, 'created_user');
 
@@ -74,9 +74,12 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     created_by: item_work_order_entry.created_by,
     created_by_name: hrSchema.users.name,
     remarks: item_work_order_entry.remarks,
+    item_uuid: item_work_order_entry.item_uuid,
+    item_name: item.name,
   })
     .from(item_work_order_entry)
-    .leftJoin(hrSchema.users, eq(item_work_order_entry.created_by, hrSchema.users.uuid));
+    .leftJoin(hrSchema.users, eq(item_work_order_entry.created_by, hrSchema.users.uuid))
+    .leftJoin(item, eq(item_work_order_entry.item_uuid, item.uuid));
 
   const data = await resultPromise;
 
@@ -97,9 +100,12 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     created_by: item_work_order_entry.created_by,
     created_by_name: hrSchema.users.name,
     remarks: item_work_order_entry.remarks,
+    item_uuid: item_work_order_entry.item_uuid,
+    item_name: item.name,
   })
     .from(item_work_order_entry)
     .leftJoin(hrSchema.users, eq(item_work_order_entry.created_by, hrSchema.users.uuid))
+    .leftJoin(item, eq(item_work_order_entry.item_uuid, item.uuid))
     .where(eq(item_work_order_entry.uuid, uuid));
 
   const data = await resultPromise;
@@ -124,9 +130,12 @@ export const getAllByUuid: AppRouteHandler<GetAllByUuidRoute> = async (c: any) =
     created_by: item_work_order_entry.created_by,
     created_by_name: hrSchema.users.name,
     remarks: item_work_order_entry.remarks,
+    item_uuid: item_work_order_entry.item_uuid,
+    item_name: item.name,
   })
     .from(item_work_order_entry)
     .leftJoin(hrSchema.users, eq(item_work_order_entry.created_by, hrSchema.users.uuid))
+    .leftJoin(item, eq(item_work_order_entry.item_uuid, item.uuid))
     .where(eq(item_work_order_entry.uuid, item_work_order_uuid));
 
   const data = await resultPromise;
