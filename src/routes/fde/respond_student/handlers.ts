@@ -154,6 +154,7 @@ export const getRespondStudentDetailsWithEvaluation: AppRouteHandler<GetRespondS
           LEFT JOIN fde.qns_category ON qns.qns_category_uuid = qns_category.uuid
           LEFT JOIN hr.users ON users.uuid = evaluation.created_by
           WHERE evaluation.respond_student_uuid = ${respond_student.uuid}
+          ORDER BY qns.index ASC
         ), ARRAY[]::jsonb[])`.as('evaluation'),
 
   })
