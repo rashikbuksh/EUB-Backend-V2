@@ -10,6 +10,7 @@ import { item, item_work_order_entry } from '@/routes/procure/schema';
 import type { ValueLabelRoute } from './routes';
 
 export const valueLabel: AppRouteHandler<ValueLabelRoute> = async (c: any) => {
+  const { item_work_order_uuid } = c.req.valid('query');
   const resultPromise = db.select({
     value: item_work_order_entry.item_uuid,
     label: item.name,
@@ -19,6 +20,10 @@ export const valueLabel: AppRouteHandler<ValueLabelRoute> = async (c: any) => {
   })
     .from(item_work_order_entry)
     .leftJoin(item, eq(item_work_order_entry.item_uuid, item.uuid));
+
+  if (item_work_order_uuid) {
+    resultPromise.where(eq(item_work_order_entry.item_work_order_uuid, item_work_order_uuid));
+  }
 
   const data = await resultPromise;
 
