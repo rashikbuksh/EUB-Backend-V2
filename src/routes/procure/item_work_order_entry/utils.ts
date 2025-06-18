@@ -13,6 +13,7 @@ export const insertSchema = createInsertSchema(
   {
     uuid: schema => schema.uuid.length(21),
     item_work_order_uuid: schema => schema.item_work_order_uuid.length(21),
+    item_uuid: schema => schema.item_uuid.length(21),
     request_quantity: z.number().positive(),
     provided_quantity: z.number().positive(),
     unit_price: z.number().optional().default(0),
@@ -32,6 +33,7 @@ export const insertSchema = createInsertSchema(
   created_by: true,
 }).partial({
   item_work_order_uuid: true,
+  item_uuid: true,
   provided_quantity: true,
   unit_price: true,
   updated_at: true,
