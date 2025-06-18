@@ -8,39 +8,34 @@ import { createRoute, z } from '@hono/zod-openapi';
 
 import { insertSchema, patchSchema, selectSchema } from './utils';
 
-const tags = ['procure.bill'];
+const tags = ['lib.room'];
 
 export const list = createRoute({
-  path: '/procure/bill',
+  path: '/lib/room',
   method: 'get',
   tags,
-  // request: {
-  //   query: z.object({
-  //     category: z.string().optional(),
-  //   }),
-  // },
   responses: {
     [HSCode.OK]: jsonContent(
       z.array(selectSchema),
-      'The list of bill',
+      'The list of room',
     ),
   },
 });
 
 export const create = createRoute({
-  path: '/procure/bill',
+  path: '/lib/room',
   method: 'post',
   request: {
     body: jsonContentRequired(
       insertSchema,
-      'The bill to create',
+      'The room to create',
     ),
   },
   tags,
   responses: {
     [HSCode.OK]: jsonContent(
       selectSchema,
-      'The created bill',
+      'The created room',
     ),
     [HSCode.UNPROCESSABLE_ENTITY]: jsonContent(
       createErrorSchema(insertSchema),
@@ -50,7 +45,7 @@ export const create = createRoute({
 });
 
 export const getOne = createRoute({
-  path: '/procure/bill/{uuid}',
+  path: '/lib/room/{uuid}',
   method: 'get',
   request: {
     params: param.uuid,
@@ -59,11 +54,11 @@ export const getOne = createRoute({
   responses: {
     [HSCode.OK]: jsonContent(
       selectSchema,
-      'The requested bill',
+      'The requested room',
     ),
     [HSCode.NOT_FOUND]: jsonContent(
       notFoundSchema,
-      'bill not found',
+      'room not found',
     ),
     [HSCode.UNPROCESSABLE_ENTITY]: jsonContent(
       createErrorSchema(param.uuid),
@@ -73,24 +68,24 @@ export const getOne = createRoute({
 });
 
 export const patch = createRoute({
-  path: '/procure/bill/{uuid}',
+  path: '/lib/room/{uuid}',
   method: 'patch',
   request: {
     params: param.uuid,
     body: jsonContentRequired(
       patchSchema,
-      'The bill to update',
+      'The room updates',
     ),
   },
   tags,
   responses: {
     [HSCode.OK]: jsonContent(
       selectSchema,
-      'The updated bill',
+      'The updated room',
     ),
     [HSCode.NOT_FOUND]: jsonContent(
       notFoundSchema,
-      'bill not found',
+      'room not found',
     ),
     [HSCode.UNPROCESSABLE_ENTITY]: jsonContent(
       createErrorSchema(patchSchema)
@@ -101,7 +96,7 @@ export const patch = createRoute({
 });
 
 export const remove = createRoute({
-  path: '/procure/bill/{uuid}',
+  path: '/lib/room/{uuid}',
   method: 'delete',
   request: {
     params: param.uuid,
@@ -109,11 +104,11 @@ export const remove = createRoute({
   tags,
   responses: {
     [HSCode.NO_CONTENT]: {
-      description: 'bill deleted',
+      description: 'room deleted',
     },
     [HSCode.NOT_FOUND]: jsonContent(
       notFoundSchema,
-      'bill not found',
+      'room not found',
     ),
     [HSCode.UNPROCESSABLE_ENTITY]: jsonContent(
       createErrorSchema(param.uuid),

@@ -1,5 +1,6 @@
 import bank from './bank';
 import bill from './bill';
+import bill_payment from './bill_payment';
 import capital from './capital';
 import capital_item from './capital_item';
 import capital_vendor from './capital_vendor';
@@ -46,4 +47,5 @@ export default [
   capital_item,
   bank,
   bill,
+  bill_payment,
 ];
