@@ -11,10 +11,11 @@ import type { ValueLabelRoute } from './routes';
 
 export const valueLabel: AppRouteHandler<ValueLabelRoute> = async (c: any) => {
   const resultPromise = db.select({
-    value: item_work_order_entry.uuid,
+    value: item_work_order_entry.item_uuid,
     label: item.name,
     request_quantity: PG_DECIMAL_TO_FLOAT(item_work_order_entry.request_quantity),
     unit: item.unit,
+    item_work_order_entry_uuid: item_work_order_entry.uuid,
   })
     .from(item_work_order_entry)
     .leftJoin(item, eq(item_work_order_entry.item_uuid, item.uuid));
