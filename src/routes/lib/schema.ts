@@ -82,6 +82,51 @@ export const sem_crs_thr_entry = lib.table('sem_crs_thr_entry', {
     .on(table.semester_uuid, table.course_section_uuid, table.teachers_uuid),
 ]);
 
+export const room_type = lib.enum('room_type', ['general', 'lab']);
+
+export const room = lib.table('room', {
+  uuid: uuid_primary,
+  name: text('name').notNull(),
+  type: room_type('type').default('general'),
+  location: text('location'),
+  created_by: defaultUUID('created_by').references(
+    () => users.uuid,
+    DEFAULT_OPERATION,
+  ),
+  created_at: DateTime('created_at').notNull(),
+  updated_at: DateTime('updated_at'),
+  remarks: text('remarks'),
+});
+
+export const room_allocation_day = lib.enum('room_allocation_day', [
+  'sun',
+  'mon',
+  'tue',
+  'wed',
+  'thu',
+  'fri',
+  'sat',
+]);
+export const room_allocation = lib.table('room_allocation', {
+  uuid: uuid_primary,
+  room_uuid: defaultUUID('room_uuid')
+    .references(() => room.uuid, DEFAULT_OPERATION)
+    .notNull(),
+  sem_crs_thr_entry_uuid: defaultUUID('sem_crs_thr_entry_uuid')
+    .references(() => sem_crs_thr_entry.uuid, DEFAULT_OPERATION)
+    .notNull(),
+  day: room_allocation_day('day').notNull(),
+  from: DateTime('from').notNull(),
+  to: DateTime('to').notNull(),
+  created_by: defaultUUID('created_by').references(
+    () => users.uuid,
+    DEFAULT_OPERATION,
+  ),
+  created_at: DateTime('created_at').notNull(),
+  updated_at: DateTime('updated_at'),
+  remarks: text('remarks'),
+});
+
 //* relations
 export const semester_relations = relations(semester, ({ one }) => ({
   created_by: one(users, {
@@ -123,6 +168,28 @@ export const sem_crs_thr_entry_relations = relations(sem_crs_thr_entry, ({ one }
   }),
   created_by: one(users, {
     fields: [sem_crs_thr_entry.created_by],
+    references: [users.uuid],
+  }),
+}));
+
+export const room_relations = relations(room, ({ one }) => ({
+  created_by: one(users, {
+    fields: [room.created_by],
+    references: [users.uuid],
+  }),
+}));
+
+export const room_allocation_relations = relations(room_allocation, ({ one }) => ({
+  room: one(room, {
+    fields: [room_allocation.room_uuid],
+    references: [room.uuid],
+  }),
+  sem_crs_thr_entry: one(sem_crs_thr_entry, {
+    fields: [room_allocation.sem_crs_thr_entry_uuid],
+    references: [sem_crs_thr_entry.uuid],
+  }),
+  created_by: one(users, {
+    fields: [room_allocation.created_by],
     references: [users.uuid],
   }),
 }));
