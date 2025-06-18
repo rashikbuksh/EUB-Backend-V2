@@ -12,6 +12,7 @@ export const valueLabel = createRoute({
   request: {
     query: z.object({
       access: z.string().optional(),
+      item_work_order_uuid: z.string().optional(),
     }),
   },
   responses: {
