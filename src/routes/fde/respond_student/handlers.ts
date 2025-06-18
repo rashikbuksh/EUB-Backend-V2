@@ -135,7 +135,7 @@ export const getRespondStudentDetailsWithEvaluation: AppRouteHandler<GetRespondS
     created_at: respond_student.created_at,
     updated_at: respond_student.updated_at,
     remarks: respond_student.remarks,
-    evaluation: sql`COALESCE(ARRAY(
+    qns: sql`COALESCE(ARRAY(
           SELECT jsonb_build_object(
             'uuid', evaluation.uuid,
             'respond_student_uuid', evaluation.respond_student_uuid,
