@@ -248,6 +248,8 @@ export const getWorkOrderDEtailsByWorkOrderUuid: AppRouteHandler<GetWorkOrderDEt
     item_work_order_entry: sql`COALESCE(ARRAY(SELECT json_build_object(
         'uuid', item_work_order_entry.uuid,
         'item_work_uuid', item_work_order_entry.item_work_order_uuid,
+        'item_uuid', item_work_order_entry.item_uuid,
+        'item_name', item.name,
         'request_quantity', item_work_order_entry.request_quantity::float8,
         'provided_quantity', item_work_order_entry.provided_quantity::float8,
         'unit_price', item_work_order_entry.unit_price::float8,
@@ -257,6 +259,7 @@ export const getWorkOrderDEtailsByWorkOrderUuid: AppRouteHandler<GetWorkOrderDEt
         'remarks', item_work_order_entry.remarks
       )
       FROM procure.item_work_order_entry
+      LEFT JOIN procure.item ON item_work_order_entry.item_uuid = item.uuid
       WHERE item_work_order_entry.item_work_order_uuid = ${item_work_order.uuid}
       ORDER BY item_work_order_entry.created_at ASC), '{}')`,
   })
