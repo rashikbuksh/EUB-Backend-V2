@@ -1,6 +1,6 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { eq } from 'drizzle-orm';
+import { eq, or, sql } from 'drizzle-orm';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
@@ -10,7 +10,7 @@ import { item, item_work_order_entry } from '@/routes/procure/schema';
 import type { ValueLabelRoute } from './routes';
 
 export const valueLabel: AppRouteHandler<ValueLabelRoute> = async (c: any) => {
-  const { item_work_order_uuid } = c.req.valid('query');
+  const { item_work_order_uuid, is_item_work_order } = c.req.valid('query');
   const resultPromise = db.select({
     value: item_work_order_entry.item_uuid,
     label: item.name,
@@ -21,7 +21,18 @@ export const valueLabel: AppRouteHandler<ValueLabelRoute> = async (c: any) => {
     .from(item_work_order_entry)
     .leftJoin(item, eq(item_work_order_entry.item_uuid, item.uuid));
 
-  if (item_work_order_uuid) {
+  if (item_work_order_uuid && is_item_work_order !== 'true') {
+    if (item_work_order_uuid === 'null') {
+      resultPromise.where(eq(item_work_order_entry.item_work_order_uuid, item_work_order_uuid));
+    }
+    else {
+      or(
+        eq(item_work_order_entry.item_work_order_uuid, item_work_order_uuid),
+        eq(sql`(${item_work_order_entry.item_work_order_uuid})`, null),
+      );
+    }
+  }
+  if (is_item_work_order === 'true' && item_work_order_uuid) {
     resultPromise.where(eq(item_work_order_entry.item_work_order_uuid, item_work_order_uuid));
   }
 
