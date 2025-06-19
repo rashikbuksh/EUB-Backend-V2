@@ -5,6 +5,7 @@ import { eq } from 'drizzle-orm';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
+import { generateDynamicId } from '@/lib/dynamic_id';
 // import { PG_DECIMAL_TO_FLOAT } from '@/lib/variables';
 import * as hrSchema from '@/routes/hr/schema';
 // import { deleteFile, insertFile, updateFile } from '@/utils/upload_file';
@@ -19,7 +20,12 @@ import { bank, bill, vendor } from '../schema';
 export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
   const value = c.req.valid('json');
 
-  const [data] = await db.insert(bill).values(value).returning({
+  const newId = await generateDynamicId(bank, bank.uuid, bank.created_at);
+
+  const [data] = await db.insert(bill).values({
+    id: newId,
+    ...value,
+  }).returning({
     name: bill.uuid,
   });
 
