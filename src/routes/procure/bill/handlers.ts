@@ -147,8 +147,14 @@ export const getBillAndBillPaymentDetailsByBillUuid: AppRouteHandler<GetBillAndB
       LEFT JOIN hr.users u ON u.uuid = bp.created_by
       WHERE bp.bill_uuid = ${bill.uuid}
     )`,
-    item_work_order_uuid: sql`(
-      SELECT COALESCE(json_agg(iwo.uuid), '[]'::json)
+    item_work_order: sql`(
+     SELECT COALESCE(
+        json_agg(
+          json_build_object(
+            'item_work_order_uuid', iwo.uuid
+          )
+        ), '[]'::json
+      )
       FROM procure.item_work_order iwo
       WHERE iwo.bill_uuid = ${bill.uuid}
     )`,
