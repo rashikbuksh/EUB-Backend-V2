@@ -5,7 +5,7 @@ import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
 // import { PG_DECIMAL_TO_FLOAT } from '@/lib/variables';
-import { item_work_order } from '@/routes/procure/schema';
+import { item_work_order, item_work_order_entry } from '@/routes/procure/schema';
 
 import type { ValueLabelRoute } from './routes';
 
@@ -20,7 +20,11 @@ export const valueLabel: AppRouteHandler<ValueLabelRoute> = async (c: any) => {
           WHERE item_work_order_entry.item_work_order_uuid = ${item_work_order.uuid}
         ), 0)`,
   })
-    .from(item_work_order);
+    .from(item_work_order)
+    .leftJoin(
+      item_work_order_entry,
+      eq(item_work_order.uuid, item_work_order_entry.item_work_order_uuid),
+    );
 
   if (vendor_uuid) {
     resultPromise.where(eq(item_work_order.vendor_uuid, vendor_uuid));
