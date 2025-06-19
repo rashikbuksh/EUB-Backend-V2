@@ -62,6 +62,10 @@ export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
 
   const formData = await c.req.parseBody();
 
+  if ('bill_uuid' in formData && (formData.bill_uuid === '' || formData.bill_uuid == null)) {
+    formData.bill_uuid = null;
+  }
+
   const [existingItemWorkOrder] = await db.select()
     .from(item_work_order)
     .where(eq(item_work_order.uuid, uuid));
