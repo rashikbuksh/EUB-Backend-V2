@@ -163,7 +163,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     created_by_name: hrSchema.users.name,
     remarks: item_work_order.remarks,
     bill_uuid: item_work_order.bill_uuid,
-    total_quantity: sql`COALESCE((
+    total_amount: sql`COALESCE((
       SELECT SUM(item_work_order_entry.provided_quantity::float8 * item_work_order_entry.unit_price::float8)
       FROM procure.item_work_order_entry
       WHERE item_work_order_entry.item_work_order_uuid = ${item_work_order.uuid}
