@@ -153,7 +153,13 @@ export const getBillAndBillPaymentDetailsByBillUuid: AppRouteHandler<GetBillAndB
      SELECT COALESCE(
         json_agg(
           json_build_object(
-            'uuid', iwo.uuid
+            'uuid', iwo.uuid,
+            'bill_uuid', iwo.bill_uuid,
+            'total_amount', COALESCE((
+              SELECT SUM(iwe.provided_quantity::float8 * iwe.unit_price::float8)
+              FROM procure.item_work_order_entry iwe
+              WHERE iwe.item_work_order_uuid = iwo.uuid
+            ), 0)
           )
         ), '[]'::json
       )
