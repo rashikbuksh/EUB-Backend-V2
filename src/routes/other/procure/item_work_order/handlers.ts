@@ -1,6 +1,6 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { eq, sql } from 'drizzle-orm';
+import { eq, or, sql } from 'drizzle-orm';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
@@ -10,7 +10,7 @@ import { item_work_order, item_work_order_entry } from '@/routes/procure/schema'
 import type { ValueLabelRoute } from './routes';
 
 export const valueLabel: AppRouteHandler<ValueLabelRoute> = async (c: any) => {
-  const { vendor_uuid, bill_uuid } = c.req.valid('query');
+  const { vendor_uuid, bill_uuid, is_bill } = c.req.valid('query');
   const resultPromise = db.select({
     value: item_work_order.uuid,
     label: sql`CONCAT('IWOI', TO_CHAR(${item_work_order.created_at}::timestamp, 'YY'), '-',  TO_CHAR(${item_work_order.created_at}::timestamp, 'MM'), '-',  TO_CHAR(${item_work_order.id}, 'FM0000'))`,
@@ -29,7 +29,18 @@ export const valueLabel: AppRouteHandler<ValueLabelRoute> = async (c: any) => {
   if (vendor_uuid) {
     resultPromise.where(eq(item_work_order.vendor_uuid, vendor_uuid));
   }
-  if (bill_uuid) {
+  if (bill_uuid && is_bill !== 'true') {
+    if (bill_uuid === 'null') {
+      resultPromise.where(eq(item_work_order.bill_uuid, bill_uuid));
+    }
+    else {
+      or(
+        eq(item_work_order.bill_uuid, bill_uuid),
+        eq(sql`(${item_work_order.bill_uuid})`, null),
+      );
+    }
+  }
+  if (is_bill === 'true' && bill_uuid) {
     resultPromise.where(eq(item_work_order.bill_uuid, bill_uuid));
   }
 

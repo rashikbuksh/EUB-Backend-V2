@@ -14,6 +14,7 @@ export const valueLabel = createRoute({
       access: z.string().optional(),
       vendor_uuid: z.string().optional(),
       bill_uuid: z.string().optional(),
+      is_bill: z.string().optional(),
     }),
   },
   responses: {
