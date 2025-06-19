@@ -151,7 +151,7 @@ export const getBillAndBillPaymentDetailsByBillUuid: AppRouteHandler<GetBillAndB
      SELECT COALESCE(
         json_agg(
           json_build_object(
-            'item_work_order_uuid', iwo.uuid
+            'uuid', iwo.uuid
           )
         ), '[]'::json
       )
