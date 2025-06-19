@@ -20,7 +20,7 @@ import { bank, bill, vendor } from '../schema';
 export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
   const value = c.req.valid('json');
 
-  const newId = await generateDynamicId(bank, bank.uuid, bank.created_at);
+  const newId = await generateDynamicId(bill, bill.id, bill.created_at);
 
   const [data] = await db.insert(bill).values({
     id: newId,
