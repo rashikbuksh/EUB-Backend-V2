@@ -31,6 +31,7 @@ export const insertSchema = createInsertSchema(
   bank_uuid: true,
   updated_at: true,
   remarks: true,
+  is_completed: true,
 });
 
 export const patchSchema = insertSchema.partial();

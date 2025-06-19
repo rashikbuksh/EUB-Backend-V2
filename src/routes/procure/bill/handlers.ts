@@ -83,6 +83,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     created_by: bill.created_by,
     created_by_name: hrSchema.users.name,
     remarks: bill.remarks,
+    is_completed: bill.is_completed,
   })
     .from(bill)
     .leftJoin(bank, eq(bill.bank_uuid, bank.uuid))
@@ -125,6 +126,7 @@ export const getBillAndBillPaymentDetailsByBillUuid: AppRouteHandler<GetBillAndB
     created_by: bill.created_by,
     created_by_name: hrSchema.users.name,
     remarks: bill.remarks,
+    is_completed: bill.is_completed,
     bill_payment: sql`(
       SELECT COALESCE(
         json_agg(
