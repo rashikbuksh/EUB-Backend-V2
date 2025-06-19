@@ -375,6 +375,7 @@ export const bill = procure.table('bill', {
   created_at: DateTime('created_at').notNull(),
   updated_at: DateTime('updated_at'),
   remarks: text('remarks').default(sql`null`),
+  is_completed: boolean('is_completed').default(false),
 });
 
 export const bill_payment_type = procure.enum('bill_payment_type', ['partial', 'full']);
