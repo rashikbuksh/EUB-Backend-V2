@@ -12,7 +12,7 @@ import { deleteFile, insertFile, updateFile } from '@/utils/upload_file';
 
 import type { CreateRoute, GetOneRoute, GetWorkOrderDEtailsByWorkOrderUuidRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
 
-import { item_work_order, vendor } from '../schema';
+import { bill, item_work_order, vendor } from '../schema';
 
 // const created_user = alias(hrSchema.users, 'created_user');
 
@@ -167,6 +167,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     created_by_name: hrSchema.users.name,
     remarks: item_work_order.remarks,
     bill_uuid: item_work_order.bill_uuid,
+    bill_id: sql`CONCAT('BI', TO_CHAR(${bill.created_at}::timestamp, 'YY'), '-',  TO_CHAR(${bill.created_at}::timestamp, 'MM'), '-',  TO_CHAR(${bill.id}, 'FM0000'))`,
     total_amount: sql`COALESCE((
       SELECT SUM(item_work_order_entry.provided_quantity::float8 * item_work_order_entry.unit_price::float8)
       FROM procure.item_work_order_entry
@@ -176,7 +177,8 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     .from(item_work_order)
     .leftJoin(hrSchema.users, eq(item_work_order.created_by, hrSchema.users.uuid))
     .leftJoin(vendor, eq(item_work_order.vendor_uuid, vendor
-      .uuid));
+      .uuid))
+    .leftJoin(bill, eq(item_work_order.bill_uuid, bill.uuid));
 
   if (vendor_uuid) {
     resultPromise.where(eq(item_work_order.vendor_uuid, vendor_uuid));
