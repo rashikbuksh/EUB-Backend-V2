@@ -162,6 +162,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     created_by: item_work_order.created_by,
     created_by_name: hrSchema.users.name,
     remarks: item_work_order.remarks,
+    bill_uuid: item_work_order.bill_uuid,
   })
     .from(item_work_order)
     .leftJoin(hrSchema.users, eq(item_work_order.created_by, hrSchema.users.uuid))
@@ -193,6 +194,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     created_by: item_work_order.created_by,
     created_by_name: hrSchema.users.name,
     remarks: item_work_order.remarks,
+    bill_uuid: item_work_order.bill_uuid,
   })
     .from(item_work_order)
     .leftJoin(hrSchema.users, eq(item_work_order.created_by, hrSchema.users.uuid))
@@ -245,6 +247,7 @@ export const getWorkOrderDEtailsByWorkOrderUuid: AppRouteHandler<GetWorkOrderDEt
     created_by: item_work_order.created_by,
     created_by_name: hrSchema.users.name,
     remarks: item_work_order.remarks,
+    bill_uuid: item_work_order.bill_uuid,
     item_work_order_entry: sql`COALESCE(ARRAY(SELECT json_build_object(
         'uuid', item_work_order_entry.uuid,
         'item_work_uuid', item_work_order_entry.item_work_order_uuid,
