@@ -1,6 +1,6 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { asc, eq } from 'drizzle-orm';
+import { and, asc, eq } from 'drizzle-orm';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
@@ -143,13 +143,16 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     .leftJoin(hrSchema.users, eq(feature.created_by, hrSchema.users.uuid));
 
   if (feature_type && (is_active === 'true' || is_active === 'false')) {
-    resultPromise.where(eq(feature.type, feature_type));
+    const isActiveBoolean = is_active === 'true';
+
+    resultPromise.where(and(eq(feature.type, feature_type), eq(feature.is_active, isActiveBoolean)));
   }
   else if (feature_type) {
     resultPromise.where(eq(feature.type, feature_type));
   }
   else if (is_active === 'true' || is_active === 'false') {
     const isActiveBoolean = is_active === 'true';
+
     resultPromise.where(eq(feature.is_active, isActiveBoolean));
   }
 
