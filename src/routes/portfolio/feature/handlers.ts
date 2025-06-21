@@ -149,7 +149,8 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     resultPromise.where(eq(feature.type, feature_type));
   }
   else if (is_active === 'true' || is_active === 'false') {
-    resultPromise.where(eq(feature.is_active, is_active));
+    const isActiveBoolean = is_active === 'true';
+    resultPromise.where(eq(feature.is_active, isActiveBoolean));
   }
 
   const resultPromiseForCount = await resultPromise;
