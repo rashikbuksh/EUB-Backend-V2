@@ -5,6 +5,7 @@ import { eq, sql } from 'drizzle-orm';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
+import { generateDynamicId } from '@/lib/dynamic_id';
 import { PG_DECIMAL_TO_FLOAT } from '@/lib/variables';
 import * as hrSchema from '@/routes/hr/schema';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
@@ -17,8 +18,11 @@ import { item, item_work_order, item_work_order_entry } from '../schema';
 
 export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
   const value = c.req.valid('json');
-
-  const [data] = await db.insert(item_work_order_entry).values(value).returning({
+  const newId = await generateDynamicId(item_work_order_entry, item_work_order_entry.id, item_work_order_entry.created_at);
+  const [data] = await db.insert(item_work_order_entry).values({
+    id: newId,
+    ...value,
+  }).returning({
     name: item_work_order_entry.uuid,
   });
 
@@ -77,6 +81,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     remarks: item_work_order_entry.remarks,
     item_uuid: item_work_order_entry.item_uuid,
     item_name: item.name,
+    item_work_entry_id: sql`CONCAT('IWOEI', TO_CHAR(${item_work_order_entry.created_at}::timestamp, 'YY'), '-',  TO_CHAR(${item_work_order_entry.created_at}::timestamp, 'MM'), '-',  TO_CHAR(${item_work_order_entry.id}, 'FM0000'))`,
   })
     .from(item_work_order_entry)
     .leftJoin(item_work_order, eq(item_work_order_entry.item_work_order_uuid, item_work_order.uuid))

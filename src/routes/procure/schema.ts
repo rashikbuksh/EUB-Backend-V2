@@ -413,6 +413,8 @@ export const item_work_order = procure.table('item_work_order', {
   remarks: text('remarks').default(sql`null`),
 });
 
+export const item_work_order_entry_id = procure.sequence('item_work_order_entry_id', DEFAULT_SEQUENCE);
+
 export const item_work_order_entry = procure.table('item_work_order_entry', {
   uuid: uuid_primary,
   item_work_order_uuid: defaultUUID('item_work_order_uuid').references(() => item_work_order.uuid, DEFAULT_OPERATION),
@@ -424,6 +426,7 @@ export const item_work_order_entry = procure.table('item_work_order_entry', {
   updated_at: DateTime('updated_at'),
   remarks: text('remarks').default(sql`null`),
   item_uuid: defaultUUID('item_uuid').references(() => item.uuid, DEFAULT_OPERATION),
+  id: integer('id').default(sql`nextval('procure.item_work_order_entry_id')`),
 });
 
 //* Relations *//
