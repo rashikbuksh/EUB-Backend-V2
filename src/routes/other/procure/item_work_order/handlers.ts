@@ -1,50 +1,50 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { eq, or, sql } from 'drizzle-orm';
+import { sql } from 'drizzle-orm';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
 // import { PG_DECIMAL_TO_FLOAT } from '@/lib/variables';
-import { item_work_order, item_work_order_entry } from '@/routes/procure/schema';
+// import { item_work_order, item_work_order_entry } from '@/routes/procure/schema';
 
 import type { ValueLabelRoute } from './routes';
 
 export const valueLabel: AppRouteHandler<ValueLabelRoute> = async (c: any) => {
-  const { vendor_uuid, bill_uuid, is_bill } = c.req.valid('query');
-  const resultPromise = db.select({
-    value: item_work_order.uuid,
-    label: sql`CONCAT('IWOI', TO_CHAR(${item_work_order.created_at}::timestamp, 'YY'), '-',  TO_CHAR(${item_work_order.created_at}::timestamp, 'MM'), '-',  TO_CHAR(${item_work_order.id}, 'FM0000'))`,
-    total_amount: sql`COALESCE((
-          SELECT SUM(item_work_order_entry.provided_quantity::float8 * item_work_order_entry.unit_price::float8)
-          FROM procure.item_work_order_entry
-          WHERE item_work_order_entry.item_work_order_uuid = ${item_work_order.uuid}
-        ), 0)`,
-  })
-    .from(item_work_order)
-    .leftJoin(
-      item_work_order_entry,
-      eq(item_work_order.uuid, item_work_order_entry.item_work_order_uuid),
-    );
+  const { vendor_uuid, is_bill, bill_uuid } = c.req.valid('query');
 
-  if (vendor_uuid) {
-    resultPromise.where(eq(item_work_order.vendor_uuid, vendor_uuid));
-  }
-  if (bill_uuid && is_bill !== 'true') {
-    if (bill_uuid === 'null') {
-      resultPromise.where(eq(item_work_order.bill_uuid, bill_uuid));
-    }
-    else {
-      or(
-        eq(item_work_order.bill_uuid, bill_uuid),
-        eq(sql`(${item_work_order.bill_uuid})`, null),
-      );
-    }
-  }
-  if (is_bill === 'true' && bill_uuid) {
-    resultPromise.where(eq(item_work_order.bill_uuid, bill_uuid));
-  }
+  const whereClauses = [
+    vendor_uuid ? sql`item_work_order.vendor_uuid = ${vendor_uuid}` : sql`TRUE`,
+    bill_uuid && is_bill !== 'true'
+      ? bill_uuid === 'null'
+        ? sql`item_work_order.bill_uuid IS NULL`
+        : sql`(item_work_order.bill_uuid = ${bill_uuid} OR item_work_order.bill_uuid IS NULL)`
+      : sql`TRUE`,
+    is_bill === 'true' && bill_uuid
+      ? sql`item_work_order.bill_uuid = ${bill_uuid}`
+      : sql`TRUE`,
+  ];
+
+  const query = sql`
+                  SELECT
+                    item_work_order.uuid as value,
+                    CONCAT('IWOI', TO_CHAR(item_work_order.created_at::timestamp, 'YY'), '-',  TO_CHAR(item_work_order.created_at::timestamp, 'MM'), '-',  TO_CHAR(item_work_order.id, 'FM0000')) AS label,
+                    COALESCE(total.total_amount, 0) AS total_amount
+                  FROM procure.item_work_order
+                  LEFT JOIN 
+                          (SELECT
+                            item_work_order.uuid,
+                            SUM(item_work_order_entry.provided_quantity::float8 * item_work_order_entry.unit_price::float8) AS total_amount
+                          FROM procure.item_work_order
+                          LEFT JOIN procure.item_work_order_entry
+                            ON item_work_order.uuid = item_work_order_entry.item_work_order_uuid
+                          GROUP BY item_work_order.uuid) AS total
+                    ON item_work_order.uuid = total.uuid
+                    WHERE
+                    ${sql.join(whereClauses, sql` AND `)}`;
+
+  const resultPromise = db.execute(query);
 
   const data = await resultPromise;
 
-  return c.json(data, HSCode.OK);
+  return c.json(data.rows, HSCode.OK);
 };
