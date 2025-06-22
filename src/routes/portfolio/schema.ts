@@ -440,7 +440,7 @@ export const routine = portfolio.table('routine', {
   department_uuid: defaultUUID('department_uuid').notNull().references(() => department.uuid, DEFAULT_OPERATION),
   programs: routine_programs('programs').notNull(),
   type: routine_type('type').notNull(),
-  file: text('file').notNull(),
+  file: text('file'),
   description: text('description').notNull(),
   created_at: DateTime('created_at').notNull(),
   updated_at: DateTime('updated_at'),
