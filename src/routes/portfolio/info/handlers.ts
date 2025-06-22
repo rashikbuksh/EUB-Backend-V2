@@ -126,7 +126,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     type: sql`null as type`,
     description: info.description,
     page_name: sql`${info.page_name}::text as page_name`, // Explicitly cast to text
-    file: info.file,
+    file: sql`COALESCE(${info.file}, '')::text as file`,
     created_by: info.created_by,
     created_by_name: hrSchema.users.name,
     created_at: info.created_at,
@@ -157,7 +157,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
       type: routine.type,
       description: routine.description,
       page_name: sql`'notices'::text as page_name`,
-      file: routine.file,
+      file: sql`COALESCE(${routine.file}, '')::text as file`,
       created_by: routine.created_by,
       created_by_name: hrSchema.users.name,
       created_at: routine.created_at,
