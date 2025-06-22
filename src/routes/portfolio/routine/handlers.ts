@@ -15,9 +15,10 @@ import { department, faculty, routine } from '../schema';
 
 export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
   const formData = await c.req.parseBody();
-  const file = formData.file;
+  const isAboutUs = formData.type === 'about_us';
+  const file = isAboutUs ? sql`null` : formData.file;
 
-  const filePath = await insertFile(file, 'public/routine');
+  const filePath = isAboutUs ? sql`null` : await insertFile(file, 'public/routine');
 
   const value = {
     uuid: formData.uuid,
@@ -53,12 +54,14 @@ export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
       },
     });
 
+    const isAboutUs = routineData?.type === 'about_us';
+
     if (routineData && routineData.file) {
-      const filePath = await updateFile(formData.file, routineData.file, 'public/routine');
+      const filePath = isAboutUs ? sql`null` : await updateFile(formData.file, routineData.file, 'public/routine');
       formData.file = filePath;
     }
     else {
-      const filePath = await insertFile(formData.file, 'public/routine');
+      const filePath = isAboutUs ? sql`null` : await insertFile(formData.file, 'public/routine');
       formData.file = filePath;
     }
   }
@@ -90,7 +93,9 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
     },
   });
 
-  if (routineData && routineData.file) {
+  const isAboutUs = routineData?.type === 'about_us';
+
+  if (routineData && routineData.file && !isAboutUs) {
     deleteFile(routineData.file);
   }
 
