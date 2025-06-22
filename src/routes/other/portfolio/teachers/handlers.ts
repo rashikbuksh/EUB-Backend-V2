@@ -14,8 +14,8 @@ export const valueLabelForPublication: AppRouteHandler<ValueLabelRouteForPublica
   const { is_pagination, field_name, field_value, filter } = c.req.valid('query');
 
   const resultPromise = db.select({
-    value: teachers.publication,
     label: sql`CONCAT(users.name, CASE WHEN faculty.name IS NOT NULL THEN ' - ' ELSE '' END, faculty.name)`,
+    value: teachers.publication,
   })
     .from(teachers)
     .leftJoin(hrSchema.users, eq(teachers.teacher_uuid, hrSchema.users.uuid))
@@ -25,7 +25,7 @@ export const valueLabelForPublication: AppRouteHandler<ValueLabelRouteForPublica
 
   if (filter) {
     resultPromise.where(
-      sql`${faculty.name} LIKE ${`%${filter}%`}`,
+      sql`lower(${faculty.name}) LIKE lower(${`%${filter}%`})`,
     );
   }
 
