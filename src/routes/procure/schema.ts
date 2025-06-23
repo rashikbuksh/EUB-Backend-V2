@@ -380,6 +380,7 @@ export const bill = procure.table('bill', {
 });
 
 export const bill_payment_type = procure.enum('bill_payment_type', ['partial', 'full']);
+export const payment_method = procure.enum('payment_method', ['cash', 'cheque']);
 
 export const bill_payment = procure.table('bill_payment', {
   uuid: uuid_primary,
@@ -390,6 +391,8 @@ export const bill_payment = procure.table('bill_payment', {
   created_at: DateTime('created_at').notNull(),
   updated_at: DateTime('updated_at'),
   remarks: text('remarks').default(sql`null`),
+  payment_method: payment_method('payment_method').notNull().default('cash'),
+  payment_date: DateTime('payment_date'),
 });
 
 export const item_work_order_id = procure.sequence('item_work_order_id', DEFAULT_SEQUENCE);
