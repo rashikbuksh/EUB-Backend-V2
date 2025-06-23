@@ -1,6 +1,6 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { eq, sql } from 'drizzle-orm';
+import { eq, isNotNull, isNull, sql } from 'drizzle-orm';
 // import { alias } from 'drizzle-orm/pg-core';
 import * as HSCode from 'stoker/http-status-codes';
 
@@ -65,12 +65,12 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 };
 
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
-  // const { sub_category } = c.req.valid('query');
+  const { status } = c.req.valid('query');
 
   const resultPromise = db.select({
     uuid: item_work_order_entry.uuid,
     item_work_order_uuid: item_work_order_entry.item_work_order_uuid,
-    item_work_order_id: sql`CONCAT('IWOI', TO_CHAR(${item_work_order.created_at}::timestamp, 'YY'), '-',  TO_CHAR(${item_work_order.created_at}::timestamp, 'MM'), '-',  TO_CHAR(${item_work_order.id}, 'FM0000'))`,
+    item_work_order_id: sql`CONCAT('PS', TO_CHAR(${item_work_order.created_at}::timestamp, 'YY'), '-',  TO_CHAR(${item_work_order.created_at}::timestamp, 'MM'), '-',  TO_CHAR(${item_work_order.id}, 'FM0000'))`,
     request_quantity: PG_DECIMAL_TO_FLOAT(item_work_order_entry.request_quantity),
     provided_quantity: PG_DECIMAL_TO_FLOAT(item_work_order_entry.provided_quantity),
     unit_price: PG_DECIMAL_TO_FLOAT(item_work_order_entry.unit_price),
@@ -88,6 +88,13 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     .leftJoin(hrSchema.users, eq(item_work_order_entry.created_by, hrSchema.users.uuid))
     .leftJoin(item, eq(item_work_order_entry.item_uuid, item.uuid));
 
+  if (status === 'pending') {
+    resultPromise.where(isNull(item_work_order_entry.item_work_order_uuid));
+  }
+  if (status === 'complete') {
+    resultPromise.where(isNotNull(item_work_order_entry.item_work_order_uuid));
+  }
+
   const data = await resultPromise;
 
   return c.json(data || [], HSCode.OK);
@@ -99,7 +106,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
   const resultPromise = db.select({
     uuid: item_work_order_entry.uuid,
     item_work_order_uuid: item_work_order_entry.item_work_order_uuid,
-    item_work_order_id: sql`CONCAT('IWOI', TO_CHAR(${item_work_order.created_at}::timestamp, 'YY'), '-',  TO_CHAR(${item_work_order.created_at}::timestamp, 'MM'), '-',  TO_CHAR(${item_work_order.id}, 'FM0000'))`,
+    item_work_order_id: sql`CONCAT('PS', TO_CHAR(${item_work_order.created_at}::timestamp, 'YY'), '-',  TO_CHAR(${item_work_order.created_at}::timestamp, 'MM'), '-',  TO_CHAR(${item_work_order.id}, 'FM0000'))`,
     request_quantity: PG_DECIMAL_TO_FLOAT(item_work_order_entry.request_quantity),
     provided_quantity: PG_DECIMAL_TO_FLOAT(item_work_order_entry.provided_quantity),
     unit_price: PG_DECIMAL_TO_FLOAT(item_work_order_entry.unit_price),
@@ -131,7 +138,7 @@ export const getAllByUuid: AppRouteHandler<GetAllByUuidRoute> = async (c: any) =
   const resultPromise = db.select({
     uuid: item_work_order_entry.uuid,
     item_work_order_uuid: item_work_order_entry.item_work_order_uuid,
-    item_work_order_id: sql`CONCAT('IWOI', TO_CHAR(${item_work_order.created_at}::timestamp, 'YY'), '-',  TO_CHAR(${item_work_order.created_at}::timestamp, 'MM'), '-',  TO_CHAR(${item_work_order.id}, 'FM0000'))`,
+    item_work_order_id: sql`CONCAT('PS', TO_CHAR(${item_work_order.created_at}::timestamp, 'YY'), '-',  TO_CHAR(${item_work_order.created_at}::timestamp, 'MM'), '-',  TO_CHAR(${item_work_order.id}, 'FM0000'))`,
     request_quantity: PG_DECIMAL_TO_FLOAT(item_work_order_entry.request_quantity),
     provided_quantity: PG_DECIMAL_TO_FLOAT(item_work_order_entry.provided_quantity),
     unit_price: PG_DECIMAL_TO_FLOAT(item_work_order_entry.unit_price),
