@@ -220,13 +220,13 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
                         FROM ${capital_vendor} cv 
                         WHERE cv.capital_uuid = ${capital.uuid}
                     )
-                     WHEN ${capital.sub_category_uuid} IS NOT NULL AND ${sub_category.type} = 'items' THEN (
+                     /* WHEN ${capital.sub_category_uuid} IS NOT NULL AND ${sub_category.type} = 'items' THEN (
                         SELECT SUM(iwe.quantity::float8 * iwe.unit_price::float8)
                         FROM ${item_work_order_entry} iwe
                         LEFT JOIN ${capital} c ON c.uuid = iwe.capital_uuid
                         LEFT JOIN ${sub_category} sc ON sc.uuid = c.sub_category_uuid
                         WHERE sc.uuid = ${capital.sub_category_uuid} AND sc.type = 'items'
-                    )
+                    )*/
                     WHEN ${capital.is_quotation} = false THEN 0
                     WHEN ${capital.is_quotation} = true AND ${capital.is_cs} = true AND ${capital.is_monthly_meeting} = false AND ${capital.is_work_order} = false THEN (
                         SELECT MIN(cv.amount)::float8 
@@ -378,13 +378,13 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
                         FROM ${capital_vendor} cv 
                         WHERE cv.capital_uuid = ${capital.uuid}
                     )
-                    WHEN ${capital.sub_category_uuid} IS NOT NULL AND ${sub_category.type} = 'items' THEN (
+                   /* WHEN ${capital.sub_category_uuid} IS NOT NULL AND ${sub_category.type} = 'items' THEN (
                         SELECT SUM(iwe.quantity::float8 * iwe.unit_price::float8)
                         FROM ${item_work_order_entry} iwe
                         LEFT JOIN ${capital} c ON c.uuid = iwe.capital_uuid
                         LEFT JOIN ${sub_category} sc ON sc.uuid = c.sub_category_uuid
                         WHERE sc.uuid = ${capital.sub_category_uuid} AND sc.type = 'items'
-                    )
+                    )*/
                     WHEN ${capital.is_quotation} = false THEN 0
                     WHEN ${capital.is_quotation} = true AND ${capital.is_cs} = true AND ${capital.is_monthly_meeting} = false AND ${capital.is_work_order} = false THEN (
                         SELECT MIN(cv.amount)::float8  
@@ -402,32 +402,32 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
                         WHERE cv.capital_uuid = ${capital.uuid} AND cv.vendor_uuid = ${capital.vendor_uuid}
                     )
                     END`,
-    items: sql`
-              COALESCE(
-                (
-                  SELECT jsonb_agg(
-                    jsonb_build_object(
-                        'uuid', iwe.uuid,
-                        'capital_uuid', iwe.capital_uuid,
-                        'item_uuid', iwe.item_uuid,
-                        'item_name', i.name,
-                        'quantity', iwe.quantity::float8,
-                        'unit_price', iwe.unit_price::float8,
-                        'is_received', iwe.is_received,
-                        'created_at', iwe.created_at,
-                        'updated_at', iwe.updated_at,
-                        'created_by', iwe.created_by,
-                        'created_by_name', hu.name,
-                        'remarks', iwe.remarks,
-                        'received_date', iwe.received_date
-                    )
-                  )
-                  FROM procure.item_work_order_entry iwe
-                  LEFT JOIN procure.item i ON iwe.item_uuid = i.uuid
-                  LEFT JOIN hr.users hu ON iwe.created_by = hu.uuid
-                  WHERE iwe.capital_uuid = capital.uuid
-                ),
-                '[]'::jsonb)`,
+    // items: sql`
+    //           COALESCE(
+    //             (
+    //               SELECT jsonb_agg(
+    //                 jsonb_build_object(
+    //                     'uuid', iwe.uuid,
+    //                     'capital_uuid', iwe.capital_uuid,
+    //                     'item_uuid', iwe.item_uuid,
+    //                     'item_name', i.name,
+    //                     'quantity', iwe.quantity::float8,
+    //                     'unit_price', iwe.unit_price::float8,
+    //                     'is_received', iwe.is_received,
+    //                     'created_at', iwe.created_at,
+    //                     'updated_at', iwe.updated_at,
+    //                     'created_by', iwe.created_by,
+    //                     'created_by_name', hu.name,
+    //                     'remarks', iwe.remarks,
+    //                     'received_date', iwe.received_date
+    //                 )
+    //               )
+    //               FROM procure.item_work_order_entry iwe
+    //               LEFT JOIN procure.item i ON iwe.item_uuid = i.uuid
+    //               LEFT JOIN hr.users hu ON iwe.created_by = hu.uuid
+    //               WHERE iwe.capital_uuid = capital.uuid
+    //             ),
+    //             '[]'::jsonb)`,
   })
     .from(capital)
     .leftJoin(hrSchema.users, eq(capital.created_by, hrSchema.users.uuid))
