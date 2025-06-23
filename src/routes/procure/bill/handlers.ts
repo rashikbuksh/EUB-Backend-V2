@@ -141,7 +141,7 @@ export const getBillAndBillPaymentDetailsByBillUuid: AppRouteHandler<GetBillAndB
             'created_by_name', u.name,
             'created_at', bp.created_at,
             'updated_at', bp.updated_at,
-            'remarks', bp.remarks
+            'remarks', bp.remarks,
             'payment_method', bp.payment_method,
             'payment_date', bp.payment_date
           )
