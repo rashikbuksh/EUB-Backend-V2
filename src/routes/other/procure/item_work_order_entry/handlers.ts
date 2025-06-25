@@ -12,7 +12,7 @@ import type { ValueLabelRoute } from './routes';
 export const valueLabel: AppRouteHandler<ValueLabelRoute> = async (c: any) => {
   const { item_work_order_uuid, is_item_work_order } = c.req.valid('query');
   const resultPromise = db.select({
-    value: item_work_order_entry.item_uuid,
+    value: item_work_order_entry.uuid,
     label: sql`CONCAT(
       ${item.name},
       '(',
@@ -26,7 +26,7 @@ export const valueLabel: AppRouteHandler<ValueLabelRoute> = async (c: any) => {
     )`,
     request_quantity: PG_DECIMAL_TO_FLOAT(item_work_order_entry.request_quantity),
     unit: item.unit,
-    item_work_order_entry_uuid: item_work_order_entry.uuid,
+    item_uuid: item_work_order_entry.item_uuid,
     request_id: sql`CONCAT('RI', TO_CHAR(${item_work_order_entry.created_at}::timestamp, 'YY'), '-',  TO_CHAR(${item_work_order_entry.created_at}::timestamp, 'MM'), '-',  TO_CHAR(${item_work_order_entry.id}, 'FM0000'))`,
   })
     .from(item_work_order_entry)
