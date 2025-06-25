@@ -430,6 +430,7 @@ export const item_work_order_entry = procure.table('item_work_order_entry', {
   remarks: text('remarks').default(sql`null`),
   item_uuid: defaultUUID('item_uuid').references(() => item.uuid, DEFAULT_OPERATION),
   id: integer('id').default(sql`nextval('procure.item_work_order_entry_id')`),
+  index: integer('index').default(sql`0`),
 });
 
 //* Relations *//
