@@ -10,8 +10,8 @@ import type { itemOpeningClosingStockRoute } from './routes';
 export const itemOpeningClosingStock: AppRouteHandler<itemOpeningClosingStockRoute> = async (c: any) => {
   const { from_date, to_date } = c.req.valid('query');
 
-//   console.log ('from_date', from_date);
-//   console.log ('to_date', to_date);
+  //   console.log ('from_date', from_date);
+  //   console.log ('to_date', to_date);
 
   const query = sql`
                     SELECT
