@@ -280,7 +280,7 @@ export const getWorkOrderDEtailsByWorkOrderUuid: AppRouteHandler<GetWorkOrderDEt
       FROM procure.item_work_order_entry
       LEFT JOIN procure.item ON item_work_order_entry.item_uuid = item.uuid
       WHERE item_work_order_entry.item_work_order_uuid = ${item_work_order.uuid}
-      ORDER BY item_work_order_entry.created_at ASC), '{}')`,
+      ORDER BY item_work_order_entry.index ASC), '{}')`,
   })
     .from(item_work_order)
     .leftJoin(hrSchema.users, eq(item_work_order.created_by, hrSchema.users.uuid))
