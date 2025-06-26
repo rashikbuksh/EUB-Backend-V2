@@ -152,7 +152,7 @@ export const getItemRequisitionDetailsByRequisitionUuid: AppRouteHandler<GetItem
             WHERE ir.created_by = ${requisition.created_by}
               AND r.is_received = true
             ORDER BY r.received_date DESC
-            LIMIT 1
+            LIMIT 1 OFFSET 1
         ), 0),
         'prev_provided_date', COALESCE((
             SELECT rl.received_date
@@ -166,7 +166,7 @@ export const getItemRequisitionDetailsByRequisitionUuid: AppRouteHandler<GetItem
             WHERE ir.created_by = ${requisition.created_by}
               AND rl.is_received = true
             ORDER BY rl.received_date DESC
-            LIMIT 1
+            LIMIT 1 OFFSET 1
         ), NULL),
         'created_by', item_requisition.created_by,
         'created_by_name', hr.users.name,
