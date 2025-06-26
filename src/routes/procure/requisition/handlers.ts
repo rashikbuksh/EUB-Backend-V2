@@ -141,33 +141,57 @@ export const getItemRequisitionDetailsByRequisitionUuid: AppRouteHandler<GetItem
         'req_quantity', item_requisition.req_quantity::float8,
         'provided_quantity', item_requisition.provided_quantity::float8,
         'prev_provided_quantity', COALESCE((
-            SELECT ir.provided_quantity::float8
-            FROM procure.item_requisition ir
-            LEFT JOIN (
-              SELECT ir2.uuid
-              FROM procure.item_requisition ir2
-              WHERE ir2.requisition_uuid = ${requisition.uuid})
-              AS ir2 ON ir2.uuid = ir.uuid
-            LEFT JOIN procure.requisition r ON ir.requisition_uuid = r.uuid
-            WHERE ir.created_by = ${requisition.created_by}
-              AND r.is_received = true
-            ORDER BY r.received_date DESC
-            LIMIT 1 OFFSET 1
-        ), 0),
+                  SELECT ir.provided_quantity::float8
+                  FROM procure.requisition r
+                  LEFT JOIN procure.item_requisition ir ON r.uuid = ir.requisition_uuid
+                  WHERE
+                      r.created_by = (
+                          SELECT created_by 
+                          FROM procure.requisition 
+                          WHERE uuid = ${requisition.uuid}
+                          LIMIT 1
+                      )
+                      AND r.uuid != ${requisition.uuid}
+                      AND r.received_date <= (
+                          SELECT created_at 
+                          FROM procure.requisition 
+                          WHERE uuid = ${requisition.uuid}
+                          LIMIT 1
+                      )
+                      AND r.is_received = true
+                      AND ir.item_uuid = item_requisition.item_uuid
+                      AND ir.provided_quantity != 0
+                  ORDER BY
+                      r.received_date DESC,
+                      r.uuid DESC
+                  LIMIT 1
+              ), 0),
         'prev_provided_date', COALESCE((
-            SELECT rl.received_date
-            FROM procure.item_requisition ir
-            LEFT JOIN (
-              SELECT ir2.uuid
-              FROM procure.item_requisition ir2
-              WHERE ir2.requisition_uuid = ${requisition.uuid})
-              AS ir2 ON ir2.uuid = ir.uuid
-            LEFT JOIN procure.requisition_log rl ON ir.requisition_uuid = rl.requisition_uuid
-            WHERE ir.created_by = ${requisition.created_by}
-              AND rl.is_received = true
-            ORDER BY rl.received_date DESC
-            LIMIT 1 OFFSET 1
-        ), NULL),
+                  SELECT r.received_date
+                  FROM procure.requisition r
+                  LEFT JOIN procure.item_requisition ir ON r.uuid = ir.requisition_uuid
+                  WHERE
+                      r.created_by = (
+                          SELECT created_by 
+                          FROM procure.requisition 
+                          WHERE uuid = ${requisition.uuid}
+                          LIMIT 1
+                      )
+                      AND r.uuid != ${requisition.uuid}
+                      AND r.received_date <= (
+                          SELECT created_at 
+                          FROM procure.requisition 
+                          WHERE uuid = ${requisition.uuid}
+                          LIMIT 1
+                      )
+                      AND r.is_received = true
+                      AND ir.item_uuid = item_requisition.item_uuid
+                      AND ir.provided_quantity != 0
+                  ORDER BY
+                      r.received_date DESC,
+                      r.uuid DESC
+                  LIMIT 1
+              ), NULL),
         'created_by', item_requisition.created_by,
         'created_by_name', hr.users.name,
         'created_at', item_requisition.created_at,
