@@ -140,58 +140,8 @@ export const getItemRequisitionDetailsByRequisitionUuid: AppRouteHandler<GetItem
         'stock_quantity', item.quantity::float8,
         'req_quantity', item_requisition.req_quantity::float8,
         'provided_quantity', item_requisition.provided_quantity::float8,
-        'prev_provided_quantity', COALESCE((
-                  SELECT ir.provided_quantity::float8
-                  FROM procure.requisition r
-                  LEFT JOIN procure.item_requisition ir ON r.uuid = ir.requisition_uuid
-                  WHERE
-                      r.created_by = (
-                          SELECT created_by 
-                          FROM procure.requisition 
-                          WHERE uuid = ${requisition.uuid}
-                          LIMIT 1
-                      )
-                      AND r.uuid != ${requisition.uuid}
-                      AND r.received_date <= (
-                          SELECT created_at 
-                          FROM procure.requisition 
-                          WHERE uuid = ${requisition.uuid}
-                          LIMIT 1
-                      )
-                      AND r.is_received = true
-                      AND ir.item_uuid = item_requisition.item_uuid
-                      AND ir.provided_quantity != 0
-                  ORDER BY
-                      r.received_date DESC,
-                      r.uuid DESC
-                  LIMIT 1
-              ), 0),
-        'prev_provided_date', COALESCE((
-                  SELECT r.received_date
-                  FROM procure.requisition r
-                  LEFT JOIN procure.item_requisition ir ON r.uuid = ir.requisition_uuid
-                  WHERE
-                      r.created_by = (
-                          SELECT created_by 
-                          FROM procure.requisition 
-                          WHERE uuid = ${requisition.uuid}
-                          LIMIT 1
-                      )
-                      AND r.uuid != ${requisition.uuid}
-                      AND r.received_date <= (
-                          SELECT created_at 
-                          FROM procure.requisition 
-                          WHERE uuid = ${requisition.uuid}
-                          LIMIT 1
-                      )
-                      AND r.is_received = true
-                      AND ir.item_uuid = item_requisition.item_uuid
-                      AND ir.provided_quantity != 0
-                  ORDER BY
-                      r.received_date DESC,
-                      r.uuid DESC
-                  LIMIT 1
-              ), NULL),
+        'prev_provided_date', COALESCE((prev_ir.received_date), NULL),
+        'prev_provided_quantity', COALESCE((prev_ir.provided_quantity::float8), 0),
         'created_by', item_requisition.created_by,
         'created_by_name', hr.users.name,
         'created_at', item_requisition.created_at,
@@ -201,6 +151,24 @@ export const getItemRequisitionDetailsByRequisitionUuid: AppRouteHandler<GetItem
       FROM procure.item_requisition
       LEFT JOIN hr.users ON item_requisition.created_by = hr.users.uuid
       LEFT JOIN procure.item ON item_requisition.item_uuid = item.uuid
+      LEFT JOIN 
+              ( 
+                SELECT 
+                      ir.provided_quantity,
+                      ir.requisition_uuid,
+                      r.received_date,
+                      ir.item_uuid
+                  FROM
+                      procure.item_requisition ir
+                  LEFT JOIN procure.requisition r ON ir.requisition_uuid = r.uuid
+                  WHERE ir.requisition_uuid  != ${requisition.uuid}
+                  AND ir.provided_quantity::float8 > 0
+                  AND r.created_by = ${requisition.created_by} AND ir.created_by = ${requisition.created_by}
+                  AND r.is_received = true
+                  AND r.received_date <= ${requisition.created_at}
+                  ORDER BY
+                      r.received_date DESC
+                  ) AS prev_ir ON item_requisition.item_uuid = prev_ir.item_uuid
       WHERE item_requisition.requisition_uuid = ${requisition.uuid}
       ORDER BY item_requisition.index ASC), '{}')`,
     },
