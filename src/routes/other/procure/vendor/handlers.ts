@@ -1,6 +1,6 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { and, eq, isNull } from 'drizzle-orm';
+import { and, eq, isNull, sql } from 'drizzle-orm';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
@@ -12,7 +12,7 @@ export const valueLabel: AppRouteHandler<ValueLabelRoute> = async (c: any) => {
   const { item_work_uuid } = c.req.valid('query');
 
   const resultPromise = db.select({
-    value: vendor.uuid,
+    value: sql`DISTINCT ${vendor.uuid}`,
     label: vendor.name,
   })
     .from(vendor)
