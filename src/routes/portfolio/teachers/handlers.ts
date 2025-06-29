@@ -183,6 +183,8 @@ export const getTeacherDetails: AppRouteHandler<GetTeacherDetailsRoute> = async 
     teacher_name: hrSchema.users.name,
     teacher_email: teachers.teacher_email,
     teacher_phone: teachers.teacher_phone,
+    teacher_designation: hrSchema.designation.name,
+    department_name: hrSchema.department.name,
     office: hrSchema.users.office,
     teacher_image: hrSchema.users.image,
     education: teachers.education,
@@ -207,6 +209,7 @@ export const getTeacherDetails: AppRouteHandler<GetTeacherDetailsRoute> = async 
     .from(teachers)
     .leftJoin(hrSchema.users, eq(teachers.teacher_uuid, hrSchema.users.uuid))
     .leftJoin(hrSchema.designation, eq(hrSchema.users.designation_uuid, hrSchema.designation.uuid))
+    .leftJoin(hrSchema.department, eq(hrSchema.users.department_uuid, hrSchema.department.uuid))
     .leftJoin(createdByUser, eq(teachers.created_by, createdByUser.uuid))
     .where(eq(teachers.uuid, uuid));
 
