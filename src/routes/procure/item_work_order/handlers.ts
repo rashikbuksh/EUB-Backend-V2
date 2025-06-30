@@ -257,13 +257,14 @@ export const getWorkOrderDEtailsByWorkOrderUuid: AppRouteHandler<GetWorkOrderDEt
     done: item_work_order.done,
     done_date: item_work_order.done_date,
     id: item_work_order.id,
-    item_work_order_id: sql`CONCAT('IWOI', TO_CHAR(${item_work_order.created_at}::timestamp, 'YY'), '-',  TO_CHAR(${item_work_order.created_at}::timestamp, 'MM'), '-',  TO_CHAR(${item_work_order.id}, 'FM0000'))`,
+    item_work_order_id: sql`CONCAT('PS', TO_CHAR(${item_work_order.created_at}::timestamp, 'YY'), '-',  TO_CHAR(${item_work_order.created_at}::timestamp, 'MM'), '-',  TO_CHAR(${item_work_order.id}, 'FM0000'))`,
     created_at: item_work_order.created_at,
     updated_at: item_work_order.updated_at,
     created_by: item_work_order.created_by,
     created_by_name: hrSchema.users.name,
     remarks: item_work_order.remarks,
     bill_uuid: item_work_order.bill_uuid,
+    bill_id: sql`CONCAT('BI', TO_CHAR(${bill.created_at}::timestamp, 'YY'), '-',  TO_CHAR(${bill.created_at}::timestamp, 'MM'), '-',  TO_CHAR(${bill.id}, 'FM0000'))`,
     item_work_order_entry: sql`COALESCE(ARRAY(SELECT json_build_object(
         'uuid', item_work_order_entry.uuid,
         'item_work_uuid', item_work_order_entry.item_work_order_uuid,
@@ -286,6 +287,7 @@ export const getWorkOrderDEtailsByWorkOrderUuid: AppRouteHandler<GetWorkOrderDEt
     .from(item_work_order)
     .leftJoin(hrSchema.users, eq(item_work_order.created_by, hrSchema.users.uuid))
     .leftJoin(vendor, eq(item_work_order.vendor_uuid, vendor.uuid))
+    .leftJoin(bill, eq(item_work_order.bill_uuid, bill.uuid))
     .where(eq(item_work_order.uuid, uuid));
 
   const data = await resultPromise;
