@@ -85,6 +85,12 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     remarks: bill.remarks,
     is_completed: bill.is_completed,
     completed_date: bill.completed_date,
+    total_amount: sql`(
+      SELECT COALESCE(SUM(iwe.provided_quantity::float8 * iwe.unit_price::float8), 0)
+      FROM procure.item_work_order iwo
+      LEFT JOIN procure.item_work_order_entry iwe ON iwe.item_work_order_uuid = iwo.uuid
+      WHERE iwo.bill_uuid = ${bill.uuid}
+    )`,
   })
     .from(bill)
     .leftJoin(bank, eq(bill.bank_uuid, bank.uuid))
