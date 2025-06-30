@@ -27,7 +27,7 @@ export const valueLabel: AppRouteHandler<ValueLabelRoute> = async (c: any) => {
   const query = sql`
                   SELECT
                     item_work_order.uuid as value,
-                    CONCAT('IWOI', TO_CHAR(item_work_order.created_at::timestamp, 'YY'), '-',  TO_CHAR(item_work_order.created_at::timestamp, 'MM'), '-',  TO_CHAR(item_work_order.id, 'FM0000')) AS label,
+                    CONCAT('PS', TO_CHAR(item_work_order.created_at::timestamp, 'YY'), '-',  TO_CHAR(item_work_order.created_at::timestamp, 'MM'), '-',  TO_CHAR(item_work_order.id, 'FM0000')) AS label,
                     COALESCE(total.total_amount, 0) AS total_amount
                   FROM procure.item_work_order
                   LEFT JOIN 
