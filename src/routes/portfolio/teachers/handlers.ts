@@ -10,7 +10,7 @@ import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 
 import type { CreateRoute, GetOneRoute, GetTeacherDetailsRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
 
-import { department, teachers } from '../schema';
+import { department, department_teachers, teachers } from '../schema';
 
 const createdByUser = alias(hrSchema.users, 'createdByUser');
 
@@ -183,6 +183,8 @@ export const getTeacherDetails: AppRouteHandler<GetTeacherDetailsRoute> = async 
     teacher_name: hrSchema.users.name,
     teacher_email: teachers.teacher_email,
     teacher_phone: teachers.teacher_phone,
+    teacher_designation: hrSchema.designation.name,
+    department_name: department.name,
     office: hrSchema.users.office,
     teacher_image: hrSchema.users.image,
     education: teachers.education,
@@ -207,6 +209,8 @@ export const getTeacherDetails: AppRouteHandler<GetTeacherDetailsRoute> = async 
     .from(teachers)
     .leftJoin(hrSchema.users, eq(teachers.teacher_uuid, hrSchema.users.uuid))
     .leftJoin(hrSchema.designation, eq(hrSchema.users.designation_uuid, hrSchema.designation.uuid))
+    .leftJoin(department_teachers, eq(teachers.uuid, department_teachers.teachers_uuid))
+    .leftJoin(department, eq(department_teachers.department_uuid, department.uuid))
     .leftJoin(createdByUser, eq(teachers.created_by, createdByUser.uuid))
     .where(eq(teachers.uuid, uuid));
 

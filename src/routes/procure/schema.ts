@@ -189,6 +189,7 @@ export const capital_vendor = procure.table('capital_vendor', {
   updated_at: DateTime('updated_at'),
   remarks: text('remarks'),
   quotation_file: text('quotation_file').default(sql`null`),
+  index: integer('index').default(sql`0`),
 });
 
 // export const item_work_order_status = procure.enum('item_work_order_status', ['pending', 'accept', 'rejected']);

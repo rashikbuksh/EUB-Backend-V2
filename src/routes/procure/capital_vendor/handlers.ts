@@ -36,6 +36,7 @@ export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
     updated_at: formData.updated_at,
     remarks: formData.remarks,
     quotation_file: quotationFilePath,
+    index: formData.index ?? 0, // Default to 0 if not provided
   };
 
   const [data] = await db.insert(capital_vendor).values(value).returning({
@@ -127,6 +128,8 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     created_by: capital_vendor.created_by,
     created_by_name: hrSchema.users.name,
     remarks: capital_vendor.remarks,
+    quotation_file: capital_vendor.quotation_file,
+    index: capital_vendor.index,
   })
     .from(capital_vendor)
     .leftJoin(hrSchema.users, eq(capital_vendor.created_by, hrSchema.users.uuid))
