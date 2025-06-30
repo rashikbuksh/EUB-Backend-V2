@@ -146,7 +146,8 @@ export const getItemRequisitionDetailsByRequisitionUuid: AppRouteHandler<GetItem
         'created_by_name', hr.users.name,
         'created_at', item_requisition.created_at,
         'updated_at', item_requisition.updated_at,
-        'remarks', item_requisition.remarks
+        'remarks', item_requisition.remarks,
+        'index', item_requisition.index
       ) 
       FROM procure.item_requisition
       LEFT JOIN hr.users ON item_requisition.created_by = hr.users.uuid
