@@ -1,6 +1,6 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { eq, sql } from 'drizzle-orm';
+import { desc, eq, sql } from 'drizzle-orm';
 // import { alias } from 'drizzle-orm/pg-core';
 import * as HSCode from 'stoker/http-status-codes';
 
@@ -149,7 +149,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
 
   const resultPromise = db.select({
     id: item_work_order.id,
-    item_work_order_id: sql`CONCAT('IWOI', TO_CHAR(${item_work_order.created_at}::timestamp, 'YY'), '-',  TO_CHAR(${item_work_order.created_at}::timestamp, 'MM'), '-',  TO_CHAR(${item_work_order.id}, 'FM0000'))`,
+    item_work_order_id: sql`CONCAT('PS', TO_CHAR(${item_work_order.created_at}::timestamp, 'YY'), '-',  TO_CHAR(${item_work_order.created_at}::timestamp, 'MM'), '-',  TO_CHAR(${item_work_order.id}, 'FM0000'))`,
     uuid: item_work_order.uuid,
     vendor_uuid: item_work_order.vendor_uuid,
     vendor_name: vendor.name,
@@ -178,7 +178,8 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     .leftJoin(hrSchema.users, eq(item_work_order.created_by, hrSchema.users.uuid))
     .leftJoin(vendor, eq(item_work_order.vendor_uuid, vendor
       .uuid))
-    .leftJoin(bill, eq(item_work_order.bill_uuid, bill.uuid));
+    .leftJoin(bill, eq(item_work_order.bill_uuid, bill.uuid))
+    .orderBy(desc(item_work_order.created_at));
 
   if (vendor_uuid) {
     resultPromise.where(eq(item_work_order.vendor_uuid, vendor_uuid));
