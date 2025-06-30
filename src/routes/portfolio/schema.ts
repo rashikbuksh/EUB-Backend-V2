@@ -312,6 +312,7 @@ export const department_short_name = portfolio.enum('department_short_name', [
   'physics',
   'chemistry',
   'mathematics',
+  'ma-english-two-year',
 ]);
 
 export const department = portfolio.table('department', {
