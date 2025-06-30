@@ -167,6 +167,7 @@ export const getBillAndBillPaymentDetailsByBillUuid: AppRouteHandler<GetBillAndB
         json_agg(
           json_build_object(
             'uuid', iwo.uuid,
+            'item_work_order_id', CONCAT('PS', TO_CHAR(iwo.created_at::timestamp, 'YY'), '-',  TO_CHAR(iwo.created_at::timestamp, 'MM'), '-',  TO_CHAR(iwo.id, 'FM0000')),
             'bill_uuid', iwo.bill_uuid,
             'total_amount', COALESCE((
               SELECT SUM(iwe.provided_quantity::float8 * iwe.unit_price::float8)
