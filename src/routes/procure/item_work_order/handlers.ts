@@ -283,6 +283,8 @@ export const getWorkOrderDEtailsByWorkOrderUuid: AppRouteHandler<GetWorkOrderDEt
     bill_id: sql`CONCAT('BI', TO_CHAR(${bill.created_at}::timestamp, 'YY'), '-',  TO_CHAR(${bill.created_at}::timestamp, 'MM'), '-',  TO_CHAR(${bill.id}, 'FM0000'))`,
     estimated_date: item_work_order.estimated_date,
     subject: item_work_order.subject,
+    vendor_address: vendor.address,
+    vendor_phone: vendor.phone,
     item_work_order_entry: sql`COALESCE(ARRAY(SELECT json_build_object(
         'uuid', item_work_order_entry.uuid,
         'item_work_uuid', item_work_order_entry.item_work_order_uuid,
