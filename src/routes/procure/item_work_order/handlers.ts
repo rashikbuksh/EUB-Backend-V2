@@ -117,6 +117,13 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
     .from(item_work_order)
     .where(eq(item_work_order.uuid, uuid));
 
+  if (ItemWorkOrderData && ItemWorkOrderData.bill_uuid) {
+    return c.json(
+      createToast('error', 'Cannot delete: Bill is already linked.'),
+      HSCode.BAD_REQUEST,
+    );
+  }
+
   if (ItemWorkOrderData) {
     const fileFields = [
       'work_order_file',
