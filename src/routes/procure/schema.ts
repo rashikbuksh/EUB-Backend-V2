@@ -415,6 +415,8 @@ export const item_work_order = procure.table('item_work_order', {
   created_at: DateTime('created_at').notNull(),
   updated_at: DateTime('updated_at'),
   remarks: text('remarks').default(sql`null`),
+  estimated_date: DateTime('estimated_date').default(sql`null`),
+  subject: text('subject').default(sql`null`),
 });
 
 export const item_work_order_entry_id = procure.sequence('item_work_order_entry_id', DEFAULT_SEQUENCE);
