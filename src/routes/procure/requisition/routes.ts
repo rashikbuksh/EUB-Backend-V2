@@ -17,6 +17,7 @@ export const list = createRoute({
   request: {
     query: z.object({
       user_uuid: z.string().optional(),
+      status: z.enum(['pending', 'completed', 'store_not_received']).optional(),
     }),
   },
   responses: {

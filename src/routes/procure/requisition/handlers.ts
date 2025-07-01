@@ -66,7 +66,7 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 };
 
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
-  const { user_uuid } = c.req.valid('query');
+  const { user_uuid, status } = c.req.valid('query');
 
   const resultPromise = db.select({
     uuid: requisition.uuid,
@@ -86,10 +86,24 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   })
     .from(requisition)
     .leftJoin(hrSchema.users, eq(requisition.created_by, hrSchema.users.uuid))
-    .orderBy(desc(requisition.created_at));
+    .orderBy(desc(requisition.created_at), desc(requisition.id));
 
   if (user_uuid) {
     resultPromise.where(eq(requisition.created_by, user_uuid));
+  }
+
+  if (status) {
+    if (status === 'pending') {
+      resultPromise.where(eq(requisition.is_received, false));
+    }
+    else if (status === 'completed') {
+      resultPromise.where(eq(requisition.is_received, true));
+    }
+    else if (status === 'store_not_received') {
+      resultPromise.where(
+        eq(requisition.is_store_received, false),
+      );
+    }
   }
 
   const data = await resultPromise;
