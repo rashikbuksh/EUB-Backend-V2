@@ -57,7 +57,7 @@ export function createToast(toastType: Toast['type'], message: Toast['message'])
     case 'error':
       return {
         toastType,
-        message: `${message} not found`,
+        message: `${message}`,
       };
   }
 }
