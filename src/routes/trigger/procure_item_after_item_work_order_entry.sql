@@ -19,15 +19,24 @@
 -- $$ LANGUAGE plpgsql;
 
 
+-- ...existing code...
+-- ...existing code...
 CREATE OR REPLACE FUNCTION procure.item_after_item_work_order_entry_update_function() RETURNS TRIGGER AS $$
 DECLARE 
     delivery_statement_bool BOOLEAN;    
 BEGIN
+    -- If item_work_order_uuid is being unset, deduct the quantity
+    -- ...existing code...
+IF OLD.item_work_order_uuid IS NOT NULL AND NEW.item_work_order_uuid IS NULL THEN
+    UPDATE procure.item
+    SET quantity = quantity - OLD.provided_quantity
+    WHERE uuid = OLD.item_uuid;
+    RETURN NEW;
+ELSE
     SELECT is_delivery_statement INTO delivery_statement_bool
     FROM procure.item_work_order
     WHERE uuid = NEW.item_work_order_uuid;
 
-    -- If is_delivery_statement is TRUE, update the item quantity
     IF delivery_statement_bool IS TRUE THEN
         UPDATE procure.item
         SET
@@ -35,17 +44,19 @@ BEGIN
         WHERE uuid = NEW.item_uuid;
     END IF;
 
-    -- If is_delivery_statement is FALSE, do not change the item quantity
     IF delivery_statement_bool IS FALSE THEN
         UPDATE procure.item
         SET
             quantity = quantity - (OLD.provided_quantity - NEW.provided_quantity)
         WHERE uuid = NEW.item_uuid;
     END IF;
-
+END IF;
+-- ...existing code...
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
+
+
 
 -- CREATE OR REPLACE TRIGGER item_after_item_work_order_entry_insert_trigger
 -- AFTER INSERT ON procure.item_work_order_entry
