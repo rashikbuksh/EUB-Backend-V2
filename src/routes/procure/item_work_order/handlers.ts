@@ -182,6 +182,8 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     ), 0)`,
     estimated_date: item_work_order.estimated_date,
     subject: item_work_order.subject,
+    vendor_address: vendor.address,
+    vendor_phone: vendor.phone,
   })
     .from(item_work_order)
     .leftJoin(hrSchema.users, eq(item_work_order.created_by, hrSchema.users.uuid))
