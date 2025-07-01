@@ -223,6 +223,8 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     bill_id: sql`CONCAT('BI', TO_CHAR(${bill.created_at}::timestamp, 'YY'), '-',  TO_CHAR(${bill.created_at}::timestamp, 'MM'), '-',  TO_CHAR(${bill.id}, 'FM0000'))`,
     estimated_date: item_work_order.estimated_date,
     subject: item_work_order.subject,
+    vendor_address: vendor.address,
+    vendor_phone: vendor.phone,
   })
     .from(item_work_order)
     .leftJoin(hrSchema.users, eq(item_work_order.created_by, hrSchema.users.uuid))
