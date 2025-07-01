@@ -297,10 +297,13 @@ export const getWorkOrderDEtailsByWorkOrderUuid: AppRouteHandler<GetWorkOrderDEt
         'created_at', item_work_order_entry.created_at,
         'updated_at', item_work_order_entry.updated_at,
         'remarks', item_work_order_entry.remarks,
-        'index' , item_work_order_entry.index
+        'index' , item_work_order_entry.index,
+        'purchase_cost_center_uuid', item.purchase_cost_center_uuid,
+        'purchase_cost_center_name', purchase_cost_center.name
       )
       FROM procure.item_work_order_entry
       LEFT JOIN procure.item ON item_work_order_entry.item_uuid = item.uuid
+      LEFT JOIN procure.purchase_cost_center ON item.purchase_cost_center_uuid = purchase_cost_center.uuid
       WHERE item_work_order_entry.item_work_order_uuid = ${item_work_order.uuid}
       ORDER BY item_work_order_entry.index ASC), '{}')`,
   })
