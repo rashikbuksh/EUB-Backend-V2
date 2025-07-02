@@ -10,7 +10,7 @@ import * as hrSchema from '@/routes/hr/schema';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 import { deleteFile, insertFile, updateFile } from '@/utils/upload_file';
 
-import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
+import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute, SummaryByStatusRoute } from './routes';
 
 import { capital, capital_vendor, item_work_order_entry, sub_category, vendor } from '../schema';
 
@@ -471,4 +471,64 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     return DataNotFound(c);
 
   return c.json(data || {}, HSCode.OK);
+};
+
+export const summaryByStatus: AppRouteHandler<SummaryByStatusRoute> = async (c: any) => {
+  const { status } = c.req.valid('query');
+
+  const statusCase = sql`CASE 
+    WHEN ${capital.done} = true THEN 'Paid'
+    WHEN ${capital.sub_category_uuid} IS NOT NULL AND ${sub_category.type} = 'items' AND ${capital.is_work_order} = false THEN 'Decided'
+    WHEN ${capital.sub_category_uuid} IS NOT NULL AND ${sub_category.type} = 'items' AND ${capital.is_work_order} = true THEN 'Committed'
+    WHEN ${capital.is_quotation} = false THEN 'Requested'
+    WHEN ${capital.is_quotation} = true AND ${capital.is_cs} = false AND ${capital.is_monthly_meeting} = false  AND ${capital.is_work_order} = false THEN 'Pipeline' 
+    WHEN ${capital.is_quotation} = true AND ${capital.is_cs} = true AND ${capital.is_monthly_meeting} = false AND ${capital.is_work_order} = false THEN 'Pipeline'
+    WHEN ${capital.is_quotation} = true AND ${capital.is_cs} = true AND ${capital.is_monthly_meeting} = true AND ${capital.is_work_order} = false THEN 'Decided'
+    WHEN ${capital.is_quotation} = true AND ${capital.is_cs} = true AND ${capital.is_monthly_meeting} = true AND ${capital.is_work_order} = true THEN 'Committed'
+  END`;
+
+  // Define the CASE for value (reuse your logic)
+  const valueCase = sql`CASE 
+    WHEN ${capital.is_quotation} = true AND ${capital.is_cs} = false AND ${capital.is_monthly_meeting} = false AND ${capital.is_work_order} = false THEN (
+      SELECT MIN(cv.amount)::float8 
+      FROM ${capital_vendor} cv 
+      WHERE cv.capital_uuid = ${capital.uuid}
+    )
+    WHEN ${capital.is_quotation} = false THEN 0
+    WHEN ${capital.is_quotation} = true AND ${capital.is_cs} = true AND ${capital.is_monthly_meeting} = false AND ${capital.is_work_order} = false THEN (
+      SELECT MIN(cv.amount)::float8 
+      FROM ${capital_vendor} cv 
+      WHERE cv.capital_uuid = ${capital.uuid}
+    )
+    WHEN ${capital.is_quotation} = true AND ${capital.is_cs} = true AND ${capital.is_monthly_meeting} = true AND ${capital.is_work_order} = false THEN (
+      SELECT MIN(cv.amount)::float8 
+      FROM ${capital_vendor} cv 
+      WHERE cv.capital_uuid = ${capital.uuid}
+    )
+    WHEN ${capital.is_quotation} = true AND ${capital.is_cs} = true AND ${capital.is_monthly_meeting} = true AND ${capital.is_work_order} = true THEN (
+      SELECT cv.amount::float8
+      FROM ${capital_vendor} cv 
+      WHERE cv.capital_uuid = ${capital.uuid} AND cv.vendor_uuid = ${capital.vendor_uuid}
+    )
+    END`;
+
+  const resultPromise = db
+    .select({
+      status: statusCase,
+      total: sql`SUM(${valueCase})::float8`,
+    })
+    .from(capital)
+    .leftJoin(sub_category, eq(capital.sub_category_uuid, sub_category.uuid))
+    .groupBy(statusCase);
+
+  if (status) {
+    resultPromise.where(sql`LOWER(${statusCase}) = LOWER(${status})`);
+  }
+  const data = await resultPromise;
+
+  if (!data || data.length === 0) {
+    return c.json(createToast('error', 'No capital summary found for the given status'), HSCode.NOT_FOUND);
+  }
+
+  return c.json(data || [], HSCode.OK);
 };
