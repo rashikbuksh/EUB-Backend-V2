@@ -478,10 +478,10 @@ export const summaryByStatus: AppRouteHandler<SummaryByStatusRoute> = async (c: 
 
   const allStatuses = [
     'Paid',
-    'Decided',
     'Committed',
-    'Requested',
+    'Decided',
     'Pipeline',
+    'Requested',
   ];
 
   const statusCase = sql`CASE 
