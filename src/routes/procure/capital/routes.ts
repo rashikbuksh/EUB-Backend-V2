@@ -132,8 +132,30 @@ export const remove = createRoute({
   },
 });
 
+export const summaryByStatus = createRoute({
+  path: '/procure/capital-summary-by-status',
+  method: 'get',
+  tags,
+  request: {
+    query: z.object({
+      status: z.string().optional(),
+    }),
+  },
+  responses: {
+    [HSCode.OK]: jsonContent(
+      z.array(z.object({
+        status: z.string(),
+        count: z.number(),
+      })),
+      'The summary of capital by status',
+    ),
+  },
+
+});
+
 export type ListRoute = typeof list;
 export type CreateRoute = typeof create;
 export type GetOneRoute = typeof getOne;
 export type PatchRoute = typeof patch;
 export type RemoveRoute = typeof remove;
+export type SummaryByStatusRoute = typeof summaryByStatus;
