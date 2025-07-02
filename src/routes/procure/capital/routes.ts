@@ -145,6 +145,7 @@ export const summaryByStatus = createRoute({
     [HSCode.OK]: jsonContent(
       z.array(z.object({
         status: z.string(),
+        total: z.number(),
         count: z.number(),
       })),
       'The summary of capital by status',
