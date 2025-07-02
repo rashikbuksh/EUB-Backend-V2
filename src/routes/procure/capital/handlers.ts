@@ -476,6 +476,14 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
 export const summaryByStatus: AppRouteHandler<SummaryByStatusRoute> = async (c: any) => {
   const { status } = c.req.valid('query');
 
+  const allStatuses = [
+    'Paid',
+    'Decided',
+    'Committed',
+    'Requested',
+    'Pipeline',
+  ];
+
   const statusCase = sql`CASE 
     WHEN ${capital.done} = true THEN 'Paid'
     WHEN ${capital.sub_category_uuid} IS NOT NULL AND ${sub_category.type} = 'items' AND ${capital.is_work_order} = false THEN 'Decided'
@@ -527,9 +535,10 @@ export const summaryByStatus: AppRouteHandler<SummaryByStatusRoute> = async (c: 
   }
   const data = await resultPromise;
 
-  if (!data || data.length === 0) {
-    return c.json(createToast('error', 'No capital summary found for the given status'), HSCode.NOT_FOUND);
-  }
+  const resultWithAllStatuses = allStatuses.map((s) => {
+    const found = data.find((d: any) => (d.status || '').toLowerCase() === s.toLowerCase());
+    return found || { status: s, total: 0, count: 0 };
+  });
 
-  return c.json(data || [], HSCode.OK);
+  return c.json(resultWithAllStatuses, HSCode.OK);
 };
