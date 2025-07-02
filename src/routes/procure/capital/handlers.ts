@@ -164,7 +164,7 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 };
 
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
-  // const { sub_category } = c.req.valid('query');
+  const { status } = c.req.valid('query');
 
   const resultPromise = db.select({
     id: capital.id,
@@ -276,6 +276,21 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
       capital.remarks,
     )
     .orderBy(desc(capital.created_at));
+
+  if (status) {
+    resultPromise.where(sql`LOWER(
+      CASE 
+        WHEN ${capital.done} = true THEN 'Paid'
+        WHEN ${capital.sub_category_uuid} IS NOT NULL AND ${sub_category.type} = 'items' AND ${capital.is_work_order} = false THEN 'Decided'
+        WHEN ${capital.sub_category_uuid} IS NOT NULL AND ${sub_category.type} = 'items' AND ${capital.is_work_order} = true THEN 'Committed'
+        WHEN ${capital.is_quotation} = false THEN 'Requested'
+        WHEN ${capital.is_quotation} = true AND ${capital.is_cs} = false AND ${capital.is_monthly_meeting} = false  AND ${capital.is_work_order} = false THEN 'Pipeline' 
+        WHEN ${capital.is_quotation} = true AND ${capital.is_cs} = true AND ${capital.is_monthly_meeting} = false AND ${capital.is_work_order} = false THEN 'Pipeline'
+        WHEN ${capital.is_quotation} = true AND ${capital.is_cs} = true AND ${capital.is_monthly_meeting} = true AND ${capital.is_work_order} = false THEN 'Decided'
+        WHEN ${capital.is_quotation} = true AND ${capital.is_cs} = true AND ${capital.is_monthly_meeting} = true AND ${capital.is_work_order} = true THEN 'Committed'
+      END
+    ) = LOWER(${status})`);
+  }
 
   const data = await resultPromise;
 
