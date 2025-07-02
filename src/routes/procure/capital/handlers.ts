@@ -516,6 +516,7 @@ export const summaryByStatus: AppRouteHandler<SummaryByStatusRoute> = async (c: 
     .select({
       status: statusCase,
       total: sql`SUM(${valueCase})::float8`,
+      count: sql`COUNT(${statusCase})::float8`,
     })
     .from(capital)
     .leftJoin(sub_category, eq(capital.sub_category_uuid, sub_category.uuid))
