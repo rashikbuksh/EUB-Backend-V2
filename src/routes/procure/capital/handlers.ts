@@ -421,32 +421,29 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
                         WHERE cv.capital_uuid = ${capital.uuid} AND cv.vendor_uuid = ${capital.vendor_uuid}
                     )
                     END`,
-    // items: sql`
-    //           COALESCE(
-    //             (
-    //               SELECT jsonb_agg(
-    //                 jsonb_build_object(
-    //                     'uuid', iwe.uuid,
-    //                     'capital_uuid', iwe.capital_uuid,
-    //                     'item_uuid', iwe.item_uuid,
-    //                     'item_name', i.name,
-    //                     'quantity', iwe.quantity::float8,
-    //                     'unit_price', iwe.unit_price::float8,
-    //                     'is_received', iwe.is_received,
-    //                     'created_at', iwe.created_at,
-    //                     'updated_at', iwe.updated_at,
-    //                     'created_by', iwe.created_by,
-    //                     'created_by_name', hu.name,
-    //                     'remarks', iwe.remarks,
-    //                     'received_date', iwe.received_date
-    //                 )
-    //               )
-    //               FROM procure.item_work_order_entry iwe
-    //               LEFT JOIN procure.item i ON iwe.item_uuid = i.uuid
-    //               LEFT JOIN hr.users hu ON iwe.created_by = hu.uuid
-    //               WHERE iwe.capital_uuid = capital.uuid
-    //             ),
-    //             '[]'::jsonb)`,
+    items: sql`
+              COALESCE(
+                (
+                  SELECT jsonb_agg(
+                    jsonb_build_object(
+                        'uuid', ci.uuid,
+                        'capital_uuid', ci.capital_uuid,
+                        'item_uuid', ci.item_uuid,
+                        'item_name', i.name,
+                        'quantity', ci.quantity::float8,
+                        'created_at', ci.created_at,
+                        'updated_at', ci.updated_at,
+                        'created_by', ci.created_by,
+                        'created_by_name', hu.name,
+                        'remarks', ci.remarks
+                    )
+                  )
+                  FROM procure.capital_item ci
+                  LEFT JOIN procure.item i ON iwe.item_uuid = i.uuid
+                  LEFT JOIN hr.users hu ON iwe.created_by = hu.uuid
+                  WHERE ci.capital_uuid = capital.uuid
+                ),
+                '[]'::jsonb)`,
   })
     .from(capital)
     .leftJoin(hrSchema.users, eq(capital.created_by, hrSchema.users.uuid))
