@@ -18,7 +18,7 @@ export const teachersEvaluationSemesterWise: AppRouteHandler<teachersEvaluationS
                           thr.appointment_date,
                           thr.department_name,
                           thr.teacher_name,
-                          jsonb_object_agg(evaluation.category_name, evaluation.total_rating) AS performance_key
+                          evaluation.performance_key
                     FROM lib.sem_crs_thr_entry sche
                     LEFT JOIN (
                           SELECT 
@@ -33,20 +33,24 @@ export const teachersEvaluationSemesterWise: AppRouteHandler<teachersEvaluationS
                           GROUP BY thr.uuid, thr.appointment_date, d.name, u.name
                     ) AS thr ON sche.teachers_uuid = thr.uuid
                     LEFT JOIN (
-                          SELECT 
-                                qnc.name AS category_name,
-                                SUM(e.rating) AS total_rating,
-                                rt.sem_crs_thr_entry_uuid
-                          FROM fde.qns_category qnc
-                          LEFT JOIN fde.qns qns ON qns.qns_category_uuid = qnc.uuid
-                          LEFT JOIN fde.evaluation e ON e.qns_uuid = qns.uuid
-                          LEFT JOIN fde.respond_student rt ON e.respond_student_uuid = rt.uuid
-                          GROUP BY qnc.name, rt.sem_crs_thr_entry_uuid
+                              SELECT 
+                                    evaluation_per_cat.sem_crs_thr_entry_uuid,
+                                    jsonb_object_agg(evaluation_per_cat.name, evaluation_per_cat.total_rating_sum) AS performance_key
+                              FROM (
+                                    SELECT 
+                                          rt.sem_crs_thr_entry_uuid,
+                                          qnc.name,
+                                          SUM(e.rating) AS total_rating_sum
+                                    FROM fde.qns_category qnc
+                                    LEFT JOIN fde.qns qns ON qns.qns_category_uuid = qnc.uuid
+                                    LEFT JOIN fde.evaluation e ON e.qns_uuid = qns.uuid
+                                    LEFT JOIN fde.respond_student rt ON e.respond_student_uuid = rt.uuid
+                                    GROUP BY rt.sem_crs_thr_entry_uuid, qnc.name
+                              ) AS evaluation_per_cat
+                              GROUP BY sem_crs_thr_entry_uuid
                     ) AS evaluation ON sche.uuid = evaluation.sem_crs_thr_entry_uuid
-                    GROUP BY sche.uuid, sche.semester_uuid, sche.teachers_uuid, thr.appointment_date, thr.department_name, thr.teacher_name
-                    WHERE sche.semester_uuid = ${semester_uuid}
-
-                    `;
+                    GROUP BY sche.uuid, sche.semester_uuid, sche.teachers_uuid, thr.appointment_date, thr.department_name, thr.teacher_name, evaluation.performance_key
+                    WHERE sche.semester_uuid = ${semester_uuid} `;
 
   const resultPromise = db.execute(query);
 
