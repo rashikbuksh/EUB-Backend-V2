@@ -90,11 +90,26 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
 export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
 
-  const data = await db.query.capital_item.findFirst({
-    where(fields, operators) {
-      return operators.eq(fields.uuid, uuid);
-    },
-  });
+  const resultPromise = db.select({
+    uuid: capital_item.uuid,
+    capital_uuid: capital_item.capital_uuid,
+    capital_name: capital.name,
+    item_uuid: capital_item.item_uuid,
+    item_name: item.name,
+    quantity: PG_DECIMAL_TO_FLOAT(capital_item.quantity),
+    created_at: capital_item.created_at,
+    updated_at: capital_item.updated_at,
+    created_by: capital_item.created_by,
+    created_by_name: hrSchema.users.name,
+    remarks: capital_item.remarks,
+  })
+    .from(capital_item)
+    .leftJoin(hrSchema.users, eq(capital_item.created_by, hrSchema.users.uuid))
+    .leftJoin(capital, eq(capital_item.capital_uuid, capital.uuid))
+    .leftJoin(item, eq(capital_item.item_uuid, item.uuid))
+    .where(eq(capital_item.uuid, uuid));
+
+  const [data] = await resultPromise;
 
   if (!data)
     return DataNotFound(c);
