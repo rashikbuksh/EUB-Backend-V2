@@ -12,7 +12,7 @@ import { deleteFile, insertFile, updateFile } from '@/utils/upload_file';
 
 import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute, SummaryByStatusRoute } from './routes';
 
-import { capital, capital_vendor, item_work_order_entry, sub_category, vendor } from '../schema';
+import { capital, capital_item, capital_vendor, item_work_order_entry, sub_category, vendor } from '../schema';
 
 const sv_vendor = alias(vendor, 'sv_vendor');
 
@@ -439,8 +439,8 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
                     )
                   )
                   FROM procure.capital_item ci
-                  LEFT JOIN procure.item i ON iwe.item_uuid = i.uuid
-                  LEFT JOIN hr.users hu ON iwe.created_by = hu.uuid
+                  LEFT JOIN procure.item i ON ci.item_uuid = i.uuid
+                  LEFT JOIN hr.users hu ON ci.created_by = hu.uuid
                   WHERE ci.capital_uuid = capital.uuid
                 ),
                 '[]'::jsonb)`,
@@ -451,7 +451,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     .leftJoin(capital_vendor, eq(capital_vendor.capital_uuid, capital.uuid))
     .leftJoin(vendor, eq(capital.vendor_uuid, vendor.uuid))
     .leftJoin(sv_vendor, eq(capital_vendor.vendor_uuid, sv_vendor.uuid))
-  // .leftJoin(item_work_order_entry, eq(item_work_order_entry.capital_uuid, capital.uuid))
+    .leftJoin(capital_item, eq(capital_item.capital_uuid, capital.uuid))
     .where(eq(capital.uuid, uuid))
     .groupBy(
       capital.index,
