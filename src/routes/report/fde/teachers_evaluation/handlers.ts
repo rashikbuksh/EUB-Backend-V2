@@ -245,35 +245,66 @@ export const teachersEvaluationTeacherWise: AppRouteHandler<teachersEvaluationTe
   //   [
   //       {
   //         "teacher_name": "John Doe",
-  //         "year": {
-  //           "semester_year": 2023,
-  //           "semester": {
-  //             "name": "Fall 2023",
-  //             "score": {
-  //             "mid_performance_percentage": 85.5,
-  //             "final_performance_percentage": 90.2
-  //           },
-  //           },
-  //         }
+  //         "year": [
+  //           {
+  //             "semester_year": 2023,
+  //             "semester": [
+  //               {
+  //                 "name": "Fall 2023",
+  //                 "score": {
+  //                   "mid_performance_percentage": 85.5,
+  //                   "final_performance_percentage": 90.2
+  //                 },
+  //               },
+  //             ]
+  //           }
+  //         ]
   //       }
   //     ]
 
-  // Format the data into the desired structure
-  const formattedData = data.rows
-    .filter((row: any) => row.teacher_name) // Filter out null teacher names
-    .map((row: any) => ({
-      teacher_name: row.teacher_name,
-      year: {
-        semester_year: Number.parseInt(row.semester_year),
-        semester: {
-          name: row.semester_name,
-          score: {
-            mid_performance_percentage: Number.parseFloat(row.mid_performance_percentage) || 0,
-            final_performance_percentage: Number.parseFloat(row.final_performance_percentage) || 0,
-          },
+  // Group data by teacher name and then by year
+  const teacherMap = new Map();
+
+  data.rows
+    .filter((row: any) => row.teacher_name)
+    .forEach((row: any) => {
+      const teacherName = row.teacher_name;
+      const semesterYear = Number.parseInt(row.semester_year);
+
+      if (!teacherMap.has(teacherName)) {
+        teacherMap.set(teacherName, {
+          teacher_name: teacherName,
+          year: [],
+        });
+      }
+
+      const teacher = teacherMap.get(teacherName);
+
+      // Find existing year or create new one
+      let yearEntry = teacher.year.find((y: any) => y.semester_year === semesterYear);
+      if (!yearEntry) {
+        yearEntry = {
+          semester_year: semesterYear,
+          semester: [],
+        };
+        teacher.year.push(yearEntry);
+      }
+
+      // Add semester to the year
+      yearEntry.semester.push({
+        name: row.semester_name,
+        score: {
+          mid_performance_percentage: Number.parseFloat(row.mid_performance_percentage) || 0,
+          final_performance_percentage: Number.parseFloat(row.final_performance_percentage) || 0,
         },
-      },
-    }));
+      });
+    });
+
+  // Convert Map to Array and sort years
+  const formattedData = Array.from(teacherMap.values()).map(teacher => ({
+    ...teacher,
+    year: teacher.year.sort((a: any, b: any) => a.semester_year - b.semester_year),
+  }));
 
   // Return the formatted data
   return c.json(formattedData, HSCode.OK);
