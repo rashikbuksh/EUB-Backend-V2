@@ -78,7 +78,7 @@ export const teachersEvaluationSemesterWise: AppRouteHandler<teachersEvaluationS
             ) AS thr ON sche.teachers_uuid = thr.uuid
       LEFT JOIN (
                   SELECT evaluation_per_cat.sem_crs_thr_entry_uuid, jsonb_object_agg(
-                        evaluation_per_cat.name, evaluation_per_cat.total_rating_sum
+                        LOWER(REPLACE(evaluation_per_cat.name, ' ', '_')), evaluation_per_cat.total_rating_sum
                         ) AS performance_key
                   FROM (
                         SELECT rt.sem_crs_thr_entry_uuid, qnc.name, SUM(e.rating) AS total_rating_sum
