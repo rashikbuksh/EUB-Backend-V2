@@ -241,42 +241,45 @@ export const teachersEvaluationTeacherWise: AppRouteHandler<teachersEvaluationTe
 
   const data = await resultPromise;
 
-  // group data using first teacher_name then under teacher semester_name and then show mid_performance_percentage, final_performance_percentage
-  interface GroupedData {
-    [teacherName: string]: {
-      [semesterName: string]: {
-        mid_performance_percentage: number;
-        final_performance_percentage: number;
-      };
-    };
-  }
+  //   [
+  //       {
+  //         "teacher_name": "John Doe",
+  //         "semesters": {
+  //           "name": "Fall 2023",
+  //           "score": {
+  //             "mid_performance_percentage": 85.5,
+  //             "final_performance_percentage": 90.2
+  //           },
+  //         }
+  //       }
+  //     ]
 
-  const groupedData = data.rows.reduce<GroupedData>((acc, row) => {
-    const r = row as {
-      teacher_name: string;
-      semester_name: string;
-      mid_performance_percentage: number;
-      final_performance_percentage: number;
-    };
-    const teacherKey = r.teacher_name;
-    const semesterKey = r.semester_name;
+  let groupedData: Record<string, any> = {};
+  data.rows.forEach((row: any) => {
+    const teacherName = row.teacher_name;
+    const semesterName = row.semester_name;
 
-    if (!acc[teacherKey]) {
-      acc[teacherKey] = {};
+    if (!groupedData[teacherName]) {
+      groupedData[teacherName] = {};
     }
 
-    if (!acc[teacherKey][semesterKey]) {
-      acc[teacherKey][semesterKey] = {
-        mid_performance_percentage: 0,
-        final_performance_percentage: 0,
+    if (!groupedData[teacherName][semesterName]) {
+      groupedData[teacherName][semesterName] = {
+        mid_performance_percentage: row.mid_performance_percentage,
+        final_performance_percentage: row.final_performance_percentage,
       };
     }
-
-    acc[teacherKey][semesterKey].mid_performance_percentage += r.mid_performance_percentage;
-    acc[teacherKey][semesterKey].final_performance_percentage += r.final_performance_percentage;
-
-    return acc;
-  }, {});
+  });
+  // Format the data to match the desired output structure
+  const formattedData = Object.entries(groupedData).map(([teacher_name, semesters]) => ({
+    teacher_name,
+    semesters: Object.entries(semesters).map(([name, score]) => ({
+      name,
+      score,
+    })),
+  }));
+  // Return the formatted data
+  groupedData = formattedData;
 
   return c.json(groupedData, HSCode.OK);
 };
