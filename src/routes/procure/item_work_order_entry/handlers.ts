@@ -65,7 +65,7 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 };
 
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
-  const { status } = c.req.valid('query');
+  const { status, store_type } = c.req.valid('query');
 
   const resultPromise = db.select({
     uuid: item_work_order_entry.uuid,
@@ -95,6 +95,9 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   }
   if (status === 'complete') {
     resultPromise.where(isNotNull(item_work_order_entry.item_work_order_uuid));
+  }
+  if (store_type) {
+    resultPromise.where(eq(item.store, store_type));
   }
 
   const data = await resultPromise;
