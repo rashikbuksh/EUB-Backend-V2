@@ -1,6 +1,6 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { eq, sql } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import * as HSCode from 'stoker/http-status-codes';
 
@@ -80,7 +80,9 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     remarks: room_allocation.remarks,
     teacher_name: teacherUser.name,
     class_size: sem_crs_thr_entry.class_size,
-    course_code: sql`CONCAT(${course.name}, ' - ', ${course.code})`,
+    course_name: course.name,
+    course_code: course.code,
+    course_section: course_section.name,
 
   })
     .from(room_allocation)
@@ -128,7 +130,9 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     remarks: room_allocation.remarks,
     teacher_name: teacherUser.name,
     class_size: sem_crs_thr_entry.class_size,
-    course_code: sql`CONCAT(${course.name}, ' - ', ${course.code})`,
+    course_name: course.name,
+    course_code: course.code,
+    course_section: course_section.name,
   })
     .from(room_allocation)
     .leftJoin(room, eq(room.uuid, room_allocation.room_uuid))
