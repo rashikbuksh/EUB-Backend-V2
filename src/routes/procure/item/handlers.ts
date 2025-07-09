@@ -61,7 +61,7 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 };
 
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
-  const { vendor_uuid } = c.req.valid('query');
+  const { vendor_uuid, store_type } = c.req.valid('query');
 
   const baseFields = {
     index: item.index,
@@ -98,6 +98,10 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
       .leftJoin(item_vendor, eq(item.uuid, item_vendor.item_uuid))
       .leftJoin(vendor, eq(item_vendor.vendor_uuid, vendor.uuid))
       .where(eq(vendor.uuid, vendor_uuid));
+  }
+
+  if (store_type) {
+    query.where(eq(item.store, store_type));
   }
 
   const data = await query;
