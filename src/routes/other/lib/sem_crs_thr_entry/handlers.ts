@@ -11,6 +11,7 @@ import { teachers } from '@/routes/portfolio/schema';
 import type { ValueLabelRoute } from './routes';
 
 export const valueLabel: AppRouteHandler<ValueLabelRoute> = async (c: any) => {
+  const { semester_uuid } = c.req.valid('query');
   const resultPromise = db.select({
     value: sem_crs_thr_entry.uuid,
     label: sql`CONCAT( ${course.name}, ' - ',${course_section.name}, ' - ', ${users.name} , ' - ', ${sem_crs_thr_entry.class_size})`.as('label'),
@@ -20,6 +21,10 @@ export const valueLabel: AppRouteHandler<ValueLabelRoute> = async (c: any) => {
     .leftJoin(course, eq(course.uuid, course_section.course_uuid))
     .leftJoin(teachers, eq(teachers.uuid, sem_crs_thr_entry.teachers_uuid))
     .leftJoin(users, eq(users.uuid, teachers.teacher_uuid));
+
+  if (semester_uuid) {
+    resultPromise.where(eq(sem_crs_thr_entry.semester_uuid, semester_uuid));
+  }
 
   const data = await resultPromise;
 
