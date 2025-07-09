@@ -80,9 +80,12 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     remarks: room_allocation.remarks,
     teacher_name: teacherUser.name,
     class_size: sem_crs_thr_entry.class_size,
+    course_uuid: course_section.course_uuid,
     course_name: course.name,
     course_code: course.code,
+    course_section_uuid: sem_crs_thr_entry.course_section_uuid,
     course_section: course_section.name,
+    semester_uuid: sem_crs_thr_entry.semester_uuid,
     semester_name: semester.name,
 
   })
@@ -132,9 +135,12 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     remarks: room_allocation.remarks,
     teacher_name: teacherUser.name,
     class_size: sem_crs_thr_entry.class_size,
+    course_uuid: course_section.course_uuid,
     course_name: course.name,
     course_code: course.code,
+    course_section_uuid: sem_crs_thr_entry.course_section_uuid,
     course_section: course_section.name,
+    semester_uuid: sem_crs_thr_entry.semester_uuid,
     semester_name: semester.name,
   })
     .from(room_allocation)
