@@ -81,6 +81,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     remarks: item_work_order_entry.remarks,
     item_uuid: item_work_order_entry.item_uuid,
     item_name: item.name,
+    store: item.store,
     item_work_entry_id: sql`CONCAT('IWOEI', TO_CHAR(${item_work_order_entry.created_at}::timestamp, 'YY'), '-',  TO_CHAR(${item_work_order_entry.created_at}::timestamp, 'MM'), '-',  TO_CHAR(${item_work_order_entry.id}, 'FM0000'))`,
     index: item_work_order_entry.index,
   })
@@ -118,6 +119,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     remarks: item_work_order_entry.remarks,
     item_uuid: item_work_order_entry.item_uuid,
     item_name: item.name,
+    store: item.store,
     index: item_work_order_entry.index,
   })
     .from(item_work_order_entry)
@@ -151,6 +153,7 @@ export const getAllByUuid: AppRouteHandler<GetAllByUuidRoute> = async (c: any) =
     remarks: item_work_order_entry.remarks,
     item_uuid: item_work_order_entry.item_uuid,
     item_name: item.name,
+    store: item.store,
     index: item_work_order_entry.index,
   })
     .from(item_work_order_entry)
