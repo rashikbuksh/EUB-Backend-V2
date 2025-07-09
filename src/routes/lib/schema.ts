@@ -117,8 +117,8 @@ export const room_allocation = lib.table('room_allocation', {
     .references(() => sem_crs_thr_entry.uuid, DEFAULT_OPERATION)
     .notNull(),
   day: room_allocation_day('day').notNull(),
-  from: DateTime('from').notNull(),
-  to: DateTime('to').notNull(),
+  from: text('from').notNull(), // Time in HH:MM format
+  to: text('to').notNull(), // Time in HH:MM format
   created_by: defaultUUID('created_by').references(
     () => users.uuid,
     DEFAULT_OPERATION,
