@@ -258,40 +258,23 @@ export const teachersEvaluationTeacherWise: AppRouteHandler<teachersEvaluationTe
   //       }
   //     ]
 
-  const groupedData: Record<string, Record<string, any>> = {};
+  // Format the data into the desired structure
+  const formattedData = data.rows
+    .filter((row: any) => row.teacher_name) // Filter out null teacher names
+    .map((row: any) => ({
+      teacher_name: row.teacher_name,
+      year: {
+        semester_year: Number.parseInt(row.semester_year),
+        semester: {
+          name: row.semester_name,
+          score: {
+            mid_performance_percentage: Number.parseFloat(row.mid_performance_percentage) || 0,
+            final_performance_percentage: Number.parseFloat(row.final_performance_percentage) || 0,
+          },
+        },
+      },
+    }));
 
-  data.rows.forEach((row: any) => {
-    const teacherName = row.teacher_name;
-    const semesterName = row.semester_name;
-    const semesterYear = row.semester_year;
-    const midPerformance = row.mid_performance_percentage;
-    const finalPerformance = row.final_performance_percentage;
-    const performanceKey = `${semesterYear}-${semesterName}`;
-    if (!groupedData[teacherName]) {
-      groupedData[teacherName] = {};
-    }
-
-    if (!groupedData[teacherName][performanceKey]) {
-      groupedData[teacherName][performanceKey] = {
-        mid_performance_percentage: midPerformance,
-        final_performance_percentage: finalPerformance,
-      };
-    }
-    else {
-      groupedData[teacherName][performanceKey].mid_performance_percentage = midPerformance;
-      groupedData[teacherName][performanceKey].final_performance_percentage = finalPerformance;
-    }
-  },
-  );
-
-  // Format the grouped data into the desired structure
-  const formattedData = Object.entries(groupedData).map(([teacherName, semesters]) => ({
-    teacher_name: teacherName,
-    semesters: Object.entries(semesters).map(([semesterKey, scores]) => ({
-      semester_key: semesterKey,
-      ...scores,
-    })),
-  }));
   // Return the formatted data
   return c.json(formattedData, HSCode.OK);
 };
