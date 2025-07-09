@@ -82,6 +82,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     sub_purchase_cost_center_name: sub_purchase_cost_center.name,
     threshold: PG_DECIMAL_TO_FLOAT(item.threshold),
     lead_time: PG_DECIMAL_TO_FLOAT(item.lead_time),
+    store: item.store,
   };
 
   const query = db
@@ -129,6 +130,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     sub_purchase_cost_center_name: sub_purchase_cost_center.name,
     threshold: PG_DECIMAL_TO_FLOAT(item.threshold),
     lead_time: PG_DECIMAL_TO_FLOAT(item.lead_time),
+    store: item.store,
   })
     .from(item)
     .leftJoin(hrSchema.users, eq(item.created_by, hrSchema.users.uuid))
@@ -194,6 +196,7 @@ export const getItemByVendorUuid: AppRouteHandler<GetItemByVendorUuidRoute> = as
     sub_purchase_cost_center_name: sub_purchase_cost_center.name,
     threshold: PG_DECIMAL_TO_FLOAT(item.threshold),
     lead_time: PG_DECIMAL_TO_FLOAT(item.lead_time),
+    store: item.store,
 
   })
     .from(item)
