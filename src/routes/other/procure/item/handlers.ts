@@ -14,6 +14,7 @@ export const valueLabel: AppRouteHandler<ValueLabelRoute> = async (c: any) => {
     quantity: item.quantity,
     vendor_price: item.vendor_price,
     unit: item.unit,
+    store: item.store,
   })
     .from(item);
 
