@@ -11,7 +11,7 @@ import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 
 import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
 
-import { course, course_section, room, room_allocation, sem_crs_thr_entry } from '../schema';
+import { course, course_section, room, room_allocation, sem_crs_thr_entry, semester } from '../schema';
 
 const teacherUser = alias(users, 'teacherUser');
 
@@ -83,6 +83,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     course_name: course.name,
     course_code: course.code,
     course_section: course_section.name,
+    semester_name: semester.name,
 
   })
     .from(room_allocation)
@@ -92,7 +93,8 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     .leftJoin(teacherUser, eq(teacherUser.uuid, teachers.teacher_uuid))
     .leftJoin(users, eq(users.uuid, room_allocation.created_by))
     .leftJoin(course_section, eq(course_section.uuid, sem_crs_thr_entry.course_section_uuid))
-    .leftJoin(course, eq(course.uuid, course_section.course_uuid));
+    .leftJoin(course, eq(course.uuid, course_section.course_uuid))
+    .leftJoin(semester, eq(semester.uuid, sem_crs_thr_entry.semester_uuid));
 
   if (room_uuid)
     resultPromise.where(eq(room_allocation.room_uuid, room_uuid));
@@ -133,6 +135,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     course_name: course.name,
     course_code: course.code,
     course_section: course_section.name,
+    semester_name: semester.name,
   })
     .from(room_allocation)
     .leftJoin(room, eq(room.uuid, room_allocation.room_uuid))
@@ -142,6 +145,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     .leftJoin(course_section, eq(course_section.uuid, sem_crs_thr_entry.course_section_uuid))
     .leftJoin(course, eq(course.uuid, course_section.course_uuid))
     .leftJoin(users, eq(users.uuid, room_allocation.created_by))
+    .leftJoin(semester, eq(semester.uuid, sem_crs_thr_entry.semester_uuid))
     .where(eq(room_allocation.uuid, uuid));
 
   const data = await resultPromise;
