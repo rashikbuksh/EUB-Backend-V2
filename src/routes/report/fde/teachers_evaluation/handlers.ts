@@ -153,6 +153,7 @@ export const teachersEvaluationTeacherWise: AppRouteHandler<teachersEvaluationTe
                 sche.uuid,
                 sche.semester_uuid,
                 sem.name AS semester_name,
+                extract(YEAR FROM sem.started_at) AS semester_year,
                 thr.appointment_date,
                 sche.teachers_uuid,
                 thr.department_uuid,
@@ -244,42 +245,53 @@ export const teachersEvaluationTeacherWise: AppRouteHandler<teachersEvaluationTe
   //   [
   //       {
   //         "teacher_name": "John Doe",
-  //         "semesters": {
-  //           "name": "Fall 2023",
-  //           "score": {
+  //         "year": {
+  //           "semester_year": 2023,
+  //           "semester": {
+  //             "name": "Fall 2023",
+  //             "score": {
   //             "mid_performance_percentage": 85.5,
   //             "final_performance_percentage": 90.2
+  //           },
   //           },
   //         }
   //       }
   //     ]
 
-  let groupedData: Record<string, any> = {};
+  const groupedData: Record<string, Record<string, any>> = {};
+
   data.rows.forEach((row: any) => {
     const teacherName = row.teacher_name;
     const semesterName = row.semester_name;
-
+    const semesterYear = row.semester_year;
+    const midPerformance = row.mid_performance_percentage;
+    const finalPerformance = row.final_performance_percentage;
+    const performanceKey = `${semesterYear}-${semesterName}`;
     if (!groupedData[teacherName]) {
       groupedData[teacherName] = {};
     }
 
-    if (!groupedData[teacherName][semesterName]) {
-      groupedData[teacherName][semesterName] = {
-        mid_performance_percentage: row.mid_performance_percentage,
-        final_performance_percentage: row.final_performance_percentage,
+    if (!groupedData[teacherName][performanceKey]) {
+      groupedData[teacherName][performanceKey] = {
+        mid_performance_percentage: midPerformance,
+        final_performance_percentage: finalPerformance,
       };
     }
-  });
-  // Format the data to match the desired output structure
-  const formattedData = Object.entries(groupedData).map(([teacher_name, semesters]) => ({
-    teacher_name,
-    semesters: Object.entries(semesters).map(([name, score]) => ({
-      name,
-      score,
+    else {
+      groupedData[teacherName][performanceKey].mid_performance_percentage = midPerformance;
+      groupedData[teacherName][performanceKey].final_performance_percentage = finalPerformance;
+    }
+  },
+  );
+
+  // Format the grouped data into the desired structure
+  const formattedData = Object.entries(groupedData).map(([teacherName, semesters]) => ({
+    teacher_name: teacherName,
+    semesters: Object.entries(semesters).map(([semesterKey, scores]) => ({
+      semester_key: semesterKey,
+      ...scores,
     })),
   }));
   // Return the formatted data
-  groupedData = formattedData;
-
-  return c.json(groupedData, HSCode.OK);
+  return c.json(formattedData, HSCode.OK);
 };
