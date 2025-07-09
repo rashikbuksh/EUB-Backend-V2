@@ -47,7 +47,7 @@ export const teachersEvaluationSemesterWise: AppRouteHandler<teachersEvaluationS
                   )
             ) / 2.0,
             2
-            ) AS average_performance_percentage,
+            )::float8 AS average_performance_percentage,
             ROUND((
                   (
                         evaluation_on_time.total_final_rating_sum::DECIMAL / evaluation_on_time.total_final_rating_count::DECIMAL / 5.0
@@ -56,7 +56,7 @@ export const teachersEvaluationSemesterWise: AppRouteHandler<teachersEvaluationS
                   (
                         evaluation_on_time.total_mid_rating_sum::DECIMAL / evaluation_on_time.total_mid_rating_count::DECIMAL / 5.0
                   ) * 100
-            ), 2) AS change_in_performance_percentage
+            ), 2)::float8 AS change_in_performance_percentage
       FROM
             lib.sem_crs_thr_entry sche
       LEFT JOIN lib.semester sem ON sche.semester_uuid = sem.uuid
