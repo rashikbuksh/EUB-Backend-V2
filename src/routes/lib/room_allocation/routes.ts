@@ -14,6 +14,12 @@ export const list = createRoute({
   path: '/lib/room-allocation',
   method: 'get',
   tags,
+  request: {
+    query: z.object({
+      room_uuid: z.string().optional(),
+      semester_uuid: z.string().optional(),
+    }),
+  },
   responses: {
     [HSCode.OK]: jsonContent(
       z.array(selectSchema),

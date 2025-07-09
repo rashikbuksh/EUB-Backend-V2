@@ -1,15 +1,19 @@
 import type { AppRouteHandler } from '@/lib/types';
 
 import { eq } from 'drizzle-orm';
+import { alias } from 'drizzle-orm/pg-core';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
 import { users } from '@/routes/hr/schema';
+import { teachers } from '@/routes/portfolio/schema';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 
 import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
 
-import { room, room_allocation } from '../schema';
+import { room, room_allocation, sem_crs_thr_entry } from '../schema';
+
+const teacherUser = alias(users, 'teacherUser');
 
 export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
   const value = c.req.valid('json');
@@ -58,6 +62,9 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   // const data = await db.query.room_allocation.findMany();
+
+  const { room_uuid, semester_uuid } = c.req.valid('query');
+
   const resultPromise = db.select({
     uuid: room_allocation.uuid,
     room_uuid: room_allocation.room_uuid,
@@ -71,12 +78,24 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     created_at: room_allocation.created_at,
     updated_at: room_allocation.updated_at,
     remarks: room_allocation.remarks,
+    teacher_name: teacherUser.name,
   })
     .from(room_allocation)
     .leftJoin(room, eq(room.uuid, room_allocation.room_uuid))
+    .leftJoin(sem_crs_thr_entry, eq(sem_crs_thr_entry.uuid, room_allocation.sem_crs_thr_entry_uuid))
+    .leftJoin(teachers, eq(teachers.uuid, sem_crs_thr_entry.teachers_uuid))
+    .leftJoin(teacherUser, eq(teacherUser.uuid, teachers.teacher_uuid))
     .leftJoin(users, eq(users.uuid, room_allocation.created_by));
 
+  if (room_uuid)
+    resultPromise.where(eq(room_allocation.room_uuid, room_uuid));
+  if (semester_uuid)
+    resultPromise.where(eq(sem_crs_thr_entry.semester_uuid, semester_uuid));
+
   const data = await resultPromise;
+
+  if (!data || data.length === 0)
+    return DataNotFound(c);
 
   return c.json(data || [], HSCode.OK);
 };
