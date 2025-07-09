@@ -96,6 +96,7 @@ export const room = lib.table('room', {
   created_at: DateTime('created_at').notNull(),
   updated_at: DateTime('updated_at'),
   remarks: text('remarks'),
+  capacity: integer('capacity').notNull().default(0),
 });
 
 export const room_allocation_day = lib.enum('room_allocation_day', [
