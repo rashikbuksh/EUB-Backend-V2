@@ -9,11 +9,11 @@ export const valueLabel = createRoute({
   path: '/other/lib/sem-crs-thr-entry/value/label',
   method: 'get',
   tags,
-  // request: {
-  //   query: z.object({
-  //     page: z.string().optional(),
-  //   }),
-  // },
+  request: {
+    query: z.object({
+      semester_uuid: z.string().optional(),
+    }),
+  },
   responses: {
     [HSCode.OK]: jsonContent(
       z.object({
