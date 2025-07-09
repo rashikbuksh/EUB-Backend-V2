@@ -136,6 +136,7 @@ export const capital = procure.table('capital', {
 });
 
 export const item_index = procure.sequence('item_index', DEFAULT_SEQUENCE);
+export const item_store = procure.enum('item_store', ['maintenance', 'general', 'it_store']);
 
 export const item = procure.table('item', {
   uuid: uuid_primary,
@@ -153,6 +154,8 @@ export const item = procure.table('item', {
   sub_purchase_cost_center_uuid: defaultUUID('sub_purchase_cost_center_uuid').references(() => sub_purchase_cost_center.uuid, DEFAULT_OPERATION),
   threshold: PG_DECIMAL('threshold').default(sql`0`),
   lead_time: integer('lead_time').default(sql`0`),
+  store: item_store('store').notNull(),
+
 });
 
 export const general_note = procure.table('general_note', {
