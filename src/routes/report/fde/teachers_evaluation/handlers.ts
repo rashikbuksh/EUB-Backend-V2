@@ -278,5 +278,5 @@ export const teachersEvaluationTeacherWise: AppRouteHandler<teachersEvaluationTe
     return acc;
   }, {});
 
-  return c.json(Object.values(groupedData), HSCode.OK);
+  return c.json(groupedData, HSCode.OK);
 };
