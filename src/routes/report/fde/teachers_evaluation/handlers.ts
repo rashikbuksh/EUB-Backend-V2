@@ -19,6 +19,7 @@ export const teachersEvaluationSemesterWise: AppRouteHandler<teachersEvaluationS
             thr.appointment_date,
             thr.department_name,
             thr.teacher_name,
+            thr.designation_name,
             evaluation.performance_key,
             ROUND(
                   (
@@ -65,16 +66,13 @@ export const teachersEvaluationSemesterWise: AppRouteHandler<teachersEvaluationS
                         thr.uuid,
                         thr.appointment_date,
                         d.name AS department_name,
-                        u.name AS teacher_name
+                        u.name AS teacher_name,
+                        des.name AS designation_name
                   FROM portfolio.teachers thr
                         LEFT JOIN portfolio.department_teachers dt ON thr.uuid = dt.teachers_uuid
                         LEFT JOIN portfolio.department d ON dt.department_uuid = d.uuid
                         LEFT JOIN hr.users u ON thr.teacher_uuid = u.uuid
-                  GROUP BY
-                        thr.uuid,
-                        thr.appointment_date,
-                        d.name,
-                        u.name
+                        LEFT JOIN hr.designation des ON u.designation_uuid = des.uuid
             ) AS thr ON sche.teachers_uuid = thr.uuid
       LEFT JOIN (
                   SELECT evaluation_per_cat.sem_crs_thr_entry_uuid, jsonb_object_agg(
