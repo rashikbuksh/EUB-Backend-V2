@@ -427,5 +427,5 @@ export const teachersEvaluationDepartmentWise: AppRouteHandler<teachersEvaluatio
   }, {});
 
   // Return the formatted data
-  return c.json(formattedData, HSCode.OK);
+  return c.json([formattedData], HSCode.OK);
 };
