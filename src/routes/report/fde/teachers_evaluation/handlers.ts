@@ -157,6 +157,7 @@ export const teachersEvaluationTeacherWise: AppRouteHandler<teachersEvaluationTe
                 thr.department_uuid,
                 thr.department_name,
                 thr.teacher_name,
+                thr.designation_name,
                 ROUND(
                       (
                             evaluation_on_time.total_mid_rating_sum::DECIMAL / evaluation_on_time.total_mid_rating_count::DECIMAL / 5.0
@@ -178,17 +179,13 @@ export const teachersEvaluationTeacherWise: AppRouteHandler<teachersEvaluationTe
                             thr.appointment_date,
                             d.uuid as department_uuid,
                             d.name AS department_name,
-                            u.name AS teacher_name
+                            u.name AS teacher_name,
+                            des.name AS designation_name
                       FROM portfolio.teachers thr
                             LEFT JOIN portfolio.department_teachers dt ON thr.uuid = dt.teachers_uuid
                             LEFT JOIN portfolio.department d ON dt.department_uuid = d.uuid
                             LEFT JOIN hr.users u ON thr.teacher_uuid = u.uuid
-                      GROUP BY
-                            thr.uuid,
-                            thr.appointment_date,
-                            d.uuid,
-                            d.name,
-                            u.name
+                            LEFT JOIN hr.designation des ON u.designation_uuid = des.uuid
                 ) AS thr ON sche.teachers_uuid = thr.uuid
           LEFT JOIN (
                       SELECT
@@ -240,27 +237,7 @@ export const teachersEvaluationTeacherWise: AppRouteHandler<teachersEvaluationTe
 
   const data = await resultPromise;
 
-  //   [
-  //       {
-  //         "teacher_name": "John Doe",
-  //         "year": [
-  //           {
-  //             "semester_year": 2023,
-  //             "semester": [
-  //               {
-  //                 "name": "Fall 2023",
-  //                 "score": {
-  //                   "mid_performance_percentage": 85.5,
-  //                   "final_performance_percentage": 90.2
-  //                 },
-  //               },
-  //             ]
-  //           }
-  //         ]
-  //       }
-  //     ]
-
-  // Group data by teacher name and then by year
+  // Group data by teacher name and then by year and semester and then score as an object
   const teacherMap = new Map();
 
   data.rows
@@ -272,6 +249,8 @@ export const teachersEvaluationTeacherWise: AppRouteHandler<teachersEvaluationTe
       if (!teacherMap.has(teacherName)) {
         teacherMap.set(teacherName, {
           teacher_name: teacherName,
+          department_name: row.department_name,
+          designation_name: row.designation_name,
           year: [],
         });
       }
