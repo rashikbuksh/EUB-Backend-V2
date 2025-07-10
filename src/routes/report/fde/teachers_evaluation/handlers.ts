@@ -409,17 +409,22 @@ export const teachersEvaluationDepartmentWise: AppRouteHandler<teachersEvaluatio
   const data = await resultPromise;
 
   //   [
-  //       {"spring 2024": 85},
-  //       {"fall 2024": 90},
-  //       {"spring 2025": 88},
-  //       {"semester_name": average_performance_percentage},
+  //       {
+  //        "spring 2024": 85,
+  //        "fall 2024": 90,
+  //         "spring 2025": 88, "semester_name": average_performance_percentage
+  //       },
   //   ]
 
   // i want data like the above
 
-  const formattedData = data.rows?.map((item: any) => ({
-    [item.semester_name]: item.average_performance_percentage,
-  }));
+  //   const formattedData = data.rows?.map((item: any) => ({
+  //     [item.semester_name]: item.average_performance_percentage,
+  //   }));
+  const formattedData = data.rows?.reduce((acc: any, item: any) => {
+    acc[item.semester_name] = item.average_performance_percentage;
+    return acc;
+  }, {});
 
   // Return the formatted data
   return c.json(formattedData, HSCode.OK);
