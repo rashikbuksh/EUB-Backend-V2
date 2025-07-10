@@ -5,7 +5,7 @@ import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
 
-import type { teachersEvaluationSemesterWiseRoute, teachersEvaluationTeacherWiseRoute } from './routes';
+import type { teachersEvaluationDepartmentWiseRoute, teachersEvaluationSemesterWiseRoute, teachersEvaluationTeacherWiseRoute } from './routes';
 
 export const teachersEvaluationSemesterWise: AppRouteHandler<teachersEvaluationSemesterWiseRoute> = async (c: any) => {
   const { semester_uuid } = c.req.valid('query');
@@ -285,4 +285,129 @@ export const teachersEvaluationTeacherWise: AppRouteHandler<teachersEvaluationTe
 
   // Return the formatted data
   return c.json(formattedData, HSCode.OK);
+};
+
+export const teachersEvaluationDepartmentWise: AppRouteHandler<teachersEvaluationDepartmentWiseRoute> = async (c: any) => {
+  const { department_uuid } = c.req.valid('query');
+
+  const query = sql`
+              SELECT
+                    sche.uuid,
+                    sche.semester_uuid,
+                    sem.name AS semester_name,
+                    extract(YEAR FROM sem.started_at) AS semester_year,
+                    thr.department_uuid,
+                    thr.department_name,
+                    ROUND(
+                          AVG(
+                              evaluation_on_time.total_mid_rating_sum::DECIMAL / evaluation_on_time.total_mid_rating_count::DECIMAL 
+                          ) / 5.0 * 100,
+                          2
+                    )::float8 AS mid_performance_percentage,
+                    ROUND(
+                          AVG(
+                                evaluation_on_time.total_final_rating_sum::DECIMAL / evaluation_on_time.total_final_rating_count::DECIMAL 
+                          ) / 5.0 * 100,
+                          2
+                    )::float8 AS final_performance_percentage,
+                    ROUND(
+                  (
+                        CASE
+                              WHEN SUM(
+                              evaluation_on_time.total_mid_rating_sum::DECIMAL / evaluation_on_time.total_mid_rating_count::DECIMAL
+                              ) IS NOT NULL THEN COALESCE(
+                              SUM(
+                                    evaluation_on_time.total_mid_rating_sum::DECIMAL / evaluation_on_time.total_mid_rating_count::DECIMAL
+                              ) / 5.0 * 100,
+                              0
+                              )
+                              ELSE 0
+                        END + CASE
+                              WHEN SUM(
+                              evaluation_on_time.total_final_rating_sum::DECIMAL / evaluation_on_time.total_final_rating_count::DECIMAL
+                              ) IS NOT NULL THEN COALESCE(
+                              SUM(
+                                    evaluation_on_time.total_final_rating_sum::DECIMAL / evaluation_on_time.total_final_rating_count::DECIMAL
+                              ) / 5.0 * 100,
+                              0
+                              )
+                              ELSE 0
+                        END
+                  ) / CASE
+                        WHEN SUM(
+                              evaluation_on_time.total_final_rating_sum::DECIMAL / evaluation_on_time.total_final_rating_count::DECIMAL
+                        ) IS NOT NULL
+                        AND SUM(
+                              evaluation_on_time.total_mid_rating_sum::DECIMAL / evaluation_on_time.total_mid_rating_count::DECIMAL
+                        ) IS NOT NULL THEN 2.0
+                        ELSE 1.0
+                  END,
+                  2
+                  )::float8 AS average_performance_percentage
+              FROM
+                    lib.sem_crs_thr_entry sche
+              LEFT JOIN lib.semester sem ON sche.semester_uuid = sem.uuid
+              LEFT JOIN (
+                          SELECT
+                                thr.uuid,
+                                d.uuid as department_uuid,
+                                d.name AS department_name
+                          FROM portfolio.teachers thr
+                                LEFT JOIN portfolio.department_teachers dt ON thr.uuid = dt.teachers_uuid
+                                LEFT JOIN portfolio.department d ON dt.department_uuid = d.uuid
+                    ) AS thr ON sche.teachers_uuid = thr.uuid
+              LEFT JOIN (
+                          SELECT
+                                evaluation_per_cat.sem_crs_thr_entry_uuid,
+                                SUM(
+                                evaluation_per_cat.total_mid_rating_sum
+                                ) AS total_mid_rating_sum,
+                                SUM(
+                                evaluation_per_cat.total_mid_rating_count
+                                ) AS total_mid_rating_count,
+                                SUM(
+                                evaluation_per_cat.total_final_rating_sum
+                                ) AS total_final_rating_sum,
+                                SUM(
+                                evaluation_per_cat.total_final_rating_count
+                                ) AS total_final_rating_count
+                          FROM (
+                                SELECT
+                                      rt.sem_crs_thr_entry_uuid, qnc.name, SUM(
+                                            CASE
+                                            WHEN rt.evaluation_time = 'mid' THEN e.rating
+                                            END
+                                      ) AS total_mid_rating_sum, COUNT(
+                                            CASE
+                                            WHEN rt.evaluation_time = 'mid' THEN (e.rating)
+                                            END
+                                      ) AS total_mid_rating_count, SUM(
+                                            CASE
+                                            WHEN rt.evaluation_time = 'final' THEN e.rating
+                                            END
+                                      ) AS total_final_rating_sum, COUNT(
+                                            CASE
+                                            WHEN rt.evaluation_time = 'final' THEN (e.rating)
+                                            END
+                                      ) AS total_final_rating_count
+                                FROM fde.qns_category qnc
+                                      LEFT JOIN fde.qns qns ON qns.qns_category_uuid = qnc.uuid
+                                      LEFT JOIN fde.evaluation e ON e.qns_uuid = qns.uuid
+                                      LEFT JOIN fde.respond_student rt ON e.respond_student_uuid = rt.uuid
+                                GROUP BY
+                                      rt.sem_crs_thr_entry_uuid, qnc.name
+                                ) AS evaluation_per_cat
+                          GROUP BY
+                                sem_crs_thr_entry_uuid
+                    ) AS evaluation_on_time ON sche.uuid = evaluation_on_time.sem_crs_thr_entry_uuid
+              WHERE ${department_uuid ? sql`thr.department_uuid = ${department_uuid}` : sql`true`}
+            GROUP BY sche.uuid, sche.semester_uuid, sem.name, thr.department_uuid, thr.department_name, sem.started_at;
+            `;
+
+  const resultPromise = db.execute(query);
+
+  const data = await resultPromise;
+
+  // Return the formatted data
+  return c.json(data, HSCode.OK);
 };

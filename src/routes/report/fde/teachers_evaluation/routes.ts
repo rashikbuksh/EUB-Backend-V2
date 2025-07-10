@@ -62,5 +62,34 @@ export const teachersEvaluationTeacherWise = createRoute({
   },
 });
 
+export const teachersEvaluationDepartmentWise = createRoute({
+  path: '/report/fde/teachers-evaluation-department-wise',
+  method: 'get',
+  tags,
+  request: {
+    query: z.object({
+      department_uuid: z.string().describe('The UUID of the department to filter evaluations').optional(),
+    }),
+  },
+  responses: {
+    [HSCode.OK]: jsonContent(
+      z.object({
+        rows: z.array(
+          z.object({
+            semester_uuid: z.string(),
+            semester_name: z.string(),
+            total_students: z.number(),
+            total_evaluated: z.number(),
+            average_score: z.number().optional(),
+          }),
+        ),
+
+      }),
+      'The teachers evaluation semester wise report',
+    ),
+  },
+});
+
 export type teachersEvaluationSemesterWiseRoute = typeof teachersEvaluationSemesterWise;
 export type teachersEvaluationTeacherWiseRoute = typeof teachersEvaluationTeacherWise;
+export type teachersEvaluationDepartmentWiseRoute = typeof teachersEvaluationDepartmentWise; // Alias for consistency

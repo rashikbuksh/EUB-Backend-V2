@@ -5,6 +5,7 @@ import * as routes from './routes';
 
 const router = createRouter()
   .openapi(routes.teachersEvaluationSemesterWise, handlers.teachersEvaluationSemesterWise)
-  .openapi(routes.teachersEvaluationTeacherWise, handlers.teachersEvaluationTeacherWise);
+  .openapi(routes.teachersEvaluationTeacherWise, handlers.teachersEvaluationTeacherWise)
+  .openapi(routes.teachersEvaluationDepartmentWise, handlers.teachersEvaluationDepartmentWise);
 
 export default router;
