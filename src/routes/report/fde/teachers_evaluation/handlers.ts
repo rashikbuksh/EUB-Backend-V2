@@ -422,7 +422,8 @@ export const teachersEvaluationDepartmentWise: AppRouteHandler<teachersEvaluatio
   //     [item.semester_name]: item.average_performance_percentage,
   //   }));
   const formattedData = data.rows?.reduce((acc: any, item: any) => {
-    acc[item.semester_name] = item.average_performance_percentage;
+    const formattedSemesterName = item.semester_name.toLowerCase().replace(/\s+/g, '_');
+    acc[formattedSemesterName] = item.average_performance_percentage;
     return acc;
   }, {});
 
