@@ -79,6 +79,8 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     updated_at: room_allocation.updated_at,
     remarks: room_allocation.remarks,
     teacher_name: teacherUser.name,
+    teacher_phone: teachers.teacher_phone,
+    teacher_email: teachers.teacher_email,
     class_size: sem_crs_thr_entry.class_size,
     course_uuid: course_section.course_uuid,
     course_name: course.name,
