@@ -59,6 +59,8 @@ export const valueLabel = createRoute({
       field_name: z.string().optional(),
       field_value: z.string().optional(),
       department_uuid: z.string().optional(),
+      semester_uuid: z.string().optional(),
+      is_room_allocation: z.string().optional(),
     }),
   },
 });
