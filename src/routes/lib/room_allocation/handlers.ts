@@ -5,8 +5,8 @@ import { alias } from 'drizzle-orm/pg-core';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
-import { users } from '@/routes/hr/schema';
-import { teachers } from '@/routes/portfolio/schema';
+import { designation, users } from '@/routes/hr/schema';
+import { department, department_teachers, teachers } from '@/routes/portfolio/schema';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 
 import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
@@ -81,6 +81,9 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     teacher_name: teacherUser.name,
     teacher_phone: teachers.teacher_phone,
     teacher_email: teachers.teacher_email,
+    teacher_initial: teachers.teacher_initial,
+    teacher_department: department.name,
+    teacher_designation: designation.name,
     class_size: sem_crs_thr_entry.class_size,
     course_uuid: course_section.course_uuid,
     course_name: course.name,
@@ -96,6 +99,9 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     .leftJoin(sem_crs_thr_entry, eq(sem_crs_thr_entry.uuid, room_allocation.sem_crs_thr_entry_uuid))
     .leftJoin(teachers, eq(teachers.uuid, sem_crs_thr_entry.teachers_uuid))
     .leftJoin(teacherUser, eq(teacherUser.uuid, teachers.teacher_uuid))
+    .leftJoin(designation, eq(teacherUser.designation_uuid, designation.uuid))
+    .leftJoin(department_teachers, eq(teachers.uuid, department_teachers.teachers_uuid))
+    .leftJoin(department, eq(department_teachers.department_uuid, department.uuid))
     .leftJoin(users, eq(users.uuid, room_allocation.created_by))
     .leftJoin(course_section, eq(course_section.uuid, sem_crs_thr_entry.course_section_uuid))
     .leftJoin(course, eq(course.uuid, course_section.course_uuid))
