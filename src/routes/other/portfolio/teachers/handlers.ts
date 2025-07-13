@@ -1,11 +1,12 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { eq, sql } from 'drizzle-orm';
+import { and, eq, sql } from 'drizzle-orm';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
 import { constructSelectAllQuery } from '@/lib/variables';
 import * as hrSchema from '@/routes/hr/schema';
+import { room_allocation, sem_crs_thr_entry } from '@/routes/lib/schema';
 import { department, department_teachers, faculty, teachers } from '@/routes/portfolio/schema';
 
 import type { ValueLabelRoute, ValueLabelRouteForPublication } from './routes';
@@ -60,7 +61,7 @@ export const valueLabelForPublication: AppRouteHandler<ValueLabelRouteForPublica
 };
 
 export const valueLabel: AppRouteHandler<ValueLabelRoute> = async (c: any) => {
-  const { department_uuid } = c.req.valid('query');
+  const { department_uuid, semester_uuid, is_room_allocation } = c.req.valid('query');
   const resultPromise = db.select({
     value: teachers.uuid,
     label: sql`CONCAT(users.name, CASE WHEN teachers.teacher_email IS NOT NULL THEN ' - ' ELSE '' END, teachers.teacher_email)`,
@@ -68,11 +69,29 @@ export const valueLabel: AppRouteHandler<ValueLabelRoute> = async (c: any) => {
     .from(teachers)
     .leftJoin(hrSchema.users, eq(teachers.teacher_uuid, hrSchema.users.uuid))
     .leftJoin(department_teachers, eq(teachers.uuid, department_teachers.teachers_uuid))
-    .leftJoin(department, eq(department_teachers.department_uuid, department.uuid));
+    .leftJoin(department, eq(department_teachers.department_uuid, department.uuid))
+    .leftJoin(sem_crs_thr_entry, eq(sem_crs_thr_entry.teachers_uuid, teachers.uuid))
+    .leftJoin(room_allocation, eq(room_allocation.sem_crs_thr_entry_uuid, sem_crs_thr_entry.uuid));
 
-  if (department_uuid) {
-    resultPromise.where(eq(department.uuid, department_uuid));
+  const filters = [];
+
+  if (department_uuid)
+    filters.push(eq(department_teachers.department_uuid, department_uuid));
+
+  if (semester_uuid)
+    filters.push(eq(sem_crs_thr_entry.semester_uuid, semester_uuid));
+
+  if (is_room_allocation === 'true') {
+    filters.push(sql`${room_allocation.uuid} IS NOT NULL`);
   }
+
+  if (filters.length > 0) {
+    resultPromise.where(and(...filters));
+  }
+
+  // if (department_uuid) {
+  //   resultPromise.where(eq(department.uuid, department_uuid));
+  // }
 
   const data = await resultPromise;
 
