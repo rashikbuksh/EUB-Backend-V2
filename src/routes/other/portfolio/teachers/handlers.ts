@@ -62,7 +62,7 @@ export const valueLabelForPublication: AppRouteHandler<ValueLabelRouteForPublica
 
 export const valueLabel: AppRouteHandler<ValueLabelRoute> = async (c: any) => {
   const { department_uuid, semester_uuid, is_room_allocation } = c.req.valid('query');
-  const resultPromise = db.select({
+  const resultPromise = db.selectDistinct({
     value: teachers.uuid,
     label: sql`CONCAT(users.name, CASE WHEN teachers.teacher_email IS NOT NULL THEN ' - ' ELSE '' END, teachers.teacher_email)`,
   })
