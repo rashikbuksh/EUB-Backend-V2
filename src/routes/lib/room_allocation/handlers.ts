@@ -63,7 +63,7 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   // const data = await db.query.room_allocation.findMany();
 
-  const { room_uuid, semester_uuid } = c.req.valid('query');
+  const { room_uuid, semester_uuid, teachers_uuid } = c.req.valid('query');
 
   const resultPromise = db.select({
     uuid: room_allocation.uuid,
@@ -103,6 +103,8 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     resultPromise.where(eq(room_allocation.room_uuid, room_uuid));
   if (semester_uuid)
     resultPromise.where(eq(sem_crs_thr_entry.semester_uuid, semester_uuid));
+  if (teachers_uuid)
+    resultPromise.where(eq(sem_crs_thr_entry.teachers_uuid, teachers_uuid));
 
   const data = await resultPromise;
 
