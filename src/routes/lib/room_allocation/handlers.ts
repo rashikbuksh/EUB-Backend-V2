@@ -1,6 +1,6 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import * as HSCode from 'stoker/http-status-codes';
 
@@ -99,12 +99,18 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     .leftJoin(course, eq(course.uuid, course_section.course_uuid))
     .leftJoin(semester, eq(semester.uuid, sem_crs_thr_entry.semester_uuid));
 
+  const filters = [];
+
   if (room_uuid)
-    resultPromise.where(eq(room_allocation.room_uuid, room_uuid));
+    filters.push(eq(room_allocation.room_uuid, room_uuid));
   if (semester_uuid)
-    resultPromise.where(eq(sem_crs_thr_entry.semester_uuid, semester_uuid));
+    filters.push(eq(sem_crs_thr_entry.semester_uuid, semester_uuid));
   if (teachers_uuid)
-    resultPromise.where(eq(sem_crs_thr_entry.teachers_uuid, teachers_uuid));
+    filters.push(eq(sem_crs_thr_entry.teachers_uuid, teachers_uuid));
+
+  if (filters.length > 0) {
+    resultPromise.where(and(...filters));
+  }
 
   const data = await resultPromise;
 
