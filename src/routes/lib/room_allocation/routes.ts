@@ -18,6 +18,7 @@ export const list = createRoute({
     query: z.object({
       room_uuid: z.string().optional(),
       semester_uuid: z.string().optional(),
+      teachers_uuid: z.string().optional(),
     }),
   },
   responses: {
