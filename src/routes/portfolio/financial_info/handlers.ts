@@ -1,6 +1,6 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { eq } from 'drizzle-orm';
+import { asc, eq } from 'drizzle-orm';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
@@ -90,7 +90,8 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     .from(financial_info)
     .leftJoin(department, eq(financial_info.department_uuid, department.uuid))
     .leftJoin(faculty, eq(department.faculty_uuid, faculty.uuid))
-    .leftJoin(hrSchema.users, eq(financial_info.created_by, hrSchema.users.uuid));
+    .leftJoin(hrSchema.users, eq(financial_info.created_by, hrSchema.users.uuid))
+    .orderBy(asc(department.name));
 
   const data: any[] = await resultPromise;
 

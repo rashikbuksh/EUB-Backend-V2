@@ -85,6 +85,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     teachers_status: teachers.status,
     department_uuid: department_teachers.department_uuid,
     department_name: department.name,
+    department_short_name: department.short_name,
     department_head: department_teachers.department_head,
     department_head_message: department_teachers.department_head_message,
     teacher_designation: department_teachers.teacher_designation,
