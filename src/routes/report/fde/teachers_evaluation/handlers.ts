@@ -83,16 +83,15 @@ export const teachersEvaluationSemesterWise: AppRouteHandler<teachersEvaluationS
     )::float8 AS final_performance_percentage,
     ROUND(
       (
-        COALESCE((ea.total_mid_rating_sum::DECIMAL / NULLIF(ea.total_mid_rating_count, 0) / 5.0) * 100, 0) +
-        COALESCE((ea.total_final_rating_sum::DECIMAL / NULLIF(ea.total_final_rating_count, 0) / 5.0) * 100, 0)
-      ) / CASE WHEN (ea.total_mid_rating_sum IS NOT NULL OR ea.total_final_rating_count IS NOT NULL) THEN 2.0 ELSE 1.0 END,
+      COALESCE((ea.total_mid_rating_sum::DECIMAL / NULLIF(ea.total_mid_rating_count, 0) / 5.0) * 100, 0) +
+      COALESCE((ea.total_final_rating_sum::DECIMAL / NULLIF(ea.total_final_rating_count, 0) / 5.0) * 100, 0)
+      ) / CASE 
+      WHEN (ea.total_mid_rating_count > 0 AND ea.total_final_rating_count > 0) THEN 2.0
+      WHEN (ea.total_mid_rating_count > 0 OR ea.total_final_rating_count > 0) THEN 1.0
+      ELSE 1.0
+      END,
       2
-    )::float8 AS average_performance_percentage,
-    ROUND(
-      COALESCE((ea.total_final_rating_sum::DECIMAL / NULLIF(ea.total_final_rating_count, 0) / 5.0) * 100, 0) -
-      COALESCE((ea.total_mid_rating_sum::DECIMAL / NULLIF(ea.total_mid_rating_count, 0) / 5.0) * 100, 0),
-      2
-    )::float8 AS change_in_performance_percentage
+      )::float8 AS average_performance_percentage
   FROM lib.sem_crs_thr_entry sche
   INNER JOIN lib.semester sem ON sche.semester_uuid = sem.uuid
   LEFT JOIN teacher_info ti ON sche.teachers_uuid = ti.uuid
@@ -374,19 +373,6 @@ export const teachersEvaluationDepartmentWise: AppRouteHandler<teachersEvaluatio
 
   const data = await resultPromise;
 
-  //   [
-  //       {
-  //        "spring 2024": 85,
-  //        "fall 2024": 90,
-  //         "spring 2025": 88, "semester_name": average_performance_percentage
-  //       },
-  //   ]
-
-  // i want data like the above
-
-  //   const formattedData = data.rows?.map((item: any) => ({
-  //     [item.semester_name]: item.average_performance_percentage,
-  //   }));
   const formattedData = data.rows?.reduce((acc: any, item: any) => {
     const formattedSemesterName = item.semester_name.toLowerCase().replace(/\s+/g, '_');
     acc[formattedSemesterName] = item.average_performance_percentage;
