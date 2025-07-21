@@ -1,6 +1,6 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { and, asc, eq, sql } from 'drizzle-orm';
+import { and, asc, eq, inArray, sql } from 'drizzle-orm';
 // import { alias } from 'drizzle-orm/pg-core';
 import * as HSCode from 'stoker/http-status-codes';
 
@@ -101,7 +101,13 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   }
 
   if (store_type) {
-    query.where(eq(item.store, store_type));
+    const store_type_array = store_type.split(',');
+    if (store_type_array.length > 1) {
+      query.where(inArray(item.store, store_type_array));
+    }
+    else {
+      query.where(eq(item.store, store_type));
+    }
   }
 
   const data = await query;
