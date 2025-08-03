@@ -1,6 +1,6 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { eq, isNotNull, isNull, sql } from 'drizzle-orm';
+import { eq, inArray, isNotNull, isNull, sql } from 'drizzle-orm';
 // import { alias } from 'drizzle-orm/pg-core';
 import * as HSCode from 'stoker/http-status-codes';
 
@@ -97,7 +97,8 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     resultPromise.where(isNotNull(item_work_order_entry.item_work_order_uuid));
   }
   if (store_type) {
-    resultPromise.where(eq(item.store, store_type));
+    const storeTypes = store_type.split(',');
+    resultPromise.where(inArray(item.store, storeTypes));
   }
 
   const data = await resultPromise;
