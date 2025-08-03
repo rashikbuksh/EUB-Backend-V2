@@ -1,6 +1,6 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { eq } from 'drizzle-orm';
+import { inArray } from 'drizzle-orm';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
@@ -21,7 +21,8 @@ export const valueLabel: AppRouteHandler<ValueLabelRoute> = async (c: any) => {
     .from(item);
 
   if (store_type) {
-    resultPromise.where(eq(item.store, store_type));
+    const storeTypes = store_type.split(',');
+    resultPromise.where(inArray(item.store, storeTypes));
   }
 
   const data = await resultPromise;
