@@ -1,5 +1,6 @@
 import type { AppRouteHandler } from '@/lib/types';
 
+import { sql } from 'drizzle-orm';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
@@ -10,7 +11,7 @@ import type { ValueLabelRoute } from './routes';
 export const valueLabel: AppRouteHandler<ValueLabelRoute> = async (c: any) => {
   const resultPromise = db.select({
     value: course.uuid,
-    label: course.name,
+    label: sql`${course.code} || ' - ' || ${course.name}`,
   })
     .from(course);
 
