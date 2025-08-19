@@ -87,6 +87,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     store: item.store,
     item_work_entry_id: sql`CONCAT('IWOEI', TO_CHAR(${item_work_order_entry.created_at}::timestamp, 'YY'), '-',  TO_CHAR(${item_work_order_entry.created_at}::timestamp, 'MM'), '-',  TO_CHAR(${item_work_order_entry.id}, 'FM0000'))`,
     index: item_work_order_entry.index,
+    without_item_request: item_work_order_entry.without_item_request,
   })
     .from(item_work_order_entry)
     .leftJoin(item_work_order, eq(item_work_order_entry.item_work_order_uuid, item_work_order.uuid))
@@ -134,6 +135,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     item_name: item.name,
     store: item.store,
     index: item_work_order_entry.index,
+    without_item_request: item_work_order_entry.without_item_request,
   })
     .from(item_work_order_entry)
     .leftJoin(item_work_order, eq(item_work_order_entry.item_work_order_uuid, item_work_order.uuid))
@@ -168,6 +170,7 @@ export const getAllByUuid: AppRouteHandler<GetAllByUuidRoute> = async (c: any) =
     item_name: item.name,
     store: item.store,
     index: item_work_order_entry.index,
+    without_item_request: item_work_order_entry.without_item_request,
   })
     .from(item_work_order_entry)
     .leftJoin(item_work_order, eq(item_work_order_entry.item_work_order_uuid, item_work_order.uuid))
