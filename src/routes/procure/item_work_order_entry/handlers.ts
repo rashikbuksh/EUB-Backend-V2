@@ -1,6 +1,6 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { eq, inArray, isNotNull, isNull, sql } from 'drizzle-orm';
+import { eq, inArray, sql } from 'drizzle-orm';
 // import { alias } from 'drizzle-orm/pg-core';
 import * as HSCode from 'stoker/http-status-codes';
 
@@ -91,10 +91,10 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     .leftJoin(item, eq(item_work_order_entry.item_uuid, item.uuid));
 
   if (status === 'pending') {
-    resultPromise.where(isNull(item_work_order_entry.item_work_order_uuid));
+    resultPromise.where(sql`item_work_order_entry.item_work_order_uuid IS NULL`);
   }
   else if (status === 'complete') {
-    resultPromise.where(isNotNull(item_work_order_entry.item_work_order_uuid));
+    resultPromise.where(sql`item_work_order_entry.item_work_order_uuid IS NOT NULL`);
   }
 
   if (store_type) {
