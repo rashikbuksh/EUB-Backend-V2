@@ -301,7 +301,8 @@ export const getWorkOrderDEtailsByWorkOrderUuid: AppRouteHandler<GetWorkOrderDEt
         'remarks', item_work_order_entry.remarks,
         'index' , item_work_order_entry.index,
         'purchase_cost_center_uuid', item.purchase_cost_center_uuid,
-        'purchase_cost_center_name', purchase_cost_center.name
+        'purchase_cost_center_name', purchase_cost_center.name,
+        'without_item_request', item_work_order_entry.without_item_request
       )
       FROM procure.item_work_order_entry
       LEFT JOIN procure.item ON item_work_order_entry.item_uuid = item.uuid
