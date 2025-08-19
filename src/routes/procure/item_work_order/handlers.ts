@@ -39,6 +39,8 @@ export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
     delivery_statement_date: formData.delivery_statement_date,
     delivery_statement_file: deliveryStatementFilePath,
     delivery_statement_remarks: formData.delivery_statement_remarks,
+    estimated_date: formData.estimated_date,
+    subject: formData.subject,
     done: formData.done || false,
     done_date: formData.done_date,
     created_by: formData.created_by,
