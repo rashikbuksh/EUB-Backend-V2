@@ -186,6 +186,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     subject: item_work_order.subject,
     vendor_address: vendor.address,
     vendor_phone: vendor.phone,
+    without_item_request: item_work_order.without_item_request,
   })
     .from(item_work_order)
     .leftJoin(hrSchema.users, eq(item_work_order.created_by, hrSchema.users.uuid))
@@ -229,6 +230,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     subject: item_work_order.subject,
     vendor_address: vendor.address,
     vendor_phone: vendor.phone,
+    without_item_request: item_work_order.without_item_request,
   })
     .from(item_work_order)
     .leftJoin(hrSchema.users, eq(item_work_order.created_by, hrSchema.users.uuid))
@@ -287,6 +289,7 @@ export const getWorkOrderDEtailsByWorkOrderUuid: AppRouteHandler<GetWorkOrderDEt
     subject: item_work_order.subject,
     vendor_address: vendor.address,
     vendor_phone: vendor.phone,
+    without_item_request: item_work_order.without_item_request,
     item_work_order_entry: sql`COALESCE(ARRAY(SELECT json_build_object(
         'uuid', item_work_order_entry.uuid,
         'item_work_uuid', item_work_order_entry.item_work_order_uuid,
@@ -301,8 +304,7 @@ export const getWorkOrderDEtailsByWorkOrderUuid: AppRouteHandler<GetWorkOrderDEt
         'remarks', item_work_order_entry.remarks,
         'index' , item_work_order_entry.index,
         'purchase_cost_center_uuid', item.purchase_cost_center_uuid,
-        'purchase_cost_center_name', purchase_cost_center.name,
-        'without_item_request', item_work_order_entry.without_item_request
+        'purchase_cost_center_name', purchase_cost_center.name
       )
       FROM procure.item_work_order_entry
       LEFT JOIN procure.item ON item_work_order_entry.item_uuid = item.uuid

@@ -38,6 +38,9 @@ export const insertSchema = createInsertSchema(
   done: true,
   updated_at: true,
   remarks: true,
+  subject: true,
+  without_item_request: true,
+  estimated_date: true,
 });
 
 export const patchSchema = insertSchema.partial();
