@@ -1,6 +1,6 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { eq, inArray, sql } from 'drizzle-orm';
+import { and, eq, inArray, sql } from 'drizzle-orm';
 // import { alias } from 'drizzle-orm/pg-core';
 import * as HSCode from 'stoker/http-status-codes';
 
@@ -67,6 +67,9 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   const { status, store_type } = c.req.valid('query');
 
+  // Build conditions array
+  const conditions = [];
+
   const resultPromise = db.select({
     uuid: item_work_order_entry.uuid,
     item_work_order_uuid: item_work_order_entry.item_work_order_uuid,
@@ -91,15 +94,20 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     .leftJoin(item, eq(item_work_order_entry.item_uuid, item.uuid));
 
   if (status === 'pending') {
-    resultPromise.where(sql`item_work_order_entry.item_work_order_uuid IS NULL`);
+    conditions.push(sql`item_work_order_entry.item_work_order_uuid IS NULL`);
   }
   else if (status === 'complete') {
-    resultPromise.where(sql`item_work_order_entry.item_work_order_uuid IS NOT NULL`);
+    conditions.push(sql`item_work_order_entry.item_work_order_uuid IS NOT NULL`);
   }
 
   if (store_type) {
     const storeTypes = store_type.split(',');
-    resultPromise.where(inArray(item.store, storeTypes));
+    conditions.push(inArray(item.store, storeTypes));
+  }
+
+  // Apply all conditions if any
+  if (conditions.length > 0) {
+    resultPromise.where(and(...conditions));
   }
 
   const data = await resultPromise;
