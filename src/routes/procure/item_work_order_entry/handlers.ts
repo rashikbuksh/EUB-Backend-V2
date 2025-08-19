@@ -93,9 +93,10 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   if (status === 'pending') {
     resultPromise.where(isNull(item_work_order_entry.item_work_order_uuid));
   }
-  if (status === 'complete') {
+  else if (status === 'complete') {
     resultPromise.where(isNotNull(item_work_order_entry.item_work_order_uuid));
   }
+
   if (store_type) {
     const storeTypes = store_type.split(',');
     resultPromise.where(inArray(item.store, storeTypes));
