@@ -427,7 +427,7 @@ export const item_work_order_entry_id = procure.sequence('item_work_order_entry_
 export const item_work_order_entry = procure.table('item_work_order_entry', {
   uuid: uuid_primary,
   item_work_order_uuid: defaultUUID('item_work_order_uuid').references(() => item_work_order.uuid, DEFAULT_OPERATION),
-  request_quantity: PG_DECIMAL('request_quantity').notNull(),
+  request_quantity: PG_DECIMAL('request_quantity').default(sql`0`),
   provided_quantity: PG_DECIMAL('provided_quantity').default(sql`0`),
   unit_price: PG_DECIMAL('unit_price').default(sql`0`),
   created_by: defaultUUID('created_by').references(() => users.uuid, DEFAULT_OPERATION),
