@@ -55,4 +55,5 @@ export const ALLOWED_ROUTES: string[] = [
   'https://eub.edu.bd',
   'https://www.eub.edu.bd',
   'https://admin.eub.edu.bd',
+  'https://synap-erp-starter.vercel.app',
 ];
