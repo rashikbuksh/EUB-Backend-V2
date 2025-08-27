@@ -1,6 +1,6 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { and, eq, ne, sql } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
@@ -19,7 +19,8 @@ export const valueLabel: AppRouteHandler<ValueLabelRoute> = async (c: any) => {
     .leftJoin(portfolioSchema.teachers, eq(users.uuid, portfolioSchema.teachers.teacher_uuid));
 
   if (is_new_auth === 'true') {
-    resultPromise.leftJoin(auth_user, and(ne(users.uuid, auth_user.user_uuid), sql`users.uuid IS NULL`));
+    resultPromise.leftJoin(auth_user, eq(users.uuid, auth_user.user_uuid));
+    resultPromise.where(sql`${auth_user.user_uuid} IS NULL`);
   }
   if (is_teacher === 'false') {
     resultPromise.where(sql`${portfolioSchema.teachers.teacher_uuid} IS NULL`);
