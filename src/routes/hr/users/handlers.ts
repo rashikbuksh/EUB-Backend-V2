@@ -210,6 +210,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     status: auth_user.status,
     can_access: auth_user.can_access,
     remarks: users.remarks,
+    auth_user_uuid: auth_user.uuid,
   })
     .from(users)
     .leftJoin(department, eq(users.department_uuid, department.uuid))
@@ -240,6 +241,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     status: auth_user.status,
     can_access: auth_user.can_access,
     remarks: users.remarks,
+    auth_user_uuid: auth_user.uuid,
   })
     .from(users)
     .leftJoin(department, eq(users.department_uuid, department.uuid))
