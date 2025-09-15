@@ -595,6 +595,16 @@ export const financial_info_table = portfolio.enum('financial_info_table', [
   'arts',
 ]);
 
+export const financial_info_no_of_semester = portfolio.enum('financial_info_no_of_semester', [
+  '10',
+  '12',
+]);
+
+export const financial_info_per_semester_duration = portfolio.enum('financial_info_per_semester_duration', [
+  '4m',
+  '6m',
+]);
+
 export const financial_info = portfolio.table('financial_info', {
   id: integer('id').default(sql`nextval('portfolio.financial_info_id')`),
   uuid: uuid_primary,
@@ -619,6 +629,8 @@ export const financial_info = portfolio.table('financial_info', {
   updated_at: DateTime('updated_at').$onUpdate(() => 'now()'),
   created_by: defaultUUID('created_by').references(() => users.uuid, DEFAULT_OPERATION),
   remarks: text('remarks'),
+  no_of_semester: financial_info_no_of_semester('no_of_semester').notNull().default('12'),
+  per_semester_duration: financial_info_per_semester_duration('per_semester_duration').notNull().default('4m'),
 }, table => [
   unique().on(table.department_uuid, table.table_name),
 ]);

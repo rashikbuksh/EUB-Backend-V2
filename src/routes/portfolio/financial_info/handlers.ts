@@ -86,6 +86,8 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     created_at: financial_info.created_at,
     updated_at: financial_info.updated_at,
     remarks: financial_info.remarks,
+    no_of_semester: financial_info.no_of_semester,
+    per_semester_duration: financial_info.per_semester_duration,
   })
     .from(financial_info)
     .leftJoin(department, eq(financial_info.department_uuid, department.uuid))
@@ -128,6 +130,8 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     created_at: financial_info.created_at,
     updated_at: financial_info.updated_at,
     remarks: financial_info.remarks,
+    no_of_semester: financial_info.no_of_semester,
+    per_semester_duration: financial_info.per_semester_duration,
   })
     .from(financial_info)
     .leftJoin(department, eq(financial_info.department_uuid, department.uuid))
@@ -174,6 +178,8 @@ export const getFinancialInfoByCategory: AppRouteHandler<GetFinancialInfoByCateg
     created_at: financial_info.created_at,
     updated_at: financial_info.updated_at,
     remarks: financial_info.remarks,
+    no_of_semester: financial_info.no_of_semester,
+    per_semester_duration: financial_info.per_semester_duration,
   })
     .from(financial_info)
     .leftJoin(department, eq(financial_info.department_uuid, department.uuid))

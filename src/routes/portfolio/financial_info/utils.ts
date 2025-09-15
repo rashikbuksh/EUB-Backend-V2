@@ -61,6 +61,8 @@ export const insertSchema = createInsertSchema(
   waiver_100: true,
   updated_at: true,
   remarks: true,
+  no_of_semester: true,
+  per_semester_duration: true,
 }).omit({
   id: true,
 });

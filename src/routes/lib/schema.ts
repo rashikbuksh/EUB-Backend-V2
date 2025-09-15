@@ -5,11 +5,26 @@ import { DateTime, defaultUUID, uuid_primary } from '@/lib/variables';
 import { DEFAULT_OPERATION } from '@/utils/db';
 
 import { users } from '../hr/schema';
-import { teachers } from '../portfolio/schema';
+import { financial_info, teachers } from '../portfolio/schema';
 
 const lib = pgSchema('lib');
 
 //* lib *//
+
+export const program_semester = lib.table('program_semester', {
+  uuid: uuid_primary,
+  financial_info_uuid: defaultUUID('financial_info_uuid')
+    .references(() => financial_info.uuid, DEFAULT_OPERATION)
+    .notNull(),
+  semester_no: integer('semester_no').notNull(),
+  created_by: defaultUUID('created_by').references(
+    () => users.uuid,
+    DEFAULT_OPERATION,
+  ),
+  created_at: DateTime('created_at').notNull(),
+  updated_at: DateTime('updated_at'),
+  remarks: text('remarks'),
+});
 
 export const semester = lib.table('semester', {
   uuid: uuid_primary,
@@ -40,11 +55,27 @@ export const course = lib.table('course', {
   remarks: text('remarks'),
 });
 
-export const course_section = lib.table('course_section', {
+export const semester_course = lib.table('semester_course', {
   uuid: uuid_primary,
+  program_semester_uuid: defaultUUID('program_semester_uuid')
+    .references(() => program_semester.uuid, DEFAULT_OPERATION)
+    .notNull(),
   course_uuid: defaultUUID('course_uuid')
     .references(() => course.uuid, DEFAULT_OPERATION)
     .notNull(),
+  created_by: defaultUUID('created_by').references(
+    () => users.uuid,
+    DEFAULT_OPERATION,
+  ),
+  created_at: DateTime('created_at').notNull(),
+  updated_at: DateTime('updated_at'),
+  remarks: text('remarks'),
+});
+
+export const course_section = lib.table('course_section', {
+  uuid: uuid_primary,
+  semester_course_uuid: defaultUUID('semester_course_uuid')
+    .references(() => semester_course.uuid, DEFAULT_OPERATION),
   name: text('name').notNull(),
   created_by: defaultUUID('created_by').references(
     () => users.uuid,
@@ -55,7 +86,10 @@ export const course_section = lib.table('course_section', {
   remarks: text('remarks'),
   index: integer('index').notNull().default(0),
 }, table => [
-  unique('course_section_course_uuid_name_unique').on(table.course_uuid, table.name),
+  unique('course_section_semester_course_uuid_name_unique').on(
+    table.semester_course_uuid,
+    table.name,
+  ),
 ]);
 
 export const sem_crs_thr_entry = lib.table('sem_crs_thr_entry', {
@@ -143,13 +177,17 @@ export const course_relations = relations(course, ({ one }) => ({
   }),
 }));
 
-export const course_section_relations = relations(course_section, ({ one }) => ({
+export const semester_course_relations = relations(semester_course, ({ one }) => ({
+  program_semester: one(program_semester, {
+    fields: [semester_course.program_semester_uuid],
+    references: [program_semester.uuid],
+  }),
   course: one(course, {
-    fields: [course_section.course_uuid],
+    fields: [semester_course.course_uuid],
     references: [course.uuid],
   }),
   created_by: one(users, {
-    fields: [course_section.created_by],
+    fields: [semester_course.created_by],
     references: [users.uuid],
   }),
 }));
