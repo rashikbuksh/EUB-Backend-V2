@@ -9,7 +9,7 @@ import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 
 import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
 
-import { course, course_section } from '../schema';
+import { course, course_section, semester_course } from '../schema';
 
 export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
   const value = c.req.valid('json');
@@ -61,7 +61,8 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   const resultPromise = db.select({
     uuid: course_section.uuid,
     name: course_section.name,
-    course_uuid: course_section.course_uuid,
+    semester_course_uuid: course_section.semester_course_uuid,
+    course_uuid: semester_course.course_uuid,
     course_name: course.name,
     course_code: course.code,
     created_by: course_section.created_by,
@@ -72,7 +73,8 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     index: course_section.index,
   })
     .from(course_section)
-    .leftJoin(course, eq(course.uuid, course_section.course_uuid))
+    .leftJoin(semester_course, eq(semester_course.uuid, course_section.semester_course_uuid))
+    .leftJoin(course, eq(course.uuid, semester_course.course_uuid))
     .leftJoin(users, eq(users.uuid, course_section.created_by))
     .orderBy(asc(course_section.index));
 
@@ -92,7 +94,8 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
   const resultPromise = db.select({
     uuid: course_section.uuid,
     name: course_section.name,
-    course_uuid: course_section.course_uuid,
+    semester_course_uuid: course_section.semester_course_uuid,
+    course_uuid: semester_course.course_uuid,
     course_name: course.name,
     course_code: course.code,
     created_by: course_section.created_by,
@@ -126,7 +129,8 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
         ), ARRAY[]::jsonb[])`.as('sem_crs_thr_entry'),
   })
     .from(course_section)
-    .leftJoin(course, eq(course.uuid, course_section.course_uuid))
+    .leftJoin(semester_course, eq(semester_course.uuid, course_section.semester_course_uuid))
+    .leftJoin(course, eq(course.uuid, semester_course.course_uuid))
     .leftJoin(users, eq(users.uuid, course_section.created_by))
     .where(eq(course_section.uuid, uuid));
 
