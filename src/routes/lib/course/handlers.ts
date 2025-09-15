@@ -12,7 +12,7 @@ import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 
 import type { CreateRoute, GetCourseAndSectionDetailsRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
 
-import { course, course_section, sem_crs_thr_entry } from '../schema';
+import { course, course_section, sem_crs_thr_entry, semester_course } from '../schema';
 
 ;
 
@@ -140,7 +140,7 @@ export const getCourseAndSectionDetails: AppRouteHandler<GetCourseAndSectionDeta
     semester_uuid: sql`COALESCE(${sem_crs_thr_entry.semester_uuid}, '')`,
     course_section_uuid: course_section.uuid,
     course_section_name: course_section.name,
-    course_uuid: course_section.course_uuid,
+    course_uuid: semester_course.course_uuid,
     created_by: course_section.created_by,
     created_by_name: users.name,
     created_at: course_section.created_at,
@@ -166,7 +166,8 @@ export const getCourseAndSectionDetails: AppRouteHandler<GetCourseAndSectionDeta
     .leftJoin(teachers, eq(teachers.uuid, sem_crs_thr_entry.teachers_uuid))
     .leftJoin(teacherUser, eq(teacherUser.uuid, teachers.teacher_uuid))
     .leftJoin(users, eq(users.uuid, course_section.created_by))
-    .where(eq(course_section.course_uuid, uuid));
+    .leftJoin(semester_course, eq(semester_course.uuid, course_section.semester_course_uuid))
+    .where(eq(semester_course.course_uuid, uuid));
 
   const data = await resultPromise;
   const response = {
