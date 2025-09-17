@@ -29,8 +29,8 @@ export const semester = lib.table('semester', {
 
 export const course = lib.table('course', {
   uuid: uuid_primary,
-  name: text('name').notNull().unique(),
-  code: text('code').notNull().unique(),
+  name: text('name').notNull(),
+  code: text('code').notNull(),
   created_by: defaultUUID('created_by').references(
     () => users.uuid,
     DEFAULT_OPERATION,
@@ -38,7 +38,9 @@ export const course = lib.table('course', {
   created_at: DateTime('created_at').notNull(),
   updated_at: DateTime('updated_at'),
   remarks: text('remarks'),
-});
+}, table => [
+  unique('course_name_and_code_unique').on(table.name, table.code),
+]);
 
 export const course_section = lib.table('course_section', {
   uuid: uuid_primary,

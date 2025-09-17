@@ -155,7 +155,6 @@ export const item = procure.table('item', {
   threshold: PG_DECIMAL('threshold').default(sql`0`),
   lead_time: integer('lead_time').default(sql`0`),
   store: item_store('store').notNull(),
-
 });
 
 export const general_note = procure.table('general_note', {
