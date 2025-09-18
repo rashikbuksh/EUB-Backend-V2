@@ -27,6 +27,8 @@ export const semester = lib.table('semester', {
   remarks: text('remarks'),
 });
 
+export const courseShiftTypeEnum = lib.enum('course_shift_type', ['regular', 'evening', 'regular_and_evening']);
+
 export const course = lib.table('course', {
   uuid: uuid_primary,
   name: text('name').notNull(),
@@ -38,9 +40,12 @@ export const course = lib.table('course', {
   created_at: DateTime('created_at').notNull(),
   updated_at: DateTime('updated_at'),
   remarks: text('remarks'),
+  shift_type: courseShiftTypeEnum('shift_type').notNull().default('regular'),
 }, table => [
   unique('course_name_and_code_unique').on(table.name, table.code),
 ]);
+
+export const courseSectionTypeEnum = lib.enum('course_section_type', ['evening', 'regular']);
 
 export const course_section = lib.table('course_section', {
   uuid: uuid_primary,
@@ -56,6 +61,7 @@ export const course_section = lib.table('course_section', {
   updated_at: DateTime('updated_at'),
   remarks: text('remarks'),
   index: integer('index').notNull().default(0),
+  type: courseSectionTypeEnum('type').notNull().default('regular'),
 }, table => [
   unique('course_section_course_uuid_name_unique').on(table.course_uuid, table.name),
 ]);
