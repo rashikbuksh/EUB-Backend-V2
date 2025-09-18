@@ -122,10 +122,18 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
 
   const data = await resultPromise;
 
-  // if (!data || data.length === 0)
+  // Deduplicate by uuid
+  const uniqueData = Object.values(
+    (data || []).reduce((acc: any, item: any) => {
+      acc[item.uuid] = item;
+      return acc;
+    }, {}),
+  );
+
+  // if (!uniqueData || uniqueData.length === 0)
   //   return DataNotFound(c);
 
-  return c.json(data || [], HSCode.OK);
+  return c.json(uniqueData, HSCode.OK);
 };
 
 export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
