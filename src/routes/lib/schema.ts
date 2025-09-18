@@ -90,7 +90,7 @@ export const sem_crs_thr_entry = lib.table('sem_crs_thr_entry', {
     .on(table.semester_uuid, table.course_section_uuid, table.teachers_uuid),
 ]);
 
-export const room_type = lib.enum('room_type', ['general', 'lab']);
+export const room_type = lib.enum('room_type', ['general', 'lab', 'online']);
 
 export const room = lib.table('room', {
   uuid: uuid_primary,
