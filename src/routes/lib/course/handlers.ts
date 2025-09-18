@@ -159,6 +159,7 @@ export const getCourseAndSectionDetails: AppRouteHandler<GetCourseAndSectionDeta
     course_section_uuid: course_section.uuid,
     course_section_name: course_section.name,
     course_uuid: course_section.course_uuid,
+    course_section_type: course_section.type,
     created_by: course_section.created_by,
     created_by_name: users.name,
     created_at: course_section.created_at,
