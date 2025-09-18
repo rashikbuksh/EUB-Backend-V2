@@ -74,6 +74,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     created_at: course.created_at,
     updated_at: course.updated_at,
     remarks: course.remarks,
+    shift_type: course.shift_type,
   })
     .from(course)
     .leftJoin(users, eq(users.uuid, course.created_by));
@@ -101,7 +102,8 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     created_at: course.created_at,
     updated_at: course.updated_at,
     remarks: course.remarks,
-    course_section: sql`COALESCE(ARRAY(
+    shift_type: course.shift_type,
+    regular_section: sql`COALESCE(ARRAY(
           SELECT jsonb_build_object(
             'uuid', course_section.uuid,
             'name', course_section.name,
@@ -115,8 +117,24 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
           )
           FROM lib.course_section
           LEFT JOIN hr.users ON users.uuid = course_section.created_by
-          WHERE course_section.course_uuid = ${course.uuid}
+          WHERE course_section.course_uuid = ${course.uuid} AND course_section.type = 'regular'
   ), ARRAY[]::jsonb[])`.as('course_section'),
+    evening_section: sql`COALESCE(ARRAY(
+          SELECT jsonb_build_object(
+            'uuid', course_section.uuid,
+            'name', course_section.name,
+            'course_uuid', course_section.course_uuid,
+            'created_by', course_section.created_by,
+            'created_by_name', users.name,
+            'created_at', course_section.created_at,
+            'updated_at', course_section.updated_at,
+            'remarks', course_section.remarks,
+            'index', course_section.index
+          )
+          FROM lib.course_section
+          LEFT JOIN hr.users ON users.uuid = course_section.created_by
+          WHERE course_section.course_uuid = ${course.uuid} AND course_section.type = 'evening'
+  ), ARRAY[]::jsonb[])`.as('course_section_evening'),
   })
     .from(course)
     .leftJoin(users, eq(users.uuid, course.created_by))
