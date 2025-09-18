@@ -63,7 +63,7 @@ export const course_section = lib.table('course_section', {
   index: integer('index').notNull().default(0),
   type: courseSectionTypeEnum('type').notNull().default('regular'),
 }, table => [
-  unique('course_section_course_uuid_name_unique').on(table.course_uuid, table.name),
+  unique('course_section_course_uuid_name_type_unique').on(table.course_uuid, table.name, table.type),
 ]);
 
 export const sem_crs_thr_entry = lib.table('sem_crs_thr_entry', {
