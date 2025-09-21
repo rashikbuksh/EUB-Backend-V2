@@ -7,7 +7,7 @@ import * as HSCode from 'stoker/http-status-codes';
 import db from '@/db';
 import { users } from '@/routes/hr/schema';
 import * as hrSchema from '@/routes/hr/schema';
-import { financial_info, teachers } from '@/routes/portfolio/schema';
+import { department, financial_info, teachers } from '@/routes/portfolio/schema';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 
 import type { CreateRoute, GetCourseAndSectionDetailsRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
@@ -76,10 +76,11 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     remarks: course.remarks,
     shift_type: course.shift_type,
     financial_info_uuid: course.financial_info_uuid,
-    financial_info_name: financial_info.table_name,
+    financial_info_name: sql`CONCAT(${department.name}, '-', ${department.category}, CASE WHEN ${financial_info.table_name} = 'engineering_diploma' THEN '(diploma)' ELSE '' END)`,
   })
     .from(course)
     .leftJoin(financial_info, eq(course.financial_info_uuid, financial_info.uuid))
+    .leftJoin(department, eq(financial_info.department_uuid, department.uuid))
     .leftJoin(users, eq(users.uuid, course.created_by));
 
   const data = await resultPromise;
