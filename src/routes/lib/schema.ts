@@ -1,7 +1,7 @@
-import { relations } from 'drizzle-orm';
+import { relations, sql } from 'drizzle-orm';
 import { boolean, integer, pgSchema, text, unique } from 'drizzle-orm/pg-core';
 
-import { DateTime, defaultUUID, uuid_primary } from '@/lib/variables';
+import { DateTime, defaultUUID, PG_DECIMAL, uuid_primary } from '@/lib/variables';
 import { DEFAULT_OPERATION } from '@/utils/db';
 
 import { users } from '../hr/schema';
@@ -29,6 +29,8 @@ export const semester = lib.table('semester', {
 
 export const courseShiftTypeEnum = lib.enum('course_shift_type', ['regular', 'evening', 'regular_and_evening']);
 
+export const courseTypeEnum = lib.enum('course_type', ['general', 'lab']);
+
 export const course = lib.table('course', {
   uuid: uuid_primary,
   name: text('name').notNull(),
@@ -43,6 +45,9 @@ export const course = lib.table('course', {
   shift_type: courseShiftTypeEnum('shift_type').notNull().default('regular'),
   financial_info_uuid: defaultUUID('financial_info_uuid')
     .references(() => financial_info.uuid, DEFAULT_OPERATION),
+  course_type: courseTypeEnum('course_type').notNull().default('general'),
+  credit: PG_DECIMAL('credit').notNull().default(sql`0`),
+
 }, table => [
   unique('course_name_and_code_unique').on(table.name, table.code),
 ]);

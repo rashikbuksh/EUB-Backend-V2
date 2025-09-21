@@ -5,6 +5,7 @@ import { alias } from 'drizzle-orm/pg-core';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
+import { PG_DECIMAL_TO_FLOAT } from '@/lib/variables';
 import { users } from '@/routes/hr/schema';
 import * as hrSchema from '@/routes/hr/schema';
 import { department, financial_info, teachers } from '@/routes/portfolio/schema';
@@ -76,7 +77,9 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     remarks: course.remarks,
     shift_type: course.shift_type,
     financial_info_uuid: course.financial_info_uuid,
-    financial_info_name: sql`CONCAT(${department.name}, '-', ${department.category}, CASE WHEN ${financial_info.table_name} = 'engineering_diploma' THEN '(diploma)' ELSE '' END)`,
+    financial_info_name: sql`CONCAT(${department.name}, '-', ${department.category}, CASE WHEN ${financial_info.table_name} = 'engineering_diploma' THEN '(dip)' ELSE '' END)`,
+    credit: PG_DECIMAL_TO_FLOAT(course.credit),
+    course_type: course.course_type,
   })
     .from(course)
     .leftJoin(financial_info, eq(course.financial_info_uuid, financial_info.uuid))
@@ -109,6 +112,8 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     shift_type: course.shift_type,
     financial_info_uuid: course.financial_info_uuid,
     financial_info_name: financial_info.table_name,
+    credit: PG_DECIMAL_TO_FLOAT(course.credit),
+    course_type: course.course_type,
     regular_section: sql`COALESCE(ARRAY(
           SELECT jsonb_build_object(
             'uuid', course_section.uuid,
