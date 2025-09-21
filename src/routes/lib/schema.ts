@@ -5,7 +5,7 @@ import { DateTime, defaultUUID, uuid_primary } from '@/lib/variables';
 import { DEFAULT_OPERATION } from '@/utils/db';
 
 import { users } from '../hr/schema';
-import { teachers } from '../portfolio/schema';
+import { financial_info, teachers } from '../portfolio/schema';
 
 const lib = pgSchema('lib');
 
@@ -41,6 +41,8 @@ export const course = lib.table('course', {
   updated_at: DateTime('updated_at'),
   remarks: text('remarks'),
   shift_type: courseShiftTypeEnum('shift_type').notNull().default('regular'),
+  financial_info_uuid: defaultUUID('financial_info_uuid')
+    .references(() => financial_info.uuid, DEFAULT_OPERATION),
 }, table => [
   unique('course_name_and_code_unique').on(table.name, table.code),
 ]);
