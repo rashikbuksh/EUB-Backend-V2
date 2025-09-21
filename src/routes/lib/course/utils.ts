@@ -13,6 +13,7 @@ export const insertSchema = createInsertSchema(
     uuid: schema => schema.uuid.length(21),
     name: schema => schema.name.min(1),
     code: schema => schema.code.min(1),
+    financial_info_uuid: schema => schema.financial_info_uuid.length(21),
     created_by: schema => schema.created_by.length(21),
     created_at: schema => schema.created_at.regex(dateTimePattern, {
       message: 'created_at must be in the format "YYYY-MM-DD HH:MM:SS"',
@@ -29,6 +30,7 @@ export const insertSchema = createInsertSchema(
   created_by: true,
 }).partial({
   shift_type: true,
+  financial_info_uuid: true,
   updated_at: true,
   remarks: true,
 });

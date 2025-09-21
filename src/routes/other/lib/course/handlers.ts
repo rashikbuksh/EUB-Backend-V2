@@ -28,6 +28,7 @@ export const valueLabel: AppRouteHandler<ValueLabelRoute> = async (c: any) => {
     value: course.uuid,
     label: sql`${course.code} || ' - ' || ${course.name}`,
     shift_type: course.shift_type,
+    financial_info_uuid: course.financial_info_uuid,
   })
     .from(course);
 
