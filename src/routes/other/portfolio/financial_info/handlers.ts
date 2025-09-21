@@ -18,7 +18,7 @@ export const valueLabel: AppRouteHandler<ValueLabelRoute> = async (c: any) => {
 
   const resultPromise = db.select({
     value: financial_info.uuid,
-    label: sql`CONCAT(${department.name}, '-', ${department.category}, CASE WHEN ${financial_info.table_name} = 'engineering_diploma' THEN '(diploma)' ELSE '' END)`,
+    label: sql`CONCAT(${department.name}, '-', ${department.category}, CASE WHEN ${financial_info.table_name} = 'engineering_diploma' THEN '(dip)' ELSE '' END)`,
   })
     .from(financial_info)
     .leftJoin(department, eq(financial_info.department_uuid, department.uuid));

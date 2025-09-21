@@ -27,7 +27,7 @@ export const shiftTypeOptions = [
 export const valueLabel: AppRouteHandler<ValueLabelRoute> = async (c: any) => {
   const resultPromise = db.select({
     value: course.uuid,
-    label: sql`COALESCE(${course.code}, '') || ' - ' || COALESCE(${course.name}, '') || ' (' || COALESCE(${department.name}, '') || '-' || COALESCE(${department.category}::text, '') || (CASE WHEN ${financial_info.table_name} = 'engineering_diploma' THEN ' (diploma)' ELSE '' END) || ')'`,
+    label: sql`COALESCE(${course.code}, '') || ' - ' || COALESCE(${course.name}, '') || ' (' || COALESCE(${department.name}, '') || '-' || COALESCE(${department.category}::text, '') || (CASE WHEN ${financial_info.table_name} = 'engineering_diploma' THEN ' (dip)' ELSE '' END) || ')' || ' - ' || COALESCE(${course.credit}::float8, 0) || ' Cr.' || ' - ' || COALESCE(${course.course_type}::text, '')`,
     shift_type: course.shift_type,
     financial_info_uuid: course.financial_info_uuid,
   })
