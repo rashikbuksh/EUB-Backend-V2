@@ -1,10 +1,12 @@
 import type { AppRouteHandler } from '@/lib/types';
 
 import { asc, eq, sql } from 'drizzle-orm';
+
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
 import { course } from '@/routes/lib/schema';
+
 import { department, financial_info } from '@/routes/portfolio/schema';
 
 import type { ValueLabelRoute } from './routes';
