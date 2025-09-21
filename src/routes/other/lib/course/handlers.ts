@@ -1,11 +1,13 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { eq, sql } from 'drizzle-orm';
+import { asc, eq, sql } from 'drizzle-orm';
+
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
 import { course } from '@/routes/lib/schema';
-import { financial_info } from '@/routes/portfolio/schema';
+
+import { department, financial_info } from '@/routes/portfolio/schema';
 
 import type { ValueLabelRoute } from './routes';
 
@@ -27,12 +29,14 @@ export const shiftTypeOptions = [
 export const valueLabel: AppRouteHandler<ValueLabelRoute> = async (c: any) => {
   const resultPromise = db.select({
     value: course.uuid,
-    label: sql`${course.code} || ' - ' || ${course.name}`,
+    label: sql`COALESCE(${course.code}, '') || ' - ' || COALESCE(${course.name}, '') || ' (' || COALESCE(${department.name}, '') || '-' || COALESCE(${department.category}::text, '') || (CASE WHEN ${financial_info.table_name} = 'engineering_diploma' THEN ' (diploma)' ELSE '' END) || ')'`,
     shift_type: course.shift_type,
     financial_info_uuid: course.financial_info_uuid,
   })
     .from(course)
-    .leftJoin(financial_info, eq(course.financial_info_uuid, financial_info.uuid));
+    .leftJoin(financial_info, eq(course.financial_info_uuid, financial_info.uuid))
+    .leftJoin(department, eq(financial_info.department_uuid, department.uuid))
+    .orderBy(asc(course.code));
 
   const data = await resultPromise;
 
