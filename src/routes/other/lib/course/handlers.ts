@@ -1,10 +1,11 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { sql } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
 import { course } from '@/routes/lib/schema';
+import { financial_info } from '@/routes/portfolio/schema';
 
 import type { ValueLabelRoute } from './routes';
 
@@ -30,7 +31,8 @@ export const valueLabel: AppRouteHandler<ValueLabelRoute> = async (c: any) => {
     shift_type: course.shift_type,
     financial_info_uuid: course.financial_info_uuid,
   })
-    .from(course);
+    .from(course)
+    .leftJoin(financial_info, eq(course.financial_info_uuid, financial_info.uuid));
 
   const data = await resultPromise;
 
