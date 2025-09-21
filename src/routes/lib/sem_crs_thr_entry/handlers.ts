@@ -10,7 +10,7 @@ import * as hrSchema from '@/routes/hr/schema';
 import { teachers } from '@/routes/portfolio/schema';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 
-import type { CreateRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
+import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
 
 import { course, course_section, sem_crs_thr_entry, semester } from '../schema';
 
@@ -167,4 +167,19 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   const data = await resultPromise;
 
   return c.json(data || [], HSCode.OK);
+};
+
+export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
+  const { uuid } = c.req.valid('param');
+
+  const data = await db.query.sem_crs_thr_entry.findFirst({
+    where(fields, operators) {
+      return operators.eq(fields.uuid, uuid);
+    },
+  });
+
+  if (!data)
+    return DataNotFound(c);
+
+  return c.json(data || {}, HSCode.OK);
 };
