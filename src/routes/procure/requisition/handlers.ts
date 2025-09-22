@@ -1,6 +1,6 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { desc, eq, sql } from 'drizzle-orm';
+import { and, desc, eq, sql } from 'drizzle-orm';
 // import { alias } from 'drizzle-orm/pg-core';
 import * as HSCode from 'stoker/http-status-codes';
 
@@ -88,22 +88,28 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     .leftJoin(hrSchema.users, eq(requisition.created_by, hrSchema.users.uuid))
     .orderBy(desc(requisition.created_at), desc(requisition.id));
 
+  const filters = [];
+
   if (user_uuid) {
-    resultPromise.where(eq(requisition.created_by, user_uuid));
+    filters.push(eq(requisition.created_by, user_uuid));
   }
 
   if (status) {
     if (status === 'pending') {
-      resultPromise.where(eq(requisition.is_received, false));
+      filters.push(eq(requisition.is_received, false));
     }
     else if (status === 'completed') {
-      resultPromise.where(eq(requisition.is_received, true));
+      filters.push(eq(requisition.is_received, true));
     }
     else if (status === 'store_not_received') {
-      resultPromise.where(
+      filters.push(
         eq(requisition.is_store_received, false),
       );
     }
+  }
+
+  if (filters.length > 0) {
+    resultPromise.where(and(...filters));
   }
 
   const data = await resultPromise;
