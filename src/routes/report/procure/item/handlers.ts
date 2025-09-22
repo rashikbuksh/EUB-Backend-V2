@@ -20,7 +20,7 @@ export const itemOpeningClosingStock: AppRouteHandler<itemOpeningClosingStockRou
                         unit,
                         COALESCE(opening_purchase.total_purchase_quantity, 0) - COALESCE(item_requisition_opening_consumption.total_item_requisition_consumption_quantity, 0) AS item_opening_quantity,
                         COALESCE(purchase.total_purchase_quantity, 0) AS item_purchased_quantity,
-                        COALESCE(item_requisition_consumption.total_item_requisition_consumption_quantity, 0) AS item_consumption_quantity,
+                        COALESCE(item_requisition_consumption.total_item_requisition_consumption_quantity, 0) + COALESCE(item_transfer_consumption.total_item_transfer_consumption_quantity, 0) AS item_consumption_quantity,
                         (COALESCE(opening_purchase.total_purchase_quantity, 0) - COALESCE(item_requisition_opening_consumption.total_item_requisition_consumption_quantity, 0)) + COALESCE(purchase.total_purchase_quantity, 0) - (COALESCE(item_requisition_consumption.total_item_requisition_consumption_quantity, 0)) AS item_closing_quantity
                     FROM
                         procure.item 
