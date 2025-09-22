@@ -11,6 +11,8 @@ const lib = pgSchema('lib');
 
 //* lib *//
 
+export const semesterTypeEnum = lib.enum('semester_type', ['four_month', 'six_month']);
+
 export const semester = lib.table('semester', {
   uuid: uuid_primary,
   name: text('name').notNull(),
@@ -25,6 +27,7 @@ export const semester = lib.table('semester', {
   created_at: DateTime('created_at').notNull(),
   updated_at: DateTime('updated_at'),
   remarks: text('remarks'),
+  type: semesterTypeEnum('type').notNull().default('four_month'),
 });
 
 export const courseShiftTypeEnum = lib.enum('course_shift_type', ['regular', 'evening', 'regular_and_evening']);
