@@ -39,6 +39,7 @@ export const itemOpeningClosingStock: AppRouteHandler<itemOpeningClosingStockRou
                             item_work_order.delivery_statement_date::date < ${from_date}::date AND item_work_order.is_delivery_statement = true AND item_uuid IS NOT NULL
                         GROUP BY item_uuid
                         )opening_purchase ON item.uuid = opening_purchase.item_uuid
+
                     LEFT JOIN(
                         SELECT
                             item_uuid,
@@ -92,7 +93,7 @@ export const itemOpeningClosingStock: AppRouteHandler<itemOpeningClosingStockRou
                         FROM
                             procure.item_transfer
                         WHERE 
-                            created_at::date <= ${from_date}::date AND item_uuid IS NOT NULL
+                            created_at::date < ${from_date}::date AND item_uuid IS NOT NULL
                         GROUP BY item_uuid
                     )item_transfer_opening_consumption ON item.uuid = item_transfer_opening_consumption.item_uuid
                     ORDER BY item_name
