@@ -39,6 +39,7 @@ export const insertSchema = createInsertSchema(
   created_at: true,
   created_by: true,
 }).partial({
+  type: true,
   mid_started_at: true,
   final_started_at: true,
   ended_at: true,

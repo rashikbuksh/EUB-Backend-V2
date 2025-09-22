@@ -70,6 +70,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     created_at: semester.created_at,
     updated_at: semester.updated_at,
     remarks: semester.remarks,
+    type: semester.type,
   })
     .from(semester)
     .leftJoin(users, eq(users.uuid, semester.created_by))
