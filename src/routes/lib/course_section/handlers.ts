@@ -70,7 +70,6 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     updated_at: course_section.updated_at,
     remarks: course_section.remarks,
     index: course_section.index,
-    type: course_section.type,
   })
     .from(course_section)
     .leftJoin(course, eq(course.uuid, course_section.course_uuid))
@@ -102,7 +101,6 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     updated_at: course_section.updated_at,
     remarks: course_section.remarks,
     index: course_section.index,
-    type: course_section.type,
     sem_crs_thr_entry: sql`COALESCE(ARRAY(
           SELECT jsonb_build_object(
             'uuid', sem_crs_thr_entry.uuid,
