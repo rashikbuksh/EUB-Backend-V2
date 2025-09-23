@@ -51,9 +51,11 @@ export const course = lib.table('course', {
   course_type: courseTypeEnum('course_type').notNull().default('general'),
   credit: PG_DECIMAL('credit').notNull().default(sql`0`),
 
-}, table => [
-  unique('course_name_and_code_unique').on(table.name, table.code),
-]);
+});
+
+// table => [
+//   // unique('course_name_and_code_unique').on(table.name, table.code),
+// ]
 
 export const courseSectionTypeEnum = lib.enum('course_section_type', ['evening', 'regular']);
 
