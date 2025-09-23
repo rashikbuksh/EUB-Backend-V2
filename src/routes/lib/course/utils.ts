@@ -33,7 +33,6 @@ export const insertSchema = createInsertSchema(
 }).partial({
   course_type: true,
   credit: true,
-  shift_type: true,
   financial_info_uuid: true,
   updated_at: true,
   remarks: true,
