@@ -20,6 +20,7 @@ export const list = createRoute({
       status: z.string().optional(),
       semester_uuid: z.string().optional(),
       department_uuid: z.string().optional(),
+      evaluation: z.string().optional(),
     }),
   },
   responses: {

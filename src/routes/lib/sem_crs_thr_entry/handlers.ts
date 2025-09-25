@@ -64,7 +64,7 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   // const data = await db.query.sem_crs_thr_entry.findMany();
-  const { user_uuid, status, semester_uuid, department_uuid } = c.req.valid('query');
+  const { user_uuid, status, semester_uuid, department_uuid, evaluation } = c.req.valid('query');
 
   const resultPromise = db.select({
     uuid: sem_crs_thr_entry.uuid,
@@ -127,6 +127,13 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
 
   if (hasValue(department_uuid)) {
     filters.push(eq(department.uuid, department_uuid));
+  }
+
+  if (evaluation === 'mid') {
+    filters.push(eq(sem_crs_thr_entry.is_mid_evaluation_complete, false));
+  }
+  else if (evaluation === 'final') {
+    filters.push(eq(sem_crs_thr_entry.is_final_evaluation_complete, false));
   }
 
   if (status === 'complete') {

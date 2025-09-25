@@ -12,6 +12,7 @@ export const valueLabel = createRoute({
   request: {
     query: z.object({
       access: z.string().optional(),
+      only_department: z.string().optional(),
     }),
   },
   responses: {
