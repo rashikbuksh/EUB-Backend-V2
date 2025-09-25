@@ -133,7 +133,10 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     filters.push(eq(sem_crs_thr_entry.is_mid_evaluation_complete, false));
   }
   else if (evaluation === 'final') {
-    filters.push(eq(sem_crs_thr_entry.is_final_evaluation_complete, false));
+    filters.push(and(
+      eq(sem_crs_thr_entry.is_mid_evaluation_complete, true),
+      eq(sem_crs_thr_entry.is_final_evaluation_complete, false),
+    ));
   }
 
   if (status === 'complete') {
