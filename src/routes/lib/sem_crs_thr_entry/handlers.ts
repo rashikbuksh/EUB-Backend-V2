@@ -100,6 +100,9 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
       WHERE respond_student.sem_crs_thr_entry_uuid = ${sem_crs_thr_entry.uuid} 
         AND respond_student.evaluation_time = 'final'
     )`,
+    financial_info_uuid: course.financial_info_uuid,
+    department_uuid: financial_info.department_uuid,
+    department_name: department.name,
   })
     .from(sem_crs_thr_entry)
     .leftJoin(semester, eq(semester.uuid, sem_crs_thr_entry.semester_uuid))
@@ -107,7 +110,9 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     .leftJoin(course, eq(course.uuid, course_section.course_uuid))
     .leftJoin(teachers, eq(teachers.uuid, sem_crs_thr_entry.teachers_uuid))
     .leftJoin(teacherUser, eq(teacherUser.uuid, teachers.teacher_uuid))
-    .leftJoin(users, eq(users.uuid, sem_crs_thr_entry.created_by));
+    .leftJoin(users, eq(users.uuid, sem_crs_thr_entry.created_by))
+    .leftJoin(financial_info, eq(financial_info.uuid, course.financial_info_uuid))
+    .leftJoin(department, eq(department.uuid, financial_info.department_uuid));
 
   const filters = [];
 
