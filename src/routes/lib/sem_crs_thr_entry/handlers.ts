@@ -5,6 +5,7 @@ import { alias } from 'drizzle-orm/pg-core';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
+import { hasValue } from '@/lib/variables';
 import { users } from '@/routes/hr/schema';
 import * as hrSchema from '@/routes/hr/schema';
 import { department, financial_info, teachers } from '@/routes/portfolio/schema';
@@ -63,7 +64,7 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   // const data = await db.query.sem_crs_thr_entry.findMany();
-  const { user_uuid, status, semester_uuid } = c.req.valid('query');
+  const { user_uuid, status, semester_uuid, department_uuid } = c.req.valid('query');
 
   const resultPromise = db.select({
     uuid: sem_crs_thr_entry.uuid,
@@ -116,53 +117,33 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
 
   const filters = [];
 
-  if (user_uuid) {
+  if (hasValue(user_uuid)) {
     filters.push(eq(teachers.teacher_uuid, user_uuid));
   }
 
-  if (semester_uuid !== 'undefined' && semester_uuid !== '' && semester_uuid !== 'null') {
+  if (hasValue(semester_uuid)) {
     filters.push(eq(sem_crs_thr_entry.semester_uuid, semester_uuid));
   }
 
+  if (hasValue(department_uuid)) {
+    filters.push(eq(department.uuid, department_uuid));
+  }
+
   if (status === 'complete') {
-    if (user_uuid) {
-      filters.push(
-        and(
-          eq(sem_crs_thr_entry.is_mid_evaluation_complete, true),
-          eq(sem_crs_thr_entry.is_final_evaluation_complete, true),
-          eq(teachers.teacher_uuid, user_uuid),
-        ),
-      );
-    }
-    else {
-      filters.push(
-        and(
-          eq(sem_crs_thr_entry.is_mid_evaluation_complete, true),
-          eq(sem_crs_thr_entry.is_final_evaluation_complete, true),
-        ),
-      );
-    }
+    filters.push(
+      and(
+        eq(sem_crs_thr_entry.is_mid_evaluation_complete, true),
+        eq(sem_crs_thr_entry.is_final_evaluation_complete, true),
+      ),
+    );
   }
   else if (status === 'pending') {
-    if (user_uuid) {
-      filters.push(
-        and(
-          or(
-            eq(sem_crs_thr_entry.is_mid_evaluation_complete, false),
-            eq(sem_crs_thr_entry.is_final_evaluation_complete, false),
-          ),
-          eq(teachers.teacher_uuid, user_uuid),
-        ),
-      );
-    }
-    else {
-      filters.push(
-        or(
-          eq(sem_crs_thr_entry.is_mid_evaluation_complete, false),
-          eq(sem_crs_thr_entry.is_final_evaluation_complete, false),
-        ),
-      );
-    }
+    filters.push(
+      or(
+        eq(sem_crs_thr_entry.is_mid_evaluation_complete, false),
+        eq(sem_crs_thr_entry.is_final_evaluation_complete, false),
+      ),
+    );
   }
 
   if (filters.length > 0) {

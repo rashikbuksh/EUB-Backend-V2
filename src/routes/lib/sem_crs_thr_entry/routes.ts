@@ -19,6 +19,7 @@ export const list = createRoute({
       user_uuid: z.string().optional(),
       status: z.string().optional(),
       semester_uuid: z.string().optional(),
+      department_uuid: z.string().optional(),
     }),
   },
   responses: {
