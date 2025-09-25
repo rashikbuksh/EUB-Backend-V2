@@ -172,11 +172,40 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
 export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
 
-  const data = await db.query.sem_crs_thr_entry.findFirst({
-    where(fields, operators) {
-      return operators.eq(fields.uuid, uuid);
-    },
-  });
+  const resultPromise = db.select({
+    uuid: sem_crs_thr_entry.uuid,
+    semester_uuid: sem_crs_thr_entry.semester_uuid,
+    semester_name: semester.name,
+    course_section_uuid: sem_crs_thr_entry.course_section_uuid,
+    course_section_name: course_section.name,
+    course_uuid: course_section.course_uuid,
+    course_name: course.name,
+    course_code: course.code,
+    teachers_uuid: sem_crs_thr_entry.teachers_uuid,
+    teacher_uuid: teachers.teacher_uuid,
+    teacher_name: teacherUser.name,
+    teacher_email: teachers.teacher_email,
+    teacher_phone: teachers.teacher_phone,
+    teacher_initials: teachers.teacher_initial,
+    class_size: sem_crs_thr_entry.class_size,
+    is_mid_evaluation_complete: sem_crs_thr_entry.is_mid_evaluation_complete,
+    is_final_evaluation_complete: sem_crs_thr_entry.is_final_evaluation_complete,
+    created_by: sem_crs_thr_entry.created_by,
+    created_by_name: users.name,
+    created_at: sem_crs_thr_entry.created_at,
+    updated_at: sem_crs_thr_entry.updated_at,
+    remarks: sem_crs_thr_entry.remarks,
+  })
+    .from(sem_crs_thr_entry)
+    .leftJoin(semester, eq(semester.uuid, sem_crs_thr_entry.semester_uuid))
+    .leftJoin(course_section, eq(course_section.uuid, sem_crs_thr_entry.course_section_uuid))
+    .leftJoin(course, eq(course.uuid, course_section.course_uuid))
+    .leftJoin(teachers, eq(teachers.uuid, sem_crs_thr_entry.teachers_uuid))
+    .leftJoin(teacherUser, eq(teacherUser.uuid, teachers.teacher_uuid))
+    .leftJoin(users, eq(users.uuid, sem_crs_thr_entry.created_by))
+    .where(eq(sem_crs_thr_entry.uuid, uuid));
+
+  const [data] = await resultPromise;
 
   if (!data)
     return DataNotFound(c);
