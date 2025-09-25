@@ -14,9 +14,10 @@ export const valueLabel: AppRouteHandler<ValueLabelRoute> = async (c: any) => {
   // Normalize (accept "true", true, 1)
   const onlyDept = only_department === 'true';
 
-  let accessArray: string[] = [];
-  if (access)
+  let accessArray = [];
+  if (access) {
     accessArray = access.split(',');
+  }
 
   const labelExpr = onlyDept
     // Only department (and maybe category if you still want it)
