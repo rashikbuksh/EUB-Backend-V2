@@ -30,8 +30,6 @@ export const semester = lib.table('semester', {
   type: semesterTypeEnum('type').notNull().default('four_month'),
 });
 
-export const courseShiftTypeEnum = lib.enum('course_shift_type', ['regular', 'evening', 'regular_and_evening']);
-
 export const courseTypeEnum = lib.enum('course_type', ['general', 'lab']);
 
 export const course = lib.table('course', {
@@ -45,17 +43,16 @@ export const course = lib.table('course', {
   created_at: DateTime('created_at').notNull(),
   updated_at: DateTime('updated_at'),
   remarks: text('remarks'),
-  shift_type: courseShiftTypeEnum('shift_type').notNull().default('regular'),
   financial_info_uuid: defaultUUID('financial_info_uuid')
-    .references(() => financial_info.uuid, DEFAULT_OPERATION),
+    .references(() => financial_info.uuid, DEFAULT_OPERATION), // department with category
   course_type: courseTypeEnum('course_type').notNull().default('general'),
   credit: PG_DECIMAL('credit').notNull().default(sql`0`),
 
-}, table => [
-  unique('course_name_and_code_unique').on(table.name, table.code),
-]);
+});
 
-export const courseSectionTypeEnum = lib.enum('course_section_type', ['evening', 'regular']);
+// table => [
+//   // unique('course_name_and_code_unique').on(table.name, table.code),
+// ]
 
 export const course_section = lib.table('course_section', {
   uuid: uuid_primary,
@@ -71,10 +68,11 @@ export const course_section = lib.table('course_section', {
   updated_at: DateTime('updated_at'),
   remarks: text('remarks'),
   index: integer('index').notNull().default(0),
-  type: courseSectionTypeEnum('type').notNull().default('regular'),
-}, table => [
-  unique('course_section_course_uuid_name_type_unique').on(table.course_uuid, table.name, table.type),
-]);
+});
+
+// table => [
+//   unique('course_section_course_uuid_name_type_unique').on(table.course_uuid, table.name, table.type),
+// ]
 
 export const sem_crs_thr_entry = lib.table('sem_crs_thr_entry', {
   uuid: uuid_primary,
