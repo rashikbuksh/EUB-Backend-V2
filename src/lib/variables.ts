@@ -150,5 +150,5 @@ export function constructSelectAllQuery(
 }
 
 export function hasValue(value: string | number | boolean | null | undefined) {
-  return value !== null && value !== undefined && value !== '';
+  return value !== null && value !== undefined && value !== '' && value !== 'null' && value !== 'undefined';
 }
