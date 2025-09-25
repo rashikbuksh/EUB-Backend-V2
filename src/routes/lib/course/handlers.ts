@@ -52,6 +52,16 @@ export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
 export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
 
+  const courseSectionDel = await db.delete(course_section).where(eq(course_section.course_uuid, uuid)).returning({
+    uuid: course_section.uuid,
+  });
+
+  if (courseSectionDel.length > 0) {
+    for (const section of courseSectionDel) {
+      await db.delete(sem_crs_thr_entry).where(eq(sem_crs_thr_entry.course_section_uuid, section.uuid));
+    }
+  }
+
   const [data] = await db.delete(course)
     .where(eq(course.uuid, uuid))
     .returning({
