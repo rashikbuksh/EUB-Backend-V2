@@ -7,7 +7,7 @@ import * as HSCode from 'stoker/http-status-codes';
 import db from '@/db';
 import { users } from '@/routes/hr/schema';
 import * as hrSchema from '@/routes/hr/schema';
-import { teachers } from '@/routes/portfolio/schema';
+import { department, financial_info, teachers } from '@/routes/portfolio/schema';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 
 import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
@@ -195,6 +195,9 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     created_at: sem_crs_thr_entry.created_at,
     updated_at: sem_crs_thr_entry.updated_at,
     remarks: sem_crs_thr_entry.remarks,
+    financial_info_uuid: course.financial_info_uuid,
+    department_uuid: financial_info.department_uuid,
+    department_name: department.name,
   })
     .from(sem_crs_thr_entry)
     .leftJoin(semester, eq(semester.uuid, sem_crs_thr_entry.semester_uuid))
@@ -203,6 +206,8 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     .leftJoin(teachers, eq(teachers.uuid, sem_crs_thr_entry.teachers_uuid))
     .leftJoin(teacherUser, eq(teacherUser.uuid, teachers.teacher_uuid))
     .leftJoin(users, eq(users.uuid, sem_crs_thr_entry.created_by))
+    .leftJoin(financial_info, eq(financial_info.uuid, course.financial_info_uuid))
+    .leftJoin(department, eq(department.uuid, financial_info.department_uuid))
     .where(eq(sem_crs_thr_entry.uuid, uuid));
 
   const [data] = await resultPromise;
