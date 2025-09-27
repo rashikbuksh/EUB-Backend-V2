@@ -1,6 +1,6 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { and, eq } from 'drizzle-orm';
+import { and, desc, eq } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import * as HSCode from 'stoker/http-status-codes';
 
@@ -119,6 +119,8 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   if (filters.length > 0) {
     resultPromise.where(and(...filters));
   }
+
+  resultPromise.orderBy(desc(room_allocation.created_at));
 
   const data = await resultPromise;
 
