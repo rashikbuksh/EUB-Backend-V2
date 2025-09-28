@@ -9,7 +9,7 @@ import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 
 import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
 
-import { room } from '../schema';
+import { room, room_allocation } from '../schema';
 
 export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
   const value = c.req.valid('json');
@@ -58,7 +58,25 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   // const data = await db.query.room.findMany();
-  const resultPromise = db.select({
+
+  const { is_room_allocation } = c.req.valid('query');
+
+  // const resultPromise = db.select({
+  //   uuid: room.uuid,
+  //   name: room.name,
+  //   type: room.type,
+  //   location: room.location,
+  //   created_by: room.created_by,
+  //   created_by_name: users.name,
+  //   created_at: room.created_at,
+  //   updated_at: room.updated_at,
+  //   remarks: room.remarks,
+  //   capacity: room.capacity,
+  // })
+  //   .from(room)
+  //   .leftJoin(users, eq(users.uuid, room.created_by));
+
+  const baseSelect = {
     uuid: room.uuid,
     name: room.name,
     type: room.type,
@@ -69,11 +87,24 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     updated_at: room.updated_at,
     remarks: room.remarks,
     capacity: room.capacity,
-  })
+  };
+
+  // default query (rooms with creator joined)
+  const baseQuery = db.select(baseSelect)
     .from(room)
     .leftJoin(users, eq(users.uuid, room.created_by));
 
-  const data = await resultPromise;
+  if (is_room_allocation === 'true') {
+    // join room_allocation and return only rooms that have an allocation
+    const data = await db.select(baseSelect)
+      .from(room)
+      .leftJoin(users, eq(users.uuid, room.created_by))
+      .innerJoin(room_allocation, eq(room_allocation.room_uuid, room.uuid));
+
+    return c.json(data || [], HSCode.OK);
+  }
+
+  const data = await baseQuery;
 
   return c.json(data || [], HSCode.OK);
 };
