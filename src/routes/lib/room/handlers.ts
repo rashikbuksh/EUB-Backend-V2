@@ -61,7 +61,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
 
   const { semester_uuid } = c.req.valid('query');
 
-  const resultPromise = db.select({
+  const resultPromise = db.selectDistinct({
     uuid: room.uuid,
     name: room.name,
     type: room.type,
