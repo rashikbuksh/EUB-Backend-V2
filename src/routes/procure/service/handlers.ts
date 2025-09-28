@@ -1,6 +1,6 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { desc, eq, sql } from 'drizzle-orm';
+import { and, desc, eq, sql } from 'drizzle-orm';
 // import { alias } from 'drizzle-orm/pg-core';
 import * as HSCode from 'stoker/http-status-codes';
 
@@ -54,6 +54,24 @@ export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
 
 export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
+
+  // Check if there are any payments with amount and payment_date (i.e. recorded/paid)
+  const paidPayments = await db.select()
+    .from(service_payment)
+    .where(
+      and(eq(service_payment.service_uuid, uuid), sql`${service_payment.amount} IS NOT NULL AND ${service_payment.payment_date} IS NOT NULL`),
+    )
+    .limit(1);
+
+  if (paidPayments.length > 0) {
+    return c.json(
+      { message: 'Cannot delete service: recorded payments exist for this service.' },
+      HSCode.CONFLICT,
+    );
+  }
+
+  // No recorded payments — remove service_payment rows first, then delete the service
+  await db.delete(service_payment).where(eq(service_payment.service_uuid, uuid));
 
   const [data] = await db.delete(service)
     .where(eq(service.uuid, uuid))
