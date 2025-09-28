@@ -17,6 +17,7 @@ export const list = createRoute({
   request: {
     query: z.object({
       is_room_allocation: z.string().optional(),
+      semester_uuid: z.string().uuid().optional(),
     }),
   },
   responses: {
