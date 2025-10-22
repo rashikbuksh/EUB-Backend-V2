@@ -152,3 +152,17 @@ export function constructSelectAllQuery(
 export function hasValue(value: string | number | boolean | null | undefined) {
   return value !== null && value !== undefined && value !== '' && value !== 'null' && value !== 'undefined';
 }
+
+export function defaultIfEmpty(val: any, def: any) {
+  return val === '' || val === 'null' || val === undefined || val === null || val === 'undefined' ? def : val;
+}
+
+export function defaultIfEmptyArray(val: any[]) {
+  // fix 'null', '', 'undefined' string to null value
+  for (const key in val) {
+    if (val[key] === 'null' || val[key] === '' || val[key] === 'undefined') {
+      val[key] = null;
+    }
+  }
+  return val;
+}

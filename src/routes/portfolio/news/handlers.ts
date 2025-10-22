@@ -4,7 +4,7 @@ import { desc, eq, inArray, sql } from 'drizzle-orm';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
-import { constructSelectAllQuery } from '@/lib/variables';
+import { constructSelectAllQuery, defaultIfEmpty, defaultIfEmptyArray } from '@/lib/variables';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 import { deleteFile, insertFile, updateFile } from '@/utils/upload_file';
 
@@ -23,18 +23,18 @@ export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
 
   const value = {
     uuid: formData.uuid,
-    department_uuid: formData.department_uuid,
-    title: formData.title,
-    subtitle: formData.subtitle,
-    description: formData.description,
-    content: formData.content,
-    created_at: formData.created_at,
-    updated_at: formData.updated_at,
-    created_by: formData.created_by,
-    remarks: formData.remarks,
-    cover_image: coverImagePath,
-    published_date: formData.published_date,
-    is_global: formData.is_global,
+    department_uuid: defaultIfEmpty(formData.department_uuid, null),
+    title: defaultIfEmpty(formData.title, null),
+    subtitle: defaultIfEmpty(formData.subtitle, null),
+    description: defaultIfEmpty(formData.description, null),
+    content: defaultIfEmpty(formData.content, null),
+    created_at: defaultIfEmpty(formData.created_at, null),
+    updated_at: defaultIfEmpty(formData.updated_at, null),
+    created_by: defaultIfEmpty(formData.created_by, null),
+    remarks: defaultIfEmpty(formData.remarks, null),
+    cover_image: defaultIfEmpty(coverImagePath, null),
+    published_date: defaultIfEmpty(formData.published_date, null),
+    is_global: defaultIfEmpty(formData.is_global, null),
   };
 
   const [data] = await db.insert(news).values(value).returning({
@@ -46,7 +46,7 @@ export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
 
 export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
-  const formData = await c.req.parseBody();
+  let formData = await c.req.parseBody();
 
   // cover_image
   // updates includes coverImage then do it else exclude it
@@ -67,6 +67,8 @@ export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
       formData.cover_image = coverImagePath;
     }
   }
+
+  formData = defaultIfEmptyArray(formData);
 
   if (Object.keys(formData).length === 0)
     return ObjectNotFound(c);
