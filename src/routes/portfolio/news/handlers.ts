@@ -159,8 +159,13 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     baseQuery.having(eq(department.short_name, department_name));
   }
   if (accessArray.length > 0) {
-    baseQuery.groupBy(news.uuid, department.name, department.short_name);
-    baseQuery.having(inArray(department.short_name, accessArray));
+    if (accessArray.includes('other')) {
+      // include other which is null department_short_name
+    }
+    else {
+      baseQuery.groupBy(news.uuid, department.name, department.short_name);
+      baseQuery.having(inArray(department.short_name, accessArray));
+    }
   }
   if (is_global === 'true') {
     baseQuery.groupBy(news.uuid, news.is_global, department.name, department.short_name);
