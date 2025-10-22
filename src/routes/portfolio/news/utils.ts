@@ -34,6 +34,7 @@ export const insertSchema = createInsertSchema(
   created_at: true,
   created_by: true,
 }).partial({
+  department_uuid: true,
   description: true,
   updated_at: true,
   remarks: true,

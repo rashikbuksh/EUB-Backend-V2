@@ -568,7 +568,7 @@ export const news = portfolio.table('news', {
   content: text('content').notNull(),
   cover_image: text('cover_image').notNull(),
   published_date: text('published_date').notNull(),
-  department_uuid: defaultUUID('department_uuid').notNull().references(() => department.uuid, DEFAULT_OPERATION),
+  department_uuid: defaultUUID('department_uuid').references(() => department.uuid, DEFAULT_OPERATION),
   created_at: DateTime('created_at').notNull().$defaultFn(() => 'now()'),
   updated_at: DateTime('updated_at').$onUpdate(() => 'now()'),
   created_by: defaultUUID('created_by').references(() => users.uuid, DEFAULT_OPERATION),
