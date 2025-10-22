@@ -117,7 +117,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   // const data = await db.query.news.findMany();
   const { department_name, latest, is_pagination, access, is_global, field_name, field_value } = c.req.valid('query');
 
-  let accessArray = [];
+  let accessArray: string[] = [];
   if (access) {
     accessArray = access.split(',');
   }
@@ -160,13 +160,15 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   }
   if (accessArray.length > 0) {
     if (accessArray.includes('other')) {
+      // remove other from accessArray to avoid conflict in inArray check
+      accessArray = accessArray.filter(item => item !== 'other');
       // include other which is null department_short_name in case of accessArray includes other and bba
       baseQuery.groupBy(news.uuid, department.name, department.short_name);
-      baseQuery.having(sql`${department.short_name} IS NULL OR ${inArray(department.short_name, accessArray)}`);
+      baseQuery.having(sql`${department.short_name} IS NULL OR ${inArray(department.short_name as any, accessArray as any)}`);
     }
     else {
       baseQuery.groupBy(news.uuid, department.name, department.short_name);
-      baseQuery.having(inArray(department.short_name, accessArray));
+      baseQuery.having(inArray(department.short_name as any, accessArray as any));
     }
   }
   if (is_global === 'true') {
