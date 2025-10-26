@@ -139,7 +139,11 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     .leftJoin(hrSchema.users, eq(info.created_by, hrSchema.users.uuid))
     .where(and(
       page_name ? eq(info.page_name, page_name) : sql`true`,
-      accessArray.length > 0 ? inArray(info.page_name, accessArray) : sql`true`,
+      accessArray.length > 0
+        ? accessArray.includes('other')
+          ? accessArray = accessArray.filter((item: string) => item !== 'other')
+          : inArray(info.page_name, accessArray)
+        : sql`true`,
     ))
     .orderBy(desc(info.created_at));
 

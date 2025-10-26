@@ -100,7 +100,12 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     resultPromise.where(eq(faculty.name, portfolio_faculty));
 
   if (accessArray.length > 0) {
-    resultPromise.where(inArray(department.short_name, accessArray));
+    if (accessArray.includes('other')) {
+      accessArray = accessArray.filter((item: string) => item !== 'other');
+    }
+    else { // If 'other' is not included, then we filter normally
+      resultPromise.where(inArray(department.short_name, accessArray));
+    }
   }
 
   const data = await resultPromise;

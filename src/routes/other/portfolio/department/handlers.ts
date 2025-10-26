@@ -34,7 +34,13 @@ export const valueLabel: AppRouteHandler<ValueLabelRoute> = async (c: any) => {
     .leftJoin(faculty, eq(department.faculty_uuid, faculty.uuid));
 
   if (accessArray.length > 0) {
-    resultPromise.where(inArray(department.short_name, accessArray));
+    // if 'other' is included, we want to include all departments not in the accessArray
+    if (accessArray.includes('other')) {
+      accessArray = accessArray.filter((item: string) => item !== 'other');
+    }
+    else { // If 'other' is not included, then we filter normally
+      resultPromise.where(inArray(department.short_name, accessArray));
+    }
   }
 
   const data = await resultPromise;

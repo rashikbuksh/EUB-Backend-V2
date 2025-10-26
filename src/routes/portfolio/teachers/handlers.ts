@@ -114,7 +114,12 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   }
 
   if (accessArray.length > 0) {
-    conditions.push(inArray(department.short_name, accessArray));
+    if (accessArray.includes('other')) {
+      accessArray = accessArray.filter((item: string) => item !== 'other');
+    }
+    else {
+      conditions.push(inArray(department.short_name, accessArray));
+    }
   }
 
   // Apply conditions to the query

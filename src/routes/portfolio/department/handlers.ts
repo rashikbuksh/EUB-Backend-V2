@@ -84,8 +84,14 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     .leftJoin(faculty, eq(department.faculty_uuid, faculty.uuid))
     .leftJoin(hrSchema.users, eq(department.created_by, hrSchema.users.uuid));
 
-  if (accessArray.length > 0)
-    resultPromise.where(inArray(department.short_name, accessArray));
+  if (accessArray.length > 0) {
+    if (accessArray.includes('other')) {
+      accessArray = accessArray.filter((item: string) => item !== 'other');
+    }
+    else { // If 'other' is not included, then we filter normally
+      resultPromise.where(inArray(department.short_name, accessArray));
+    }
+  }
 
   resultPromise.orderBy(asc(department.index));
 

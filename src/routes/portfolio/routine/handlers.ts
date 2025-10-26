@@ -188,8 +188,13 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     resultPromise.having(eq(routine.type, type));
   }
   if (accessArray.length > 0) {
-    resultPromise.groupBy(routine.uuid, department.name, department.short_name, department.short_name, hrSchema.users.name, department.faculty_uuid, faculty.name, department.page_link);
-    resultPromise.having(inArray(department.short_name, accessArray));
+    if (accessArray.includes('other')) {
+      accessArray = accessArray.filter((item: string) => item !== 'other');
+    }
+    else { // If 'other' is not included, then we filter normally
+      resultPromise.groupBy(routine.uuid, department.name, department.short_name, department.short_name, hrSchema.users.name, department.faculty_uuid, faculty.name, department.page_link);
+      resultPromise.having(inArray(department.short_name, accessArray));
+    }
   }
 
   const resultPromiseForCount = await resultPromise;

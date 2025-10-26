@@ -160,11 +160,8 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   }
   if (accessArray.length > 0) {
     if (accessArray.includes('other')) {
-      // remove other from accessArray to avoid conflict in inArray check
+      // show all department_short_name
       accessArray = accessArray.filter(item => item !== 'other');
-      // include other which is null department_short_name in case of accessArray includes other and bba
-      baseQuery.groupBy(news.uuid, department.name, department.short_name);
-      baseQuery.having(sql`${department.short_name} IS NULL OR ${inArray(department.short_name as any, accessArray as any)}`);
     }
     else {
       baseQuery.groupBy(news.uuid, department.name, department.short_name);
