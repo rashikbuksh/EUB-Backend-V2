@@ -11,7 +11,7 @@ import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 
 import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
 
-import { item, item_transfer } from '../schema';
+import { item, item_transfer, req_ticket, req_ticket_item } from '../schema';
 
 // const authorized_person = alias(hrSchema.users, 'authorized_person');
 
@@ -68,7 +68,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     item_uuid: item_transfer.item_uuid,
     item_name: item.name,
     quantity: PG_DECIMAL_TO_FLOAT(item_transfer.quantity),
-    reason: item_transfer.reason,
+    reason: sql`item_transfer.reason::text`,
     is_requisition_received: item_transfer.is_requisition_received,
     created_at: item_transfer.created_at,
     updated_at: item_transfer.updated_at,
@@ -76,12 +76,35 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     created_by_name: hrSchema.users.name,
     remarks: item_transfer.remarks,
     max_quantity: sql`${PG_DECIMAL_TO_FLOAT(item.quantity)} + ${PG_DECIMAL_TO_FLOAT(item_transfer.quantity)}`,
-
+    table_name: sql`item_transfer`,
   })
     .from(item_transfer)
     .leftJoin(hrSchema.users, eq(item_transfer.created_by, hrSchema.users.uuid))
     .leftJoin(item, eq(item_transfer.item_uuid, item.uuid))
-    .orderBy(desc(item_transfer.created_at));
+    .orderBy(desc(item_transfer.created_at))
+    .unionAll(
+      db.select({
+        uuid: req_ticket_item.uuid,
+        item_uuid: req_ticket_item.item_uuid,
+        item_name: item.name,
+        quantity: PG_DECIMAL_TO_FLOAT(req_ticket_item.quantity),
+        reason: req_ticket.problem_description,
+        is_requisition_received: req_ticket.is_resolved,
+        created_at: req_ticket_item.created_at,
+        updated_at: req_ticket_item.updated_at,
+        created_by: req_ticket_item.created_by,
+        created_by_name: hrSchema.users.name,
+        remarks: req_ticket_item.remarks,
+        max_quantity: sql`${PG_DECIMAL_TO_FLOAT(item.quantity)} + ${PG_DECIMAL_TO_FLOAT(req_ticket_item.quantity)}`,
+        table_name: sql`req_ticket_item`,
+      })
+        .from(req_ticket_item)
+        .leftJoin(req_ticket, eq(req_ticket_item.req_ticket_uuid, req_ticket.uuid))
+        .leftJoin(hrSchema.users, eq(req_ticket_item.created_by, hrSchema.users.uuid))
+        .leftJoin(item, eq(req_ticket_item.item_uuid, item.uuid))
+        .orderBy(desc(req_ticket_item.created_at)),
+    )
+    ;
 
   const data = await resultPromise;
 
