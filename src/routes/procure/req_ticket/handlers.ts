@@ -77,6 +77,18 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     updated_by: req_ticket.updated_by,
     updated_by_name: updated_user.name,
     remarks: req_ticket.remarks,
+    items: sql`(
+      SELECT array_agg(t.item_name)
+      FROM (
+        SELECT
+          rti.uuid,
+          rti.req_ticket_uuid,
+          it.name as item_name
+        FROM procure.req_ticket_item rti
+        LEFT JOIN procure.item it ON rti.item_uuid = it.uuid
+        WHERE rti.req_ticket_uuid = ${req_ticket.uuid}
+      ) t
+    )`,
   })
     .from(req_ticket)
     .leftJoin(hrSchema.users, eq(req_ticket.created_by, hrSchema.users.uuid))
@@ -113,7 +125,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
           rti.req_ticket_uuid,
           rti.item_uuid,
           it.name as item_name,
-          rti.quantity,
+          rti.quantity::float8,
           rti.created_at,
           rti.created_by,
           rti.updated_at,
