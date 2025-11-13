@@ -16,6 +16,8 @@ import item_work_order from './item_work_order';
 import item_work_order_entry from './item_work_order_entry';
 import process from './process';
 import purchase_cost_center from './purchase_cost_center';
+import req_ticket from './req_ticket';
+import req_ticket_item from './req_ticket_item';
 import requisition from './requisition';
 import service from './service';
 import service_payment from './service_payment';
@@ -48,4 +50,6 @@ export default [
   bank,
   bill,
   bill_payment,
+  req_ticket,
+  req_ticket_item,
 ];
