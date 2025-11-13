@@ -92,6 +92,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
   const resultPromise = db.select({
     uuid: req_ticket_item.uuid,
     req_ticket_uuid: req_ticket_item.req_ticket_uuid,
+    is_resolved: req_ticket.is_resolved,
     item_uuid: req_ticket_item.item_uuid,
     quantity: req_ticket_item.quantity,
     created_at: req_ticket_item.created_at,
