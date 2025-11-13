@@ -439,6 +439,36 @@ export const item_work_order_entry = procure.table('item_work_order_entry', {
   index: integer('index').default(sql`0`),
 });
 
+export const req_ticket_id = procure.sequence('req_ticket_id', DEFAULT_SEQUENCE);
+
+export const req_ticket_department = procure.enum('req_ticket_department', ['it', 'maintenance']);
+
+export const req_ticket = procure.table('req_ticket', {
+  uuid: uuid_primary,
+  id: integer('id').default(sql`nextval('procure.req_ticket_id')`),
+  department: req_ticket_department('department').notNull(),
+  problem_description: text('problem_description').notNull(),
+  is_resolved: boolean('is_resolved').notNull().default(false),
+  is_resolved_date: DateTime('is_resolved_date').default(sql`null`),
+  created_at: DateTime('created_at').notNull(),
+  created_by: defaultUUID('created_by').references(() => users.uuid, DEFAULT_OPERATION),
+  updated_at: DateTime('updated_at'),
+  updated_by: defaultUUID('updated_by').references(() => users.uuid, DEFAULT_OPERATION),
+  remarks: text('remarks').default(sql`null`),
+});
+
+export const req_ticket_item = procure.table('req_ticket_item', {
+  uuid: uuid_primary,
+  req_ticket_uuid: defaultUUID('req_ticket_uuid').references(() => req_ticket.uuid, DEFAULT_OPERATION),
+  item_uuid: defaultUUID('item_uuid').references(() => item.uuid, DEFAULT_OPERATION),
+  quantity: PG_DECIMAL('quantity').notNull(),
+  created_at: DateTime('created_at').notNull(),
+  created_by: defaultUUID('created_by').references(() => users.uuid, DEFAULT_OPERATION),
+  updated_at: DateTime('updated_at'),
+  updated_by: defaultUUID('updated_by').references(() => users.uuid, DEFAULT_OPERATION),
+  remarks: text('remarks').default(sql`null`),
+});
+
 //* Relations *//
 
 export const procure_category_rel = relations (category, ({ one }) => ({
@@ -718,4 +748,35 @@ export const procure_item_work_order_entry_rel = relations (item_work_order_entr
     references: [item_work_order.uuid],
   }),
 }));
+
+export const procure_req_ticket_rel = relations (req_ticket, ({ one }) => ({
+  created_by: one(users, {
+    fields: [req_ticket.created_by],
+    references: [users.uuid],
+  }),
+  updated_by: one(users, {
+    fields: [req_ticket.updated_by],
+    references: [users.uuid],
+  }),
+}));
+
+export const procure_req_ticket_item_rel = relations (req_ticket_item, ({ one }) => ({
+  created_by: one(users, {
+    fields: [req_ticket_item.created_by],
+    references: [users.uuid],
+  }),
+  updated_by: one(users, {
+    fields: [req_ticket_item.updated_by],
+    references: [users.uuid],
+  }),
+  req_ticket: one(req_ticket, {
+    fields: [req_ticket_item.req_ticket_uuid],
+    references: [req_ticket.uuid],
+  }),
+  item: one(item, {
+    fields: [req_ticket_item.item_uuid],
+    references: [item.uuid],
+  }),
+}));
+
 export default procure;

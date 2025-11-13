@@ -1,0 +1,1 @@
+SELECT setval('procure.req_ticket_id', 1, false);
