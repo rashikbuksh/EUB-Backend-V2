@@ -68,35 +68,37 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     item_uuid: item_transfer.item_uuid,
     item_name: item.name,
     quantity: PG_DECIMAL_TO_FLOAT(item_transfer.quantity),
-    reason: sql`item_transfer.reason::text`,
+    reason: sql<string>`${item_transfer.reason}::text`.as('reason'),
     is_requisition_received: item_transfer.is_requisition_received,
     created_at: item_transfer.created_at,
     updated_at: item_transfer.updated_at,
     created_by: item_transfer.created_by,
     created_by_name: hrSchema.users.name,
     remarks: item_transfer.remarks,
-    max_quantity: sql`${PG_DECIMAL_TO_FLOAT(item.quantity)} + ${PG_DECIMAL_TO_FLOAT(item_transfer.quantity)}`,
-    table_name: sql`item_transfer`,
+    max_quantity: sql<number>`${PG_DECIMAL_TO_FLOAT(item.quantity)} + ${PG_DECIMAL_TO_FLOAT(item_transfer.quantity)}`.as('max_quantity'),
+    table_name: sql<string>`'item_transfer'`.as('table_name'),
   })
     .from(item_transfer)
     .leftJoin(hrSchema.users, eq(item_transfer.created_by, hrSchema.users.uuid))
     .leftJoin(item, eq(item_transfer.item_uuid, item.uuid))
-    .orderBy(desc(item_transfer.created_at))
     .unionAll(
       db.select({
         uuid: req_ticket_item.uuid,
         item_uuid: req_ticket_item.item_uuid,
         item_name: item.name,
         quantity: PG_DECIMAL_TO_FLOAT(req_ticket_item.quantity),
-        reason: req_ticket.problem_description,
+        reason: sql<string>`${req_ticket.problem_description}`.as('reason'),
         is_requisition_received: req_ticket.is_resolved,
         created_at: req_ticket_item.created_at,
         updated_at: req_ticket_item.updated_at,
         created_by: req_ticket_item.created_by,
         created_by_name: hrSchema.users.name,
         remarks: req_ticket_item.remarks,
-        max_quantity: sql`${PG_DECIMAL_TO_FLOAT(item.quantity)} + ${PG_DECIMAL_TO_FLOAT(req_ticket_item.quantity)}`,
-        table_name: sql`req_ticket_item`,
+        max_quantity: sql<number>`CASE 
+          WHEN ${req_ticket.is_resolved} = true THEN ${PG_DECIMAL_TO_FLOAT(item.quantity)} + ${PG_DECIMAL_TO_FLOAT(req_ticket_item.quantity)}
+          ELSE ${PG_DECIMAL_TO_FLOAT(item.quantity)}
+        END`.as('max_quantity'),
+        table_name: sql<string>`'req_ticket_item'`.as('table_name'),
       })
         .from(req_ticket_item)
         .leftJoin(req_ticket, eq(req_ticket_item.req_ticket_uuid, req_ticket.uuid))
@@ -104,7 +106,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
         .leftJoin(item, eq(req_ticket_item.item_uuid, item.uuid))
         .orderBy(desc(req_ticket_item.created_at)),
     )
-    ;
+    .orderBy(desc(sql`created_at`));
 
   const data = await resultPromise;
 
