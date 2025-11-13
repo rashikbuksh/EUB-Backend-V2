@@ -5,6 +5,7 @@ import { alias } from 'drizzle-orm/pg-core';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
+import { PG_DECIMAL_TO_FLOAT } from '@/lib/variables';
 import * as hrSchema from '@/routes/hr/schema';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 
@@ -66,7 +67,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     uuid: req_ticket_item.uuid,
     req_ticket_uuid: req_ticket_item.req_ticket_uuid,
     item_uuid: req_ticket_item.item_uuid,
-    quantity: req_ticket_item.quantity,
+    quantity: PG_DECIMAL_TO_FLOAT(req_ticket_item.quantity),
     created_at: req_ticket_item.created_at,
     created_by: req_ticket_item.created_by,
     created_by_name: hrSchema.users.name,
@@ -94,7 +95,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     req_ticket_uuid: req_ticket_item.req_ticket_uuid,
     is_resolved: req_ticket.is_resolved,
     item_uuid: req_ticket_item.item_uuid,
-    quantity: req_ticket_item.quantity,
+    quantity: PG_DECIMAL_TO_FLOAT(req_ticket_item.quantity),
     created_at: req_ticket_item.created_at,
     created_by: req_ticket_item.created_by,
     created_by_name: hrSchema.users.name,
