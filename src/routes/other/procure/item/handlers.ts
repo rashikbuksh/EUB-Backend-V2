@@ -1,9 +1,10 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { inArray } from 'drizzle-orm';
+import { inArray, sql } from 'drizzle-orm';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
+import { PG_DECIMAL_TO_FLOAT } from '@/lib/variables';
 import { item } from '@/routes/procure/schema';
 
 import type { ValueLabelRoute } from './routes';
@@ -12,9 +13,9 @@ export const valueLabel: AppRouteHandler<ValueLabelRoute> = async (c: any) => {
   const { store_type } = c.req.valid('query');
   const resultPromise = db.select({
     value: item.uuid,
-    label: item.name,
-    quantity: item.quantity,
-    vendor_price: item.vendor_price,
+    label: sql`${item.name} || ' (' || ${item.store} || ')'`,
+    quantity: PG_DECIMAL_TO_FLOAT(item.quantity),
+    vendor_price: PG_DECIMAL_TO_FLOAT(item.vendor_price),
     unit: item.unit,
     store: item.store,
   })
