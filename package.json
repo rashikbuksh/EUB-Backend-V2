@@ -25,6 +25,7 @@
     "@hono/node-server": "^1.14.1",
     "@hono/zod-openapi": "^0.19.6",
     "@scalar/hono-api-reference": "^0.8.9",
+    "@types/nodemailer": "^7.0.3",
     "bcrypt-ts": "^7.0.0",
     "date-fns": "^4.1.0",
     "dotenv": "^16.5.0",
@@ -35,10 +36,13 @@
     "hono-pino": "^0.8.0",
     "local-file-upload": "^1.1.2",
     "nanoid": "^5.1.5",
+    "nodemailer": "^7.0.10",
+    "pdf-lib": "^1.17.1",
     "pg": "^8.16.0",
     "pino": "^9.6.0",
     "pino-pretty": "^13.0.0",
     "stoker": "^1.4.3",
+    "to-words": "^4.8.0",
     "zod": "^3.24.4"
   },
   "devDependencies": {

@@ -27,6 +27,12 @@ const EnvSchema = z.object({
   USE_CRLF: z.string().default('1'),
   DEFAULT_LOOKBACK_HOURS: z.string().default('48'),
   ICLOCK_COMMAND: z.string().default('ATTLOG'),
+  SMTP_HOST: z.string().default('smtp.gmail.com'),
+  SMTP_PORT: z.coerce.number().default(587),
+  SMTP_EMAIL: z.string().default('jobayer@fortunezip.com'),
+  SMTP_PASSWORD: z.string().default('flyd rmjn lwzw dkuq'),
+  DEPARTMENT_NAME: z.string().default('BWT Finance Department'),
+  SUPPORT_EMAIL: z.string().default('support@bwt.com'),
 });
 
 export type env = z.infer<typeof EnvSchema>;
