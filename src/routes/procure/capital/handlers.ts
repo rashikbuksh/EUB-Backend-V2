@@ -438,7 +438,6 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
                     )
                   )
                   FROM procure.capital_item ci
-                  LEFT JOIN procure.item i ON ci.item_uuid = i.uuid
                   LEFT JOIN hr.users hu ON ci.created_by = hu.uuid
                   WHERE ci.capital_uuid = capital.uuid
                 ),
