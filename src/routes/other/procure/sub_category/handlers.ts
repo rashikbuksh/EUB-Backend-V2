@@ -12,7 +12,7 @@ import type { ValueLabelRoute } from './routes';
 export const valueLabel: AppRouteHandler<ValueLabelRoute> = async (c: any) => {
   const resultPromise = db.select({
     value: sub_category.uuid,
-    label: sql`${sub_category.name} || ' (' || ${PG_DECIMAL_TO_FLOAT(sub_category.min_amount)} || ')'`,
+    label: sql`${sub_category.name} || ' (Min-' || ${PG_DECIMAL_TO_FLOAT(sub_category.min_amount)} || ' BDT)'`,
     min_amount: PG_DECIMAL_TO_FLOAT(sub_category.min_amount),
     min_quotation: PG_DECIMAL_TO_FLOAT(sub_category.min_quotation),
   })
