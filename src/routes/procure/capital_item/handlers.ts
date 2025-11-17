@@ -12,7 +12,7 @@ import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 
 import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
 
-import { capital, capital_item, item } from '../schema';
+import { capital, capital_item } from '../schema';
 
 // const created_user = alias(hrSchema.users, 'created_user');
 
@@ -68,8 +68,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     uuid: capital_item.uuid,
     capital_uuid: capital_item.capital_uuid,
     capital_name: capital.name,
-    item_uuid: capital_item.item_uuid,
-    item_name: item.name,
+    item: capital_item.item,
     quantity: PG_DECIMAL_TO_FLOAT(capital_item.quantity),
     created_at: capital_item.created_at,
     updated_at: capital_item.updated_at,
@@ -79,8 +78,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   })
     .from(capital_item)
     .leftJoin(hrSchema.users, eq(capital_item.created_by, hrSchema.users.uuid))
-    .leftJoin(capital, eq(capital_item.capital_uuid, capital.uuid))
-    .leftJoin(item, eq(capital_item.item_uuid, item.uuid));
+    .leftJoin(capital, eq(capital_item.capital_uuid, capital.uuid));
 
   const data = await resultPromise;
 
@@ -94,8 +92,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     uuid: capital_item.uuid,
     capital_uuid: capital_item.capital_uuid,
     capital_name: capital.name,
-    item_uuid: capital_item.item_uuid,
-    item_name: item.name,
+    item: capital_item.item,
     quantity: PG_DECIMAL_TO_FLOAT(capital_item.quantity),
     created_at: capital_item.created_at,
     updated_at: capital_item.updated_at,
@@ -106,7 +103,6 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     .from(capital_item)
     .leftJoin(hrSchema.users, eq(capital_item.created_by, hrSchema.users.uuid))
     .leftJoin(capital, eq(capital_item.capital_uuid, capital.uuid))
-    .leftJoin(item, eq(capital_item.item_uuid, item.uuid))
     .where(eq(capital_item.uuid, uuid));
 
   const [data] = await resultPromise;

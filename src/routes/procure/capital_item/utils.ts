@@ -13,7 +13,6 @@ export const insertSchema = createInsertSchema(
   {
     uuid: schema => schema.uuid.length(21),
     capital_uuid: schema => schema.capital_uuid.length(21),
-    item_uuid: schema => schema.item_uuid.length(21),
     quantity: z.number().optional(),
     created_by: schema => schema.created_by.length(21),
     created_at: schema => schema.created_at.regex(dateTimePattern, {
@@ -26,7 +25,7 @@ export const insertSchema = createInsertSchema(
 ).required({
   uuid: true,
   capital_uuid: true,
-  item_uuid: true,
+  item: true,
   created_at: true,
   created_by: true,
 }).partial({

@@ -225,7 +225,7 @@ export const capital_vendor = procure.table('capital_vendor', {
 export const capital_item = procure.table('capital_item', {
   uuid: uuid_primary,
   capital_uuid: defaultUUID('capital_uuid').references(() => capital.uuid, DEFAULT_OPERATION),
-  item_uuid: defaultUUID('item_uuid').references(() => item.uuid, DEFAULT_OPERATION),
+  item: text('item').notNull(),
   quantity: PG_DECIMAL('quantity').default(sql`0`),
   created_by: defaultUUID('created_by').references(() => users.uuid, DEFAULT_OPERATION),
   created_at: DateTime('created_at').notNull(),
