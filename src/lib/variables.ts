@@ -399,8 +399,8 @@ export async function getEmployeeAttendanceForDate(employee_uuid: string | null,
           ELSE FALSE
         END AS is_early_exit,
         CASE WHEN al.reason IS NOT NULL THEN al.reason ELSE NULL END AS leave_reason,
-        dept.department AS department_name,
-        des.designation AS designation_name,
+        dept.name AS department_name,
+        des.name AS designation_name,
         et.name AS employment_type_name,
         w.name AS workplace_name,
         CASE 
@@ -462,7 +462,7 @@ export async function getEmployeeAttendanceForDate(employee_uuid: string | null,
         LIMIT 1
       ) AND sod.day = ${date}::date
       ${employee_uuid ? sql`WHERE e.uuid = ${employee_uuid}` : sql``}
-      GROUP BY e.uuid, u.uuid, u.name, s.name, s.start_time, s.end_time, s.late_time, s.early_exit_before, gh.date, sp.is_special, sod.is_offday, al.reason, dept.department, des.designation, et.name, w.name, me_late.employee_uuid, me_field.employee_uuid
+      GROUP BY e.uuid, u.uuid, u.name, s.name, s.start_time, s.end_time, s.late_time, s.early_exit_before, gh.date, sp.is_special, sod.is_offday, al.reason, dept.name, des.name, et.name, w.name, me_late.employee_uuid, me_field.employee_uuid
     )
     SELECT * FROM attendance_data
   `;

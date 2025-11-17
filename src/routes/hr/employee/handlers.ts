@@ -142,9 +142,9 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
       updated_at: employee.updated_at,
       remarks: employee.remarks,
       designation_uuid: users.designation_uuid,
-      designation_name: designation.designation,
+      designation_name: designation.name,
       department_uuid: users.department_uuid,
-      department_name: department.department,
+      department_name: department.name,
       report_position: employee.report_position,
       first_leave_approver_uuid: employee.first_leave_approver_uuid,
       first_leave_approver_name: firstLeaveApprover.name,
@@ -375,9 +375,9 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
       updated_at: employee.updated_at,
       remarks: employee.remarks,
       designation_uuid: users.designation_uuid,
-      designation_name: designation.designation,
+      designation_name: designation.name,
       department_uuid: users.department_uuid,
-      department_name: department.department,
+      department_name: department.name,
       report_position: employee.report_position,
       first_leave_approver_uuid: employee.first_leave_approver_uuid,
       first_leave_approver_name: firstLeaveApprover.name,
@@ -738,9 +738,9 @@ export const getEmployeeLeaveInformationDetails: AppRouteHandler<GetEmployeeLeav
       updated_at: employee.updated_at,
       remarks: employee.remarks,
       designation_uuid: users.designation_uuid,
-      designation_name: designation.designation,
+      designation_name: designation.name,
       department_uuid: users.department_uuid,
-      department_name: department.department,
+      department_name: department.name,
       employee_id: employee.employee_id,
       report_position: employee.report_position,
       first_leave_approver_uuid: employee.first_leave_approver_uuid,
@@ -927,9 +927,9 @@ export const getEmployeeLeaveInformationDetails: AppRouteHandler<GetEmployeeLeav
                         'created_by', apply_leave.created_by,
                         'created_by_name', createdByUser.name,
                         'created_by_department_uuid', createdByUser.department_uuid,
-                        'created_by_department_name', department.department,
+                        'created_by_department_name', department.name,
                         'created_by_designation_uuid', createdByUser.designation_uuid,
-                        'created_by_designation_name', designation.designation,
+                        'created_by_designation_name', designation.name,
                         'created_by_employee_uuid', createdByEmployee.uuid,
                         'created_by_start_date', createdByEmployee.start_date,
                         'created_by_profile_picture', createdByEmployee.profile_picture
@@ -1365,8 +1365,8 @@ export const getBulkShiftForEmployee: AppRouteHandler<GetBulkShiftForEmployeeRou
                       employeeUser.name AS employee_name,
                       e.start_date::date,
                       e.profile_picture,
-                      dept.department AS department_name,
-                      des.designation AS designation_name,
+                      dept.name AS department_name,
+                      des.name AS designation_name,
                       COALESCE(current_shift_info.current_shift, '[]'::jsonb) AS current_shift,
                       COALESCE(next_shift_info.next_shifts, '[]'::jsonb) AS next_shifts
                     FROM hr.employee e
@@ -1506,8 +1506,8 @@ export const getEmployeeSalaryByFiscalYear: AppRouteHandler<GetEmployeeSalaryByF
     .select({
       employee_uuid: employee.uuid,
       employee_name: users.name,
-      designation: designation.designation,
-      department: department.department,
+      designation: designation.name,
+      department: department.name,
       start_date: employee.start_date,
       profile_picture: employee.profile_picture,
       actual_salary: sql`
@@ -1569,13 +1569,13 @@ export const postBulkEmployeeInformation: AppRouteHandler<PostBulkEmployeeInform
       for (const row of payload) {
         const email = row.email;
 
-        console.log('Processing row for employee_id:', row.employee_id, 'email:', email);
+        console.log('Processing row for employee_id:', row.employee_id, 'email:', email); // eslint-disable-line no-console
 
         const existingUser = email
           ? await tx.select({ uuid: users.uuid }).from(users).where(eq(users.email, email))
           : [];
 
-        console.log('Existing user check for email', email, ':', existingUser);
+        console.log('Existing user check for email', email, ':', existingUser); // eslint-disable-line no-console
 
         if ((existingUser && existingUser.length > 0)) {
           skipped.push({

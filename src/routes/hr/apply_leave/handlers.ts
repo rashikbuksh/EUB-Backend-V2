@@ -140,8 +140,8 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
       profile_picture: employee.profile_picture,
       department_uuid: employeeUser.department_uuid,
       designation_uuid: employeeUser.designation_uuid,
-      department_name: department.department,
-      designation_name: designation.designation,
+      department_name: department.name,
+      designation_name: designation.name,
     })
     .from(apply_leave)
     .leftJoin(
@@ -202,8 +202,8 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
       profile_picture: employee.profile_picture,
       department_uuid: employeeUser.department_uuid,
       designation_uuid: employeeUser.designation_uuid,
-      department_name: department.department,
-      designation_name: designation.designation,
+      department_name: department.name,
+      designation_name: designation.name,
     })
     .from(apply_leave)
     .leftJoin(
@@ -282,8 +282,8 @@ export const selectAllApplyLeaveWithPagination: AppRouteHandler<SelectAllApplyLe
       profile_picture: employee.profile_picture,
       department_uuid: employeeUser.department_uuid,
       designation_uuid: employeeUser.designation_uuid,
-      department_name: department.department,
-      designation_name: designation.designation,
+      department_name: department.name,
+      designation_name: designation.name,
     })
     .from(apply_leave)
     .leftJoin(employee, eq(apply_leave.employee_uuid, employee.uuid))

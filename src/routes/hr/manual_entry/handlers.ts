@@ -88,9 +88,9 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
       start_date: employee.start_date,
       profile_picture: employee.profile_picture,
       department_uuid: users.department_uuid,
-      department_name: department.department,
+      department_name: department.name,
       designation_uuid: users.designation_uuid,
-      designation_name: designation.designation,
+      designation_name: designation.name,
     })
     .from(manual_entry)
     .leftJoin(device_list, eq(manual_entry.device_list_uuid, device_list.uuid))
@@ -159,9 +159,9 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
       start_date: employee.start_date,
       profile_picture: employee.profile_picture,
       department_uuid: employee.department_uuid,
-      department_name: department.department,
+      department_name: department.name,
       designation_uuid: employee.designation_uuid,
-      designation_name: designation.designation,
+      designation_name: designation.name,
     })
     .from(manual_entry)
     .leftJoin(device_list, eq(manual_entry.device_list_uuid, device_list.uuid))
@@ -195,9 +195,9 @@ export const manualEntryByEmployee: AppRouteHandler<ManualEntryByEmployeeRoute> 
       employee_uuid: manual_entry.employee_uuid,
       employee_name: users.name,
       department_uuid: users.department_uuid,
-      department_name: department.department,
+      department_name: department.name,
       designation_uuid: users.designation_uuid,
-      designation_name: designation.designation,
+      designation_name: designation.name,
       type: manual_entry.type,
       entry_time: manual_entry.entry_time,
       exit_time: manual_entry.exit_time,
@@ -205,8 +205,8 @@ export const manualEntryByEmployee: AppRouteHandler<ManualEntryByEmployeeRoute> 
       area: manual_entry.area,
       created_by: manual_entry.created_by,
       created_by_name: createdByUser.name,
-      created_by_designation_name: createdByDesignation.designation,
-      created_by_department_name: createdByDepartment.department,
+      created_by_designation_name: createdBydesignation.name,
+      created_by_department_name: createdBydepartment.name,
       created_at: manual_entry.created_at,
       updated_at: manual_entry.updated_at,
       remarks: manual_entry.remarks,
@@ -279,9 +279,9 @@ export const selectAllManualEntryWithPaginationFieldVisit: AppRouteHandler<Selec
       updated_at: manual_entry.updated_at,
       remarks: manual_entry.remarks,
       department_uuid: users.department_uuid,
-      department_name: department.department,
+      department_name: department.name,
       designation_uuid: users.designation_uuid,
-      designation_name: designation.designation,
+      designation_name: designation.name,
       device_list_uuid: manual_entry.device_list_uuid,
       device_list_name: device_list.name,
       approval: manual_entry.approval,

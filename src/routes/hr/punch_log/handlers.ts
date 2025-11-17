@@ -78,8 +78,8 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
       device_list_name: device_list.name,
       punch_type: punch_log.punch_type,
       punch_time: punch_log.punch_time,
-      department_name: department.department,
-      designation_name: designation.designation,
+      department_name: department.name,
+      designation_name: designation.name,
       profile_picture: employee.profile_picture,
     })
     .from(punch_log)
@@ -121,8 +121,8 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
       device_list_name: device_list.name,
       punch_type: punch_log.punch_type,
       punch_time: punch_log.punch_time,
-      department_name: department.department,
-      designation_name: designation.designation,
+      department_name: department.name,
+      designation_name: designation.name,
     })
     .from(punch_log)
     .leftJoin(device_list, eq(punch_log.device_list_uuid, device_list.uuid))
@@ -289,8 +289,8 @@ export const selectEmployeeLateDayByEmployeeUuid: AppRouteHandler<SelectEmployee
                               e.uuid AS employee_uuid,
                               e.user_uuid,
                               u.name AS employee_name,
-                              d.department AS employee_department_name,
-                              des.designation AS employee_designation_name,
+                              d.name AS employee_department_name,
+                              des.name AS employee_designation_name,
                               pl.punch_date,
                               pl.entry_time,
                               pl.exit_time,
@@ -333,7 +333,7 @@ export const selectEmployeeLateDayByEmployeeUuid: AppRouteHandler<SelectEmployee
                               AND (SELECT is_special_holiday FROM hr.is_special_holiday(pl.punch_date)) IS false
                               AND hr.is_employee_off_day(e.uuid, pl.punch_date) = false
                             )
-                            GROUP BY e.user_uuid, u.name, pl.punch_date, pl.entry_time, pl.exit_time, s.late_time, d.department, des.designation, e.uuid
+                            GROUP BY e.user_uuid, u.name, pl.punch_date, pl.entry_time, pl.exit_time, s.late_time, d.name, des.name, e.uuid
                             ORDER BY pl.punch_date DESC
                             `;
 

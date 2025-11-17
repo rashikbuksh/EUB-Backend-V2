@@ -91,9 +91,9 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
       start_date: employee.start_date,
       profile_picture: employee.profile_picture,
       department_uuid: users.department_uuid,
-      department_name: department.department,
+      department_name: department.name,
       designation_uuid: users.designation_uuid,
-      designation_name: designation.designation,
+      designation_name: designation.name,
       new_tds: PG_DECIMAL_TO_FLOAT(salary_increment.new_tds),
     })
     .from(salary_increment)
@@ -150,9 +150,9 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
       start_date: employee.start_date,
       profile_picture: employee.profile_picture,
       department_uuid: users.department_uuid,
-      department_name: department.department,
+      department_name: department.name,
       designation_uuid: users.designation_uuid,
-      designation_name: designation.designation,
+      designation_name: designation.name,
       new_tds: PG_DECIMAL_TO_FLOAT(salary_increment.new_tds),
     })
     .from(salary_increment)

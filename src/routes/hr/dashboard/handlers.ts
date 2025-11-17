@@ -96,8 +96,8 @@ export const getLateEmployeeAttendanceReport: AppRouteHandler<GetLateEmployeeAtt
                               WHEN MAX(pl.punch_time)::time < s.early_exit_before::time THEN 'Early Exit'
                               ELSE 'Present'
                           END as status,
-                          dept.department AS department_name,
-                          des.designation AS designation_name,
+                          dept.name AS department_name,
+                          des.name AS designation_name,
                           et.name AS employment_type_name,
                           lineManager.name AS line_manager_name
                         FROM hr.employee e
@@ -120,7 +120,7 @@ export const getLateEmployeeAttendanceReport: AppRouteHandler<GetLateEmployeeAtt
                         LEFT JOIN hr.users lineManager ON e.line_manager_uuid = lineManager.uuid
                         LEFT JOIN hr.employment_type et ON e.employment_type_uuid = et.uuid
                         WHERE ${employee_uuid ? sql`e.uuid = ${employee_uuid}` : sql`TRUE`}
-                        GROUP BY ud.user_uuid, ud.employee_name, ud.punch_date, s.name, s.start_time, s.end_time, s.late_time, s.early_exit_before,dept.department, des.designation, et.name, e.uuid, lineManager.name, e.profile_picture
+                        GROUP BY ud.user_uuid, ud.employee_name, ud.punch_date, s.name, s.start_time, s.end_time, s.late_time, s.early_exit_before, dept.name, des.name, et.name, e.uuid, lineManager.name, e.profile_picture
                       ),
 
                       -- attendance for month range (1st .. today) used only to compute total late count per user
@@ -862,8 +862,8 @@ export const getOnLeaveEmployeeAttendanceReport: AppRouteHandler<GetOnLeaveEmplo
                         WHEN MAX(pl.punch_time)::time < s.early_exit_before::time THEN 'Early Exit'
                         ELSE 'Present'
                     END as status,
-                    dept.department AS department_name,
-                    des.designation AS designation_name,
+                    dept.name AS department_name,
+                    des.name AS designation_name,
                     et.name AS employment_type_name,
                     w.name AS workplace_name,
                     al.reason AS leave_reason,
@@ -895,7 +895,7 @@ export const getOnLeaveEmployeeAttendanceReport: AppRouteHandler<GetOnLeaveEmplo
                     AND al.approval = 'approved'
                   WHERE 
                     ${employee_uuid ? sql`e.uuid = ${employee_uuid}` : sql`TRUE`}
-                  GROUP BY ud.user_uuid, ud.employee_name, ud.punch_date, s.name, s.start_time, s.end_time, s.late_time, s.early_exit_before,al.reason, dept.department, des.designation, et.name, e.uuid, w.name, al.from_date, al.to_date, lineManager.name, e.profile_picture
+                  GROUP BY ud.user_uuid, ud.employee_name, ud.punch_date, s.name, s.start_time, s.end_time, s.late_time, s.early_exit_before,al.reason, dept.name, des.name, et.name, e.uuid, w.name, al.from_date, al.to_date, lineManager.name, e.profile_picture
                 )
                 SELECT
                     uuid,
