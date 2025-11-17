@@ -15,7 +15,7 @@ export const valueLabelForPublication: AppRouteHandler<ValueLabelRouteForPublica
   const { is_pagination, field_name, field_value, filter } = c.req.valid('query');
 
   const resultPromise = db.select({
-    label: sql`CONCAT(users.name, CASE WHEN faculty.name IS NOT NULL THEN ' - ' ELSE '' END, faculty.name)`,
+    label: sql`DISTINCT CONCAT(users.name, CASE WHEN faculty.name IS NOT NULL THEN ' - ' ELSE '' END, faculty.name)`,
     value: teachers.publication,
   })
     .from(teachers)

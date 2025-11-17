@@ -19,7 +19,7 @@
     "db-introspect": "bunx drizzle-kit introspect",
     "db-push": "bunx drizzle-kit push",
     "db-studio": "bunx drizzle-kit studio --port 4000",
-    "deploy": "git pull && bun run db-generate && bun run db-migrate && bun run build && pm2 restart eub_v2_backend --update-env"
+    "deploy": "git pull && bun i && bun run db-generate && bun run db-migrate && bun run build && pm2 restart eub_v2_backend --update-env"
   },
   "dependencies": {
     "@hono/node-server": "^1.14.1",

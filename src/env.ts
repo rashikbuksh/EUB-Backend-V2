@@ -23,6 +23,10 @@ const EnvSchema = z.object({
   // DATABASE_AUTH_TOKEN: z.string().optional(),
   PRIVATE_KEY: z.string(),
   SALT: z.coerce.number(),
+  PULL_MODE: z.string().default('1'),
+  USE_CRLF: z.string().default('1'),
+  DEFAULT_LOOKBACK_HOURS: z.string().default('48'),
+  ICLOCK_COMMAND: z.string().default('ATTLOG'),
 });
 
 export type env = z.infer<typeof EnvSchema>;
