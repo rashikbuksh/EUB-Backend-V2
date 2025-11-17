@@ -1,6 +1,83 @@
+import apply_balance from './apply_balance';
+import apply_late from './apply_late';
+import apply_leave from './apply_leave';
 import auth_user from './auth_user';
+import configuration from './configuration';
+import configuration_entry from './configuration_entry';
+import dashboard from './dashboard';
 import department from './department';
 import designation from './designation';
+import device_list from './device_list';
+import device_permission from './device_permission';
+import employee from './employee';
+import employee_address from './employee_address';
+import employee_biometric from './employee_biometric';
+import employee_document from './employee_document';
+import employee_education from './employee_education';
+import employee_history from './employee_history';
+import employee_log from './employee_log';
+import employment_type from './employment_type';
+import festival from './festival';
+import festival_bonus from './festival_bonus';
+import fiscal_year from './fiscal_year';
+import general_holiday from './general_holiday';
+import leave_category from './leave_category';
+import leave_policy from './leave_policy';
+import leave_policy_log from './leave_policy_log';
+import loan from './loan';
+import loan_entry from './loan_entry';
+import manual_entry from './manual_entry';
+import punch_log from './punch_log';
+import roster from './roster';
+import salary_entry from './salary_entry';
+import salary_increment from './salary_increment';
+import salary_occasional from './salary_occasional';
+import shift_group from './shift_group';
+import shifts from './shifts';
+import special_holidays from './special_holidays';
+import sub_department from './sub_department';
 import users from './users';
+import workplace from './workplace';
 
-export default [department, designation, users, auth_user];
+export default [
+  department,
+  designation,
+  users,
+  auth_user,
+  sub_department,
+  workplace,
+  employment_type,
+  special_holidays,
+  device_list,
+  general_holiday,
+  shifts,
+  shift_group,
+  roster,
+  leave_policy,
+  leave_category,
+  configuration,
+  configuration_entry,
+  employee,
+  employee_address,
+  employee_history,
+  employee_document,
+  device_permission,
+  employee_education,
+  punch_log,
+  manual_entry,
+  apply_leave,
+  apply_balance,
+  salary_occasional,
+  salary_increment,
+  salary_entry,
+  loan,
+  loan_entry,
+  dashboard,
+  employee_log,
+  apply_late,
+  employee_biometric,
+  leave_policy_log,
+  festival,
+  fiscal_year,
+  festival_bonus,
+];

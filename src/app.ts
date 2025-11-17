@@ -6,6 +6,7 @@ import configureOpenAPI from '@/lib/configure_open_api';
 import createApp from '@/lib/create_app';
 import { ALLOWED_ROUTES, isPublicRoute, VerifyToken } from '@/middlewares/auth';
 import routes from '@/routes/index.route';
+import zktecoRouter from '@/routes/zkteco/index';
 import { serveStatic } from '@hono/node-server/serve-static';
 
 import env from './env';
@@ -46,5 +47,8 @@ if (!isDev) {
 routes.forEach((route) => {
   app.route(basePath, route);
 });
+
+// zkteco routes
+app.route('/', zktecoRouter);
 
 export default app;
