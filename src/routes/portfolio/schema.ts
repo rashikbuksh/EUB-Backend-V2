@@ -233,6 +233,12 @@ export const online_admission = portfolio.table('online_admission', {
   student_id: text('student_id').default(sql`null`),
   is_admitted: boolean('is_admitted').default(false),
   commencement_date: DateTime('commencement_date').default(sql`null`),
+  tuition_fee: PG_DECIMAL('tuition_fee').default(sql`0`),
+  admission_fee: PG_DECIMAL('admission_fee').default(sql`15000`),
+  others_fee: PG_DECIMAL('others_fee').default(sql`0`),
+  paid_amount: PG_DECIMAL('paid_amount').default(sql`0`),
+  reference_name: text('reference_name').default(sql`null`),
+  reference_phone: text('reference_phone').default(sql`null`),
 });
 
 //* faculty

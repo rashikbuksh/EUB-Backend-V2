@@ -91,6 +91,13 @@ export const insertSchema = createInsertSchema(
   parents_phone: true,
   student_id: true,
   is_admitted: true,
+  commencement_date: true,
+  tuition_fee: true,
+  admission_fee: true,
+  others_fee: true,
+  paid_amount: true,
+  reference_name: true,
+  reference_phone: true,
 });
 
 export const patchSchema = insertSchema.partial();
