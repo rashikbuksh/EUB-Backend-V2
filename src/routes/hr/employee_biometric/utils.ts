@@ -10,8 +10,8 @@ export const selectSchema = createSelectSchema(employee_biometric);
 export const insertSchema = createInsertSchema(
   employee_biometric,
   {
-    uuid: schema => schema.uuid.length(15),
-    employee_uuid: schema => schema.employee_uuid.length(15),
+    uuid: schema => schema.uuid.length(21),
+    employee_uuid: schema => schema.employee_uuid.length(21),
     template: schema => schema.template,
     biometric_type: schema => schema.biometric_type,
     finger_index: schema => schema.finger_index.optional(),

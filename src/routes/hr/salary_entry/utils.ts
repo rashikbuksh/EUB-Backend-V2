@@ -11,15 +11,15 @@ export const selectSchema = createSelectSchema(salary_entry);
 export const insertSchema = createInsertSchema(
   salary_entry,
   {
-    uuid: schema => schema.uuid.length(15),
-    employee_uuid: schema => schema.employee_uuid.length(15),
+    uuid: schema => schema.uuid.length(21),
+    employee_uuid: schema => schema.employee_uuid.length(21),
     type: schema => schema.type,
     month: schema => schema.month,
     year: schema => schema.year,
     amount: z.number().positive().optional(),
     loan_amount: z.number().optional(),
     advance_amount: z.number().optional(),
-    created_by: schema => schema.created_by.length(15),
+    created_by: schema => schema.created_by.length(21),
     created_at: schema => schema.created_at.regex(dateTimePattern, {
       message: 'created_at must be in the format "YYYY-MM-DD HH:MM:SS"',
     }),

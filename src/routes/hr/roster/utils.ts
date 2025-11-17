@@ -7,13 +7,13 @@ import { roster } from '../schema';
 
 //* crud
 export const selectSchema = createSelectSchema(roster, {
-  shift_group_uuid: schema => schema.shift_group_uuid.length(15),
-  shifts_uuid: schema => schema.shifts_uuid.length(15),
+  shift_group_uuid: schema => schema.shift_group_uuid.length(21),
+  shifts_uuid: schema => schema.shifts_uuid.length(21),
   effective_date: schema => schema.effective_date.regex(dateTimePattern, {
     message: 'effective_date must be in the format "YYYY-MM-DD HH:MM:SS"',
   }),
   off_days: z.array(z.string()).optional(),
-  created_by: schema => schema.created_by.length(15),
+  created_by: schema => schema.created_by.length(21),
   created_at: schema => schema.created_at.regex(dateTimePattern, {
     message: 'created_at must be in the format "YYYY-MM-DD HH:MM:SS"',
   }),
@@ -27,13 +27,13 @@ export const selectSchema = createSelectSchema(roster, {
 export const insertSchema = createInsertSchema(
   roster,
   {
-    shift_group_uuid: schema => schema.shift_group_uuid.length(15),
-    shifts_uuid: schema => schema.shifts_uuid.length(15),
+    shift_group_uuid: schema => schema.shift_group_uuid.length(21),
+    shifts_uuid: schema => schema.shifts_uuid.length(21),
     effective_date: schema => schema.effective_date.regex(dateTimePattern, {
       message: 'effective_date must be in the format "YYYY-MM-DD HH:MM:SS"',
     }),
     off_days: z.array(z.string()).optional(),
-    created_by: schema => schema.created_by.length(15),
+    created_by: schema => schema.created_by.length(21),
     created_at: schema => schema.created_at.regex(dateTimePattern, {
       message: 'created_at must be in the format "YYYY-MM-DD HH:MM:SS"',
     }),

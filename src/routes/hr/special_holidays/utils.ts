@@ -10,15 +10,15 @@ export const selectSchema = createSelectSchema(special_holidays);
 export const insertSchema = createInsertSchema(
   special_holidays,
   {
-    uuid: schema => schema.uuid.length(15),
-    workplace_uuid: schema => schema.workplace_uuid.length(15),
+    uuid: schema => schema.uuid.length(21),
+    workplace_uuid: schema => schema.workplace_uuid.length(21),
     from_date: schema => schema.from_date.regex(dateTimePattern, {
       message: 'from_date must be in the format "YYYY-MM-DD HH:MM:SS"',
     }),
     to_date: schema => schema.to_date.regex(dateTimePattern, {
       message: 'to_date must be in the format "YYYY-MM-DD HH:MM:SS"',
     }),
-    created_by: schema => schema.created_by.length(15),
+    created_by: schema => schema.created_by.length(21),
     created_at: schema => schema.created_at.regex(dateTimePattern, {
       message: 'created_at must be in the format "YYYY-MM-DD HH:MM:SS"',
     }),

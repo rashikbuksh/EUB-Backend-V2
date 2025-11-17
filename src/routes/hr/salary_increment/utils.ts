@@ -11,14 +11,14 @@ export const selectSchema = createSelectSchema(salary_increment);
 export const insertSchema = createInsertSchema(
   salary_increment,
   {
-    uuid: schema => schema.uuid.length(15),
-    employee_uuid: schema => schema.employee_uuid.length(15),
+    uuid: schema => schema.uuid.length(21),
+    employee_uuid: schema => schema.employee_uuid.length(21),
     amount: z.number().positive().optional(),
     effective_date: schema => schema.effective_date.regex(dateTimePattern, {
       message: 'effective_date must be in the format "YYYY-MM-DD HH:MM:SS"',
     }),
 
-    created_by: schema => schema.created_by.length(15),
+    created_by: schema => schema.created_by.length(21),
     created_at: schema => schema.created_at.regex(dateTimePattern, {
       message: 'created_at must be in the format "YYYY-MM-DD HH:MM:SS"',
     }),

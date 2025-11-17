@@ -53,7 +53,7 @@ export const getOne = createRoute({
   method: 'get',
   request: {
     params: z.object({
-      uuid: z.string().length(15),
+      uuid: z.string().length(21),
     }),
   },
   tags,
@@ -78,7 +78,7 @@ export const patch = createRoute({
   method: 'patch',
   request: {
     params: z.object({
-      uuid: z.string().length(15),
+      uuid: z.string().length(21),
     }),
     body: jsonContentRequired(
       patchSchema,
@@ -108,7 +108,7 @@ export const remove = createRoute({
   method: 'delete',
   request: {
     params: z.object({
-      uuid: z.string().length(15),
+      uuid: z.string().length(21),
     }),
   },
   tags,

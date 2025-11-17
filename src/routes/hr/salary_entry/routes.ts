@@ -131,7 +131,7 @@ export const getEmployeeSalaryDetailsByYearDate = createRoute({
       month: z.string(),
     }),
     query: z.object({
-      employee_uuid: z.string().length(15).optional(),
+      employee_uuid: z.string().length(21).optional(),
     }),
   },
   tags,

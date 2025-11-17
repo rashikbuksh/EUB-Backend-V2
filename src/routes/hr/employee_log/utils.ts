@@ -7,10 +7,10 @@ import { employee_log } from '../schema';
 
 //* crud
 export const selectSchema = createSelectSchema(employee_log, {
-  uuid: schema => schema.uuid.length(15),
-  employee_uuid: schema => schema.employee_uuid.length(15),
-  type_uuid: schema => schema.type_uuid.length(15),
-  created_by: schema => schema.created_by.length(15),
+  uuid: schema => schema.uuid.length(21),
+  employee_uuid: schema => schema.employee_uuid.length(21),
+  type_uuid: schema => schema.type_uuid.length(21),
+  created_by: schema => schema.created_by.length(21),
   created_at: schema => schema.created_at.regex(dateTimePattern, {
     message: 'created_at must be in the format "YYYY-MM-DD HH:MM:SS"',
   }),
@@ -24,10 +24,10 @@ export const selectSchema = createSelectSchema(employee_log, {
 export const insertSchema = createInsertSchema(
   employee_log,
   {
-    uuid: schema => schema.uuid.length(15),
-    employee_uuid: schema => schema.employee_uuid.length(15),
-    type_uuid: schema => schema.type_uuid.length(15),
-    created_by: schema => schema.created_by.length(15),
+    uuid: schema => schema.uuid.length(21),
+    employee_uuid: schema => schema.employee_uuid.length(21),
+    type_uuid: schema => schema.type_uuid.length(21),
+    created_by: schema => schema.created_by.length(21),
     created_at: schema => schema.created_at.regex(dateTimePattern, {
       message: 'created_at must be in the format "YYYY-MM-DD HH:MM:SS"',
     }),

@@ -11,9 +11,9 @@ export const selectSchema = createSelectSchema(apply_leave);
 export const insertSchema = createInsertSchema(
   apply_leave,
   {
-    uuid: schema => schema.uuid.length(15),
-    employee_uuid: schema => schema.employee_uuid.length(15),
-    leave_category_uuid: schema => schema.leave_category_uuid.length(15),
+    uuid: schema => schema.uuid.length(21),
+    employee_uuid: schema => schema.employee_uuid.length(21),
+    leave_category_uuid: schema => schema.leave_category_uuid.length(21),
     year: z.number().optional().default(new Date().getFullYear()),
     type: schema => schema.type,
     from_date: schema => schema.from_date.regex(dateTimePattern, {
@@ -24,7 +24,7 @@ export const insertSchema = createInsertSchema(
     }),
     reason: schema => schema.reason,
     file: schema => schema.file.optional(),
-    created_by: schema => schema.created_by.length(15),
+    created_by: schema => schema.created_by.length(21),
     created_at: schema => schema.created_at.regex(dateTimePattern, {
       message: 'created_at must be in the format "YYYY-MM-DD HH:MM:SS"',
     }),
