@@ -4,51 +4,66 @@ import { and, eq, sql } from 'drizzle-orm';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
-import { constructSelectAllQuery } from '@/lib/variables';
 import * as hrSchema from '@/routes/hr/schema';
 import { room_allocation, sem_crs_thr_entry } from '@/routes/lib/schema';
-import { department, department_teachers, faculty, teachers } from '@/routes/portfolio/schema';
+import { department, department_teachers, teachers } from '@/routes/portfolio/schema';
 
 import type { ValueLabelRoute, ValueLabelRouteForPublication } from './routes';
 
 export const valueLabelForPublication: AppRouteHandler<ValueLabelRouteForPublication> = async (c: any) => {
-  const { is_pagination, field_name, field_value, filter } = c.req.valid('query');
+  const { is_pagination, filter } = c.req.valid('query');
 
-  const resultPromise = db.select({
-    label: sql`DISTINCT CONCAT(users.name, CASE WHEN faculty.name IS NOT NULL THEN ' - ' ELSE '' END, faculty.name)`,
-    value: teachers.publication,
-  })
-    .from(teachers)
-    .leftJoin(hrSchema.users, eq(teachers.teacher_uuid, hrSchema.users.uuid))
-    .leftJoin(department_teachers, eq(teachers.uuid, department_teachers.teachers_uuid))
-    .leftJoin(department, eq(department_teachers.department_uuid, department.uuid))
-    .leftJoin(faculty, eq(department.faculty_uuid, faculty.uuid));
+  let query = sql`
+    SELECT DISTINCT
+      CONCAT(u.name, CASE WHEN f.name IS NOT NULL THEN ' - ' ELSE '' END, f.name) AS label,
+      t.publication AS value,
+      d.index as department_index,
+      dt.index as department_teacher_index
+    FROM portfolio.teachers t
+    LEFT JOIN hr.users u ON t.teacher_uuid = u.uuid
+    LEFT JOIN portfolio.department_teachers dt ON t.uuid = dt.teachers_uuid
+    LEFT JOIN portfolio.department d ON dt.department_uuid = d.uuid
+    LEFT JOIN portfolio.faculty f ON d.faculty_uuid = f.uuid
+  `;
 
   if (filter) {
-    resultPromise.where(
-      sql`lower(${faculty.name}) LIKE lower(${`%${filter}%`})`,
-    );
+    query = sql`${query} WHERE LOWER(f.name) LIKE LOWER(${`%${filter}%`})`;
   }
 
-  const resultPromiseForCount = await resultPromise;
+  query = sql`${query} ORDER BY d.index, dt.index ASC`;
 
-  const limit = Number.parseInt(c.req.valid('query').limit);
-  const page = Number.parseInt(c.req.valid('query').page);
-  const baseQuery = is_pagination === 'false'
-    ? resultPromise
-    : constructSelectAllQuery(resultPromise, c.req.valid('query'), 'created_at', [hrSchema.users.name.name, faculty.name.name], field_name, field_value);
+  // Get total count
+  const countQuery = sql`SELECT COUNT(*) as count FROM (${query}) as subquery`;
+  const countResult = await db.execute(countQuery);
+  const totalRecord = Number(countResult.rows[0].count);
 
-  const data = await baseQuery;
+  // Add pagination
+  if (is_pagination !== 'false' && is_pagination !== null && is_pagination !== undefined && is_pagination !== '') {
+    const limit = Number.parseInt(c.req.valid('query').limit) || 10;
+    const page = Number.parseInt(c.req.valid('query').page) || 1;
+    const offset = (page - 1) * limit;
+
+    query = sql`${query} LIMIT ${limit} OFFSET ${offset}`;
+  }
+
+  const result = await db.execute(query);
+  const data = result.rows;
 
   const pagination = is_pagination === 'false'
     ? null
-    : {
-        total_record: resultPromiseForCount.length,
-        current_page: Number(page),
-        total_page: Math.ceil(resultPromiseForCount.length / limit),
-        next_page: page + 1 > Math.ceil(resultPromiseForCount.length / limit) ? null : page + 1,
-        prev_page: page - 1 <= 0 ? null : page - 1,
-      };
+    : (() => {
+        const limit = Number.parseInt(c.req.valid('query').limit) || 10;
+        const page = Number.parseInt(c.req.valid('query').page) || 1;
+        const totalPages = Math.ceil(totalRecord / limit);
+
+        return {
+          total_record: totalRecord,
+          current_page: page,
+          total_page: totalPages,
+          next_page: page + 1 > totalPages ? null : page + 1,
+          prev_page: page - 1 <= 0 ? null : page - 1,
+        };
+      })();
 
   const response = is_pagination === 'false'
     ? data
