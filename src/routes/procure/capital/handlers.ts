@@ -428,8 +428,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
                     jsonb_build_object(
                         'uuid', ci.uuid,
                         'capital_uuid', ci.capital_uuid,
-                        'item_uuid', ci.item_uuid,
-                        'item_name', i.name,
+                        'item', ci.item,
                         'quantity', ci.quantity::float8,
                         'created_at', ci.created_at,
                         'updated_at', ci.updated_at,
