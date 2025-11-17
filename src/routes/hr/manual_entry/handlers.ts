@@ -205,8 +205,8 @@ export const manualEntryByEmployee: AppRouteHandler<ManualEntryByEmployeeRoute> 
       area: manual_entry.area,
       created_by: manual_entry.created_by,
       created_by_name: createdByUser.name,
-      created_by_designation_name: createdBydesignation.name,
-      created_by_department_name: createdBydepartment.name,
+      created_by_designation_name: createdByDesignation.name,
+      created_by_department_name: createdByDepartment.name,
       created_at: manual_entry.created_at,
       updated_at: manual_entry.updated_at,
       remarks: manual_entry.remarks,
@@ -324,14 +324,14 @@ export const selectAllManualEntryWithPaginationFieldVisit: AppRouteHandler<Selec
 
   const baseQuery
     = is_pagination === 'true'
-      ? constructSelectAllQuery({
-          baseQuery: resultPromise,
-          params: c.req.valid('query'),
-          defaultSortField: 'created_at',
-          additionalSearchFields: [users.name.name],
-          searchFieldNames: field_name,
+      ? constructSelectAllQuery(
+          resultPromise,
+          c.req.valid('query'),
+          'created_at',
+          [users.name.name],
+          field_name,
           field_value,
-        })
+        )
       : resultPromise;
 
   const data = await baseQuery;
