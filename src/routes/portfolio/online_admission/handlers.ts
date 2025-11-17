@@ -117,6 +117,12 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     student_id: online_admission.student_id,
     is_admitted: online_admission.is_admitted,
     commencement_date: online_admission.commencement_date,
+    tuition_fee: PG_DECIMAL_TO_FLOAT(online_admission.tuition_fee),
+    admission_fee: PG_DECIMAL_TO_FLOAT(online_admission.admission_fee),
+    others_fee: PG_DECIMAL_TO_FLOAT(online_admission.others_fee),
+    paid_amount: PG_DECIMAL_TO_FLOAT(online_admission.paid_amount),
+    reference_name: online_admission.reference_name,
+    reference_phone: online_admission.reference_phone,
   })
     .from(online_admission)
     .leftJoin(program, eq(online_admission.program_uuid, program.uuid))
@@ -196,6 +202,12 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     student_id: online_admission.student_id,
     is_admitted: online_admission.is_admitted,
     commencement_date: online_admission.commencement_date,
+    tuition_fee: PG_DECIMAL_TO_FLOAT(online_admission.tuition_fee),
+    admission_fee: PG_DECIMAL_TO_FLOAT(online_admission.admission_fee),
+    others_fee: PG_DECIMAL_TO_FLOAT(online_admission.others_fee),
+    paid_amount: PG_DECIMAL_TO_FLOAT(online_admission.paid_amount),
+    reference_name: online_admission.reference_name,
+    reference_phone: online_admission.reference_phone,
   })
     .from(online_admission)
     .leftJoin(program, eq(online_admission.program_uuid, program.uuid))
