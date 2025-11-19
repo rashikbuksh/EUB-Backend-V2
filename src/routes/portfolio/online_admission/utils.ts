@@ -72,7 +72,6 @@ export const insertSchema = createInsertSchema(
   hsc_institute: true,
   created_at: true,
   bkash: true,
-  birth_certificate_number: true,
   nid_number: true,
   hsc_roll_number: true,
   hsc_registration_number: true,
@@ -98,6 +97,7 @@ export const insertSchema = createInsertSchema(
   paid_amount: true,
   reference_name: true,
   reference_phone: true,
+  birth_certificate_number: true,
 });
 
 export const patchSchema = insertSchema.partial();
