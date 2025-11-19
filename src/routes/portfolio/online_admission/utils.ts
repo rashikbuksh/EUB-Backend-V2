@@ -38,6 +38,10 @@ export const insertSchema = createInsertSchema(
     parents_phone: schema => schema.parents_phone.optional(),
     student_id: schema => schema.student_id.optional(),
     is_admitted: schema => schema.is_admitted.optional(),
+    tuition_fee: z.number().optional(),
+    admission_fee: z.number().optional(),
+    others_fee: z.number().optional(),
+    paid_amount: z.number().optional(),
   },
 ).required({
   uuid: true,
