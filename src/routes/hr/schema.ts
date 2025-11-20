@@ -467,6 +467,21 @@ export const employee_document_type_enum = pgEnum('employee_document_type', [
   'national_id',
   'driving_license',
   'other',
+  'cv_resume',
+  'academic_certificates_all_educational_certificates',
+  'previous_experience_certificates',
+  'panel_documents_interview_recruitment_panel_papers',
+  'note_for_application_applicants_note_justification',
+  'appointment_letter',
+  'joining_letter',
+  'promotion_letter_increment_letter',
+  'appreciation_achievement_thanks_letter',
+  'transfer_letter',
+  'socks_letter_show_cause_explanation_letter',
+  'leave_documents_all_leave_applications_approvals',
+  'resignation_letter_termination_letter',
+  'release_order',
+  'final_experience_letter',
 ]);
 
 export const employee_document = hr.table('employee_document', {
