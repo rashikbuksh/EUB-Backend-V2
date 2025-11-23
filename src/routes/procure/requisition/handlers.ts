@@ -113,14 +113,23 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     }
   }
   if (store_type) {
-    filters.push(sql`${store_type} = ANY (
-                              SELECT DISTINCT item.store
-                              FROM procure.item
-                              LEFT JOIN procure.item_requisition ON item_requisition.item_uuid = item.uuid
-                              WHERE item_requisition.requisition_uuid = ${requisition.uuid}
-                            )`);
-  }
+    const store_type_array = (store_type as string)
+      .split(',')
+      .map((s: string) => s.trim())
+      .filter(Boolean);
 
+    if (store_type_array.length > 0) {
+      const sqlChunks = store_type_array.map(s => sql`${s}`);
+
+      filters.push(sql`EXISTS (
+      SELECT 1
+      FROM procure.item
+      LEFT JOIN procure.item_requisition ON item_requisition.item_uuid = item.uuid
+      WHERE item_requisition.requisition_uuid = ${requisition.uuid}
+        AND item.store IN (${sql.join(sqlChunks, sql`, `)})
+    )`);
+    }
+  }
   if (filters.length > 0) {
     resultPromise.where(and(...filters));
   }
