@@ -186,9 +186,20 @@ export const getGalleryNews = createRoute({
       department_name: z.string().optional(),
     }),
   },
+  // selectSchema
   responses: {
     [HSCode.OK]: jsonContent(
-      z.array(selectSchema),
+      z.array(
+        z.object({
+          ...selectSchema.shape,
+          news_entry: z.object({
+            uuid: z.string(),
+            documents: z.string(),
+            created_at: z.string(),
+            updated_at: z.string(),
+          }),
+        }),
+      ),
       'The list of news',
     ),
   },
