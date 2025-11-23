@@ -66,7 +66,7 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 };
 
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
-  const { user_uuid, status } = c.req.valid('query');
+  const { user_uuid, status, store_type } = c.req.valid('query');
 
   const resultPromise = db.select({
     uuid: requisition.uuid,
@@ -111,6 +111,14 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
         eq(requisition.is_store_received, false),
       );
     }
+  }
+  if (store_type) {
+    filters.push(sql`${store_type} = ANY (
+                              SELECT DISTINCT item.store
+                              FROM procure.item
+                              LEFT JOIN procure.item_requisition ON item_requisition.item_uuid = item.uuid
+                              WHERE item_requisition.requisition_uuid = ${requisition.uuid}
+                            )`);
   }
 
   if (filters.length > 0) {
