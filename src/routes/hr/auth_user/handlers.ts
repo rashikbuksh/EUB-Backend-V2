@@ -22,7 +22,7 @@ import type {
 
 } from './routes';
 
-import { auth_user, department, designation, users } from '../schema';
+import { auth_user, department, designation, employee, users } from '../schema';
 
 export const signin: AppRouteHandler<SigninRoute> = async (c: any) => {
   const updates = c.req.valid('json');
@@ -45,11 +45,13 @@ export const signin: AppRouteHandler<SigninRoute> = async (c: any) => {
     name: users.name,
     department_name: department.name,
     designation_name: designation.name,
+    employee_uuid: employee.uuid,
   })
     .from(auth_user)
     .leftJoin(users, eq(auth_user.user_uuid, users.uuid))
     .leftJoin(department, eq(users.department_uuid, department.uuid))
     .leftJoin(designation, eq(users.designation_uuid, designation.uuid))
+    .leftJoin(employee, eq(users.uuid, employee.user_uuid))
     .where(eq(users.email, email));
 
   const [data] = await resultPromise;
@@ -79,6 +81,7 @@ export const signin: AppRouteHandler<SigninRoute> = async (c: any) => {
     username: data.name,
     // can_access: data.can_access,
     exp: now + 60 * 60 * 24,
+    employee_uuid: data.employee_uuid,
   };
 
   const token = await CreateToken(payload);
@@ -90,6 +93,7 @@ export const signin: AppRouteHandler<SigninRoute> = async (c: any) => {
     name: data.name,
     department_name: data.department_name,
     designation_name: data.designation_name,
+    employee_uuid: data.employee_uuid,
   };
 
   const can_access = data.can_access;
