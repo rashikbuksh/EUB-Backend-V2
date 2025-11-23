@@ -86,7 +86,8 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
                               SELECT json_agg(DISTINCT item.store)::jsonb
                               FROM procure.item
                               LEFT JOIN procure.item_requisition ON item_requisition.item_uuid = item.uuid
-                              WHERE item_requisition.requisition_uuid = ${requisition.uuid}
+                              LEFT JOIN procure.requisition ON item_requisition.requisition_uuid = requisition.uuid
+                              WHERE requisition.uuid = ${requisition.uuid}
                             ), '[]'::jsonb)`,
   })
     .from(requisition)
