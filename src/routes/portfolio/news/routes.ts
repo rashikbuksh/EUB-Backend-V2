@@ -177,6 +177,23 @@ export const getLatestNews = createRoute({
   },
 });
 
+export const getGalleryNews = createRoute({
+  path: '/portfolio/news-gallery',
+  method: 'get',
+  tags,
+  request: {
+    query: z.object({
+      department_name: z.string().optional(),
+    }),
+  },
+  responses: {
+    [HSCode.OK]: jsonContent(
+      z.array(selectSchema),
+      'The list of news',
+    ),
+  },
+});
+
 export type ListRoute = typeof list;
 export type CreateRoute = typeof create;
 export type GetOneRoute = typeof getOne;
@@ -184,3 +201,4 @@ export type PatchRoute = typeof patch;
 export type RemoveRoute = typeof remove;
 export type GetNewsAndNewsEntryDetailsByNewsUuidRoute = typeof getNewsAndNewsEntryDetailsByNewsUuid;
 export type GetLatestNewsRoute = typeof getLatestNews;
+export type GetGalleryNewsRoute = typeof getGalleryNews;

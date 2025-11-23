@@ -10,6 +10,7 @@ const router = createRouter()
   .openapi(routes.patch, handlers.patch)
   .openapi(routes.remove, handlers.remove)
   .openapi(routes.getNewsAndNewsEntryDetailsByNewsUuid, handlers.getNewsAndNewsEntryDetailsByNewsUuid)
-  .openapi(routes.getLatestNews, handlers.getLatestNews);
+  .openapi(routes.getLatestNews, handlers.getLatestNews)
+  .openapi(routes.getGalleryNews, handlers.getGalleryNews);
 
 export default router;

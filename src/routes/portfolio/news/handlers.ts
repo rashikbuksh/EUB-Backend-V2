@@ -8,7 +8,7 @@ import { constructSelectAllQuery, defaultIfEmpty, defaultIfEmptyArray } from '@/
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 import { deleteFile, insertFile, updateFile } from '@/utils/upload_file';
 
-import type { CreateRoute, GetLatestNewsRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
+import type { CreateRoute, GetGalleryNewsRoute, GetLatestNewsRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
 
 import { department, news } from '../schema';
 
@@ -291,6 +291,38 @@ export const getLatestNews: AppRouteHandler<GetLatestNewsRoute> = async (c: any)
     published_date: news.published_date,
     remarks: news.remarks,
     is_global: news.is_global,
+  })
+    .from(news)
+    .leftJoin(department, eq(news.department_uuid, department.uuid))
+    .where((department_name ? eq(department.name, department_name) : sql`1=1`))
+    .orderBy(desc(news.created_at))
+    .limit(10);
+
+  const data = await resultPromise;
+
+  if (!data)
+    return DataNotFound(c);
+
+  return c.json(data || {}, HSCode.OK);
+};
+
+export const getGalleryNews: AppRouteHandler<GetGalleryNewsRoute> = async (c: any) => {
+  const { department_name } = c.req.valid('query');
+
+  const resultPromise = db.select({
+    id: news.id,
+    uuid: news.uuid,
+    department_uuid: news.department_uuid,
+    department_name: department.name,
+    title: news.title,
+    subtitle: news.subtitle,
+    description: news.description,
+    created_at: news.created_at,
+    cover_image: news.cover_image,
+    published_date: news.published_date,
+    remarks: news.remarks,
+    is_global: news.is_global,
+    news_entry: sql`ARRAY(SELECT json_build_object('uuid', uuid, 'documents', documents,'created_at', created_at, 'updated_at',updated_at) FROM portfolio.news_entry WHERE news_uuid = portfolio.news.uuid)`,
   })
     .from(news)
     .leftJoin(department, eq(news.department_uuid, department.uuid))
