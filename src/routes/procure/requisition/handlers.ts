@@ -85,9 +85,8 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     store_type: sql`COALESCE((
                               SELECT json_agg(DISTINCT item.store)::jsonb
                               FROM procure.item
-                              LEFT JOIN procure.item_requisition ON item_requisition.item_uuid = item.uuid
-                              LEFT JOIN procure.requisition ON item_requisition.requisition_uuid = requisition.uuid
-                              WHERE requisition.uuid = ${requisition.uuid}
+                              JOIN procure.item_requisition ON item_requisition.item_uuid = item.uuid
+                              WHERE item_requisition.requisition_uuid = requisition.uuid
                             ), '[]'::jsonb)`,
   })
     .from(requisition)
