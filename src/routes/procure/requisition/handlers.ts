@@ -82,7 +82,12 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     is_store_received: requisition.is_store_received,
     store_received_date: requisition.store_received_date,
     pi_generated_number: requisition.pi_generated_number,
-
+    store_type: sql`COALESCE((
+                              SELECT json_agg(DISTINCT item.store)::jsonb
+                              FROM procure.item
+                              LEFT JOIN procure.item_requisition ON item_requisition.item_uuid = item.uuid
+                              WHERE item_requisition.requisition_uuid = ${requisition.uuid}
+                            ), '[]'::jsonb)`,
   })
     .from(requisition)
     .leftJoin(hrSchema.users, eq(requisition.created_by, hrSchema.users.uuid))
