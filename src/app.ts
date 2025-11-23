@@ -26,6 +26,13 @@ export const basePath = '/v1';
 const isDev = env.NODE_ENV === 'development';
 const isVps = env.NODE_ENV === 'vps';
 
+// Apply CORS to uploads route for image downloads
+app.use('/uploads/*', cors({
+  origin: ALLOWED_ROUTES,
+  maxAge: 600,
+  credentials: true,
+}));
+
 // Serve static files from the 'uploads' directory
 app.use('/uploads/*', serveStatic({ root: isDev ? './src/' : isVps ? './dist/src/' : './' }));
 
