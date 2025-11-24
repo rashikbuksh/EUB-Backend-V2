@@ -1,12 +1,14 @@
 CREATE OR REPLACE FUNCTION employee_log_after_employee_insert_function() RETURNS TRIGGER AS $$
 BEGIN
     INSERT INTO hr.employee_log (
+        uuid,
         employee_uuid,
         type,
         type_uuid,
         created_by,
         created_at
     ) VALUES (
+        generate_15_digit_uuid(),
         NEW.uuid,
         'leave_policy',
         NEW.leave_policy_uuid,
@@ -15,12 +17,14 @@ BEGIN
     );
 
     INSERT INTO hr.employee_log (
+        uuid,
         employee_uuid,
         type,
         type_uuid,
         created_by,
         created_at
     ) VALUES (
+        generate_15_digit_uuid(),
         NEW.uuid,
         'shift_group',
         NEW.shift_group_uuid,
@@ -43,12 +47,14 @@ CREATE OR REPLACE FUNCTION employee_log_after_employee_update_function() RETURNS
 BEGIN
     IF OLD.leave_policy_uuid IS DISTINCT FROM NEW.leave_policy_uuid THEN
         INSERT INTO hr.employee_log (
+            uuid,
             employee_uuid,
             type,
             type_uuid,
             created_by,
             created_at
         ) VALUES (
+            generate_15_digit_uuid(),
             NEW.uuid,
             'leave_policy',
             NEW.leave_policy_uuid,
@@ -59,12 +65,14 @@ BEGIN
 
     IF OLD.shift_group_uuid IS DISTINCT FROM NEW.shift_group_uuid THEN
         INSERT INTO hr.employee_log (
+            uuid,
             employee_uuid,
             type,
             type_uuid,
             created_by,
             created_at
         ) VALUES (
+            generate_15_digit_uuid(),
             NEW.uuid,
             'shift_group',
             NEW.shift_group_uuid,

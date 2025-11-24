@@ -732,7 +732,7 @@ export const employee_log = hr.table('employee_log', {
   id: serial('id').notNull(),
   employee_uuid: defaultUUID('employee_uuid').references(() => employee.uuid),
   type: employee_log_type_enum('type').notNull(),
-  type_uuid: text('type_uuid').notNull(),
+  type_uuid: defaultUUID('type_uuid').notNull(),
   created_by: defaultUUID('created_by').references(() => users.uuid),
   created_at: DateTime('created_at').notNull(),
   updated_at: DateTime('updated_at').default(sql`null`),
