@@ -239,6 +239,7 @@ export const online_admission = portfolio.table('online_admission', {
   paid_amount: PG_DECIMAL('paid_amount').default(sql`0`),
   reference_name: text('reference_name').default(sql`null`),
   reference_phone: text('reference_phone').default(sql`null`),
+  internal_id: text('internal_id').default(sql`null`),
 });
 
 //* faculty

@@ -42,6 +42,7 @@ export const insertSchema = createInsertSchema(
     admission_fee: z.number().optional(),
     others_fee: z.number().optional(),
     paid_amount: z.number().optional(),
+    internal_id: schema => schema.internal_id.optional(),
   },
 ).required({
   uuid: true,
@@ -102,6 +103,7 @@ export const insertSchema = createInsertSchema(
   reference_name: true,
   reference_phone: true,
   birth_certificate_number: true,
+  internal_id: true,
 });
 
 export const patchSchema = insertSchema.partial();
