@@ -1,3 +1,12 @@
+-- ! NOT NEEDED
+
+DROP TRIGGER IF EXISTS employee_log_after_employee_insert_trigger ON hr.employee;
+DROP FUNCTION IF EXISTS employee_log_after_employee_insert_function();
+DROP TRIGGER IF EXISTS employee_log_after_employee_update_trigger ON hr.employee;
+DROP FUNCTION IF EXISTS employee_log_after_employee_update_function ();
+
+-- Trigger Deleted
+
 CREATE OR REPLACE FUNCTION employee_log_after_employee_insert_function() RETURNS TRIGGER AS $$
 BEGIN
     INSERT INTO hr.employee_log (
