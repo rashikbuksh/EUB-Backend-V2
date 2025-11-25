@@ -33,6 +33,7 @@ export const insertSchema = createInsertSchema(
   updated_at: true,
   phone: true,
   is_response: true,
+  type: true,
 }).omit({
   id: true,
 });

@@ -633,6 +633,10 @@ export const financial_info = portfolio.table('financial_info', {
 //* contact us
 
 export const contact_us_id = portfolio.sequence('contact_us_id', DEFAULT_SEQUENCE);
+export const contactTypeEnum = portfolio.enum('contact_type_enum', [
+  'general',
+  'journal',
+]);
 
 export const contact_us = portfolio.table('contact_us', {
   uuid: uuid_primary,
@@ -645,6 +649,7 @@ export const contact_us = portfolio.table('contact_us', {
   updated_at: DateTime('updated_at').$onUpdate(() => 'now()'),
   phone: text('phone').default(sql`null`),
   is_response: boolean('is_response').default(false),
+  type: contactTypeEnum('type').default('general'),
 });
 
 //* offer

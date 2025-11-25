@@ -71,6 +71,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     updated_at: contact_us.updated_at,
     phone: contact_us.phone,
     is_response: contact_us.is_response,
+    type: contact_us.type,
   })
     .from(contact_us)
     .orderBy(desc(contact_us.created_at));
