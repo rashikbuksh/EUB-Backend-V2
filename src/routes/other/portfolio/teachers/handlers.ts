@@ -11,7 +11,7 @@ import { department, department_teachers, teachers } from '@/routes/portfolio/sc
 import type { ValueLabelRoute, ValueLabelRouteForPublication } from './routes';
 
 export const valueLabelForPublication: AppRouteHandler<ValueLabelRouteForPublication> = async (c: any) => {
-  const { is_pagination, q, filter } = c.req.valid('query');
+  const { is_pagination, q } = c.req.valid('query');
 
   let query = sql`
     SELECT DISTINCT
@@ -26,8 +26,8 @@ export const valueLabelForPublication: AppRouteHandler<ValueLabelRouteForPublica
     LEFT JOIN portfolio.faculty f ON d.faculty_uuid = f.uuid
   `;
 
-  if (q || filter) {
-    query = sql`${query} WHERE LOWER(f.name) LIKE LOWER(${`%${q}%`}) OR LOWER(d.name) LIKE LOWER(${`%${q}%`}) ${filter ? sql`OR LOWER(f.name) LIKE LOWER(${`%${filter}%`}) OR LOWER(d.name) LIKE LOWER(${`%${filter}%`})` : sql``}`;
+  if (q) {
+    query = sql`${query} WHERE LOWER(f.name) LIKE LOWER(${`%${q}%`})`;
   }
 
   query = sql`${query} ORDER BY d.index, dt.index ASC`;
