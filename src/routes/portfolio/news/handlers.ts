@@ -327,8 +327,7 @@ export const getGalleryNews: AppRouteHandler<GetGalleryNewsRoute> = async (c: an
     .from(news)
     .leftJoin(department, eq(news.department_uuid, department.uuid))
     .where((department_name ? eq(department.name, department_name) : sql`1=1`))
-    .orderBy(desc(news.created_at))
-    .limit(10);
+    .orderBy(desc(news.created_at));
 
   const data = await resultPromise;
 
