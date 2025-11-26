@@ -31,7 +31,7 @@ export const valueLabelForPublication: AppRouteHandler<ValueLabelRouteForPublica
   }
 
   if (filter) {
-    query = sql`${query} AND LOWER(f.name) LIKE LOWER(${`%${filter}%`})`;
+    query = sql`${query} AND LOWER(f.name) = LOWER(${filter})`;
   }
 
   query = sql`${query} ORDER BY d.index, dt.index ASC`;
