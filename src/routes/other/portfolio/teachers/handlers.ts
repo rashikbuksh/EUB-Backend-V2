@@ -24,10 +24,11 @@ export const valueLabelForPublication: AppRouteHandler<ValueLabelRouteForPublica
     LEFT JOIN portfolio.department_teachers dt ON t.uuid = dt.teachers_uuid
     LEFT JOIN portfolio.department d ON dt.department_uuid = d.uuid
     LEFT JOIN portfolio.faculty f ON d.faculty_uuid = f.uuid
+    WHERE 1=1
   `;
 
   if (q) {
-    query = sql`${query} WHERE LOWER(u.name) LIKE LOWER(${`%${q}%`})`;
+    query = sql`${query} AND LOWER(u.name) LIKE LOWER(${`%${q}%`})`;
   }
 
   if (filter) {
