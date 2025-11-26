@@ -27,7 +27,7 @@ export const valueLabelForPublication: AppRouteHandler<ValueLabelRouteForPublica
   `;
 
   if (q) {
-    query = sql`${query} WHERE LOWER(f.name) LIKE LOWER(${`%${q}%`})`;
+    query = sql`${query} WHERE LOWER(u.name) LIKE LOWER(${`%${q}%`})`;
   }
 
   query = sql`${query} ORDER BY d.index, dt.index ASC`;
