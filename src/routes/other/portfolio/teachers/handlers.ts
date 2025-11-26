@@ -11,7 +11,7 @@ import { department, department_teachers, teachers } from '@/routes/portfolio/sc
 import type { ValueLabelRoute, ValueLabelRouteForPublication } from './routes';
 
 export const valueLabelForPublication: AppRouteHandler<ValueLabelRouteForPublication> = async (c: any) => {
-  const { is_pagination, q } = c.req.valid('query');
+  const { is_pagination, q, filter } = c.req.valid('query');
 
   let query = sql`
     SELECT DISTINCT
@@ -28,6 +28,10 @@ export const valueLabelForPublication: AppRouteHandler<ValueLabelRouteForPublica
 
   if (q) {
     query = sql`${query} WHERE LOWER(u.name) LIKE LOWER(${`%${q}%`})`;
+  }
+
+  if (filter) {
+    query = sql`${query} AND LOWER(f.name) LIKE LOWER(${`%${filter}%`})`;
   }
 
   query = sql`${query} ORDER BY d.index, dt.index ASC`;
