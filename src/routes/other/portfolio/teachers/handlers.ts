@@ -31,7 +31,7 @@ export const valueLabelForPublication: AppRouteHandler<ValueLabelRouteForPublica
     query = sql`${query} AND LOWER(u.name) LIKE LOWER(${`%${q}%`})`;
   }
 
-  if (filter) {
+  if (filter && filter.trim() !== '' && filter !== 'all' && filter !== 'null') {
     query = sql`${query} AND LOWER(f.name) = LOWER(${filter})`;
   }
 
