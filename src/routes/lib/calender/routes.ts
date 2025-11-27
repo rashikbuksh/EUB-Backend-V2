@@ -16,8 +16,8 @@ export const list = createRoute({
   tags,
   request: {
     query: z.object({
-      is_calender_allocation: z.string().optional(),
-      semester_uuid: z.string().optional(),
+      date: z.string().optional(),
+      room_uuid: z.string().optional(),
     }),
   },
   responses: {

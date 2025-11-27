@@ -1,6 +1,6 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { eq } from 'drizzle-orm';
+import { and, eq, sql } from 'drizzle-orm';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
@@ -59,6 +59,8 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   // const data = await db.query.calender.findMany();
 
+  const { date, room_uuid } = c.req.valid('query');
+
   const resultPromise = db.select({
     uuid: calender.uuid,
     room_uuid: calender.room_uuid,
@@ -77,6 +79,19 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     .from(calender)
     .leftJoin(users, eq(users.uuid, calender.created_by))
     .leftJoin(room, eq(room.uuid, calender.room_uuid));
+
+  const filters = [];
+
+  if (date) {
+    filters.push(eq(sql`${calender.date}::date`, sql`${date}::date`));
+  }
+  if (room_uuid) {
+    filters.push(eq(calender.room_uuid, room_uuid));
+  }
+
+  if (filters.length > 0) {
+    resultPromise.where(and(...filters));
+  }
 
   const data = await resultPromise;
 
