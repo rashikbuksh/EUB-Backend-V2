@@ -1,6 +1,6 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { desc, eq } from 'drizzle-orm';
+import { desc, eq, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import * as HSCode from 'stoker/http-status-codes';
 
@@ -159,6 +159,50 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     updated_by_name: updatedByUser.name,
     updated_at: articles.updated_at,
     remarks: articles.remarks,
+    authors: sql`(SELECT COALESCE(json_agg(json_build_object(
+                  'uuid', aa.uuid,
+                  'articles_uuid', aa.articles_uuid,
+                  'authors_uuid', aa.authors_uuid,
+                  'authors_name', a.name,
+                  'created_by', aa.created_by,
+                  'created_at', aa.created_at,  
+                  'updated_by', aa.updated_by,
+                  'updated_at', aa.updated_at,
+                  'remarks', aa.remarks
+                )), '[]'::json)
+                FROM journal.article_authors aa
+                LEFT JOIN journal.authors a ON aa.authors_uuid = a.uuid
+                WHERE aa.articles_uuid = ${articles.uuid}
+          )`,
+    keywords: sql`(SELECT COALESCE(json_agg(json_build_object(
+                  'uuid', ak.uuid,
+                  'articles_uuid', ak.articles_uuid,
+                  'keywords_uuid', ak.keywords_uuid,
+                  'keywords_name', k.name,
+                  'created_by', ak.created_by,
+                  'created_at', ak.created_at,  
+                  'updated_by', ak.updated_by,
+                  'updated_at', ak.updated_at,
+                  'remarks', ak.remarks
+                )), '[]'::json)
+                FROM journal.article_keywords ak  
+                LEFT JOIN journal.keywords k ON ak.keywords_uuid = k.uuid
+                WHERE ak.articles_uuid = ${articles.uuid}
+          )`,
+    images: sql`(SELECT COALESCE(json_agg(json_build_object(
+                  'uuid', ai.uuid,
+                  'index', ai.index,
+                  'articles_uuid', ai.articles_uuid,
+                  'image', ai.image,
+                  'created_by', ai.created_by,
+                  'created_at', ai.created_at,
+                  'updated_by', ai.updated_by,
+                  'updated_at', ai.updated_at,
+                  'remarks', ai.remarks
+                )), '[]'::json) 
+                FROM journal.article_images ai
+                WHERE ai.articles_uuid = ${articles.uuid}
+          )`,
   })
     .from(articles)
     .leftJoin(volume, eq(articles.volume_uuid, volume.uuid))
