@@ -1,6 +1,6 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
@@ -59,7 +59,7 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   // const data = await db.query.room.findMany();
 
-  const { semester_uuid } = c.req.valid('query');
+  const { semester_uuid, type } = c.req.valid('query');
 
   const resultPromise = db.selectDistinct({
     uuid: room.uuid,
@@ -78,8 +78,18 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     .leftJoin(room_allocation, eq(room_allocation.room_uuid, room.uuid))
     .leftJoin(sem_crs_thr_entry, eq(sem_crs_thr_entry.uuid, room_allocation.sem_crs_thr_entry_uuid));
 
+  const filters = [];
+
+  if (type) {
+    filters.push(eq(room.type, type));
+  }
+
   if (semester_uuid) {
-    resultPromise.where(eq(sem_crs_thr_entry.semester_uuid, semester_uuid));
+    filters.push(eq(sem_crs_thr_entry.semester_uuid, semester_uuid));
+  }
+
+  if (filters.length > 0) {
+    resultPromise.where(and(...filters));
   }
 
   const data = await resultPromise;
