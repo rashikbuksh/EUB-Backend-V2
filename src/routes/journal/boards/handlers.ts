@@ -1,11 +1,12 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { eq } from 'drizzle-orm';
+import { desc, eq } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
-import { users } from '@/routes/hr/schema';
+import { department, designation, users } from '@/routes/hr/schema';
+import { teachers } from '@/routes/portfolio/schema';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 
 import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
@@ -13,6 +14,7 @@ import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } fro
 import { boards } from '../schema';
 
 const updatedByUser = alias(users, 'updated_by_user');
+const teacherUser = alias(users, 'teacher_user');
 
 export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
   const value = c.req.valid('json');
@@ -64,8 +66,17 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   const resultPromise = db.select({
     uuid: boards.uuid,
     teachers_uuid: boards.teachers_uuid,
+    teacher_name: teacherUser.name,
+    teacher_phone: teachers.teacher_phone,
+    teacher_email: teachers.teacher_email,
+    teacher_image: teacherUser.image,
+    teacher_department: teacherUser.department_uuid,
+    teacher_department_name: department.name,
+    teacher_designation: teacherUser.designation_uuid,
+    teacher_designation_name: designation.name,
     is_chief: boards.is_chief,
     type: boards.type,
+    description: boards.description,
     created_by: boards.created_by,
     created_by_name: users.name,
     created_at: boards.created_at,
@@ -76,7 +87,12 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   })
     .from(boards)
     .leftJoin(users, eq(users.uuid, boards.created_by))
-    .leftJoin(updatedByUser, eq(updatedByUser.uuid, boards.updated_by));
+    .leftJoin(updatedByUser, eq(updatedByUser.uuid, boards.updated_by))
+    .leftJoin(teachers, eq(teachers.uuid, boards.teachers_uuid))
+    .leftJoin(teacherUser, eq(teacherUser.uuid, teachers.teacher_uuid))
+    .leftJoin(department, eq(department.uuid, teacherUser.department_uuid))
+    .leftJoin(designation, eq(designation.uuid, teacherUser.designation_uuid))
+    .orderBy(desc(boards.created_at));
 
   const data = await resultPromise;
 
@@ -89,8 +105,17 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
   const [data] = await db.select({
     uuid: boards.uuid,
     teachers_uuid: boards.teachers_uuid,
+    teacher_name: teacherUser.name,
+    teacher_phone: teachers.teacher_phone,
+    teacher_email: teachers.teacher_email,
+    teacher_image: teacherUser.image,
+    teacher_department: teacherUser.department_uuid,
+    teacher_department_name: department.name,
+    teacher_designation: teacherUser.designation_uuid,
+    teacher_designation_name: designation.name,
     is_chief: boards.is_chief,
     type: boards.type,
+    description: boards.description,
     created_by: boards.created_by,
     created_by_name: users.name,
     created_at: boards.created_at,
@@ -102,6 +127,10 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     .from(boards)
     .leftJoin(users, eq(users.uuid, boards.created_by))
     .leftJoin(updatedByUser, eq(updatedByUser.uuid, boards.updated_by))
+    .leftJoin(teachers, eq(teachers.uuid, boards.teachers_uuid))
+    .leftJoin(teacherUser, eq(teacherUser.uuid, teachers.teacher_uuid))
+    .leftJoin(department, eq(department.uuid, teacherUser.department_uuid))
+    .leftJoin(designation, eq(designation.uuid, teacherUser.designation_uuid))
     .where(eq(boards.uuid, uuid));
 
   if (!data)
