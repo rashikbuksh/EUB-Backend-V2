@@ -150,8 +150,8 @@ export const calender = lib.table('calender', {
     .references(() => room.uuid, DEFAULT_OPERATION)
     .notNull(),
   date: DateTime('date').notNull(),
-  from: DateTime('from').notNull(),
-  to: DateTime('to').notNull(),
+  from: text('from').notNull(),
+  to: text('to').notNull(),
   arrange_by: text('arrange_by').notNull(),
   purpose: text('purpose').notNull(),
   created_by: defaultUUID('created_by').references(
