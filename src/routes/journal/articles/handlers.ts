@@ -1,6 +1,6 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { desc, eq, sql } from 'drizzle-orm';
+import { and, desc, eq, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import * as HSCode from 'stoker/http-status-codes';
 
@@ -110,11 +110,16 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 };
 
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
+  const { redirect_query } = c.req.valid('query');
+
   const articlesPromise = db
     .select({
       uuid: articles.uuid,
       volume_uuid: articles.volume_uuid,
       volume_name: volume.name,
+      volume_number: volume.volume_number,
+      no: volume.no,
+      volume_published_date: volume.published_date,
       title: articles.title,
       abstract: articles.abstract,
       reference: articles.reference,
@@ -129,6 +134,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
       updated_at: articles.updated_at,
       remarks: articles.remarks,
       index: articles.index,
+      redirect_query: sql`'v' || COALESCE(${volume.volume_number}::text, '') || '_n' || COALESCE(${volume.no}::text, '') || '_' || COALESCE(to_char(${volume.published_date}, 'YYYY'), '') || '_' || COALESCE(${articles.index}::text, '')`,
       authors: sql`(SELECT COALESCE(json_agg(json_build_object(
                   'uuid', aa.uuid,
                   'articles_uuid', aa.articles_uuid,
@@ -180,6 +186,16 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     .leftJoin(updatedByUser, eq(articles.updated_by, updatedByUser.uuid))
     .orderBy(desc(articles.created_at));
 
+  const filters = [];
+
+  if (redirect_query) {
+    filters.push(eq(sql`'v' || COALESCE(${volume.volume_number}::text, '') || '_n' || COALESCE(${volume.no}::text, '') || '_' || COALESCE(to_char(${volume.published_date}, 'YYYY'), '') || '_' || COALESCE(${articles.index}::text, '')`, redirect_query));
+  }
+
+  if (filters.length > 0) {
+    articlesPromise.where(and(...filters));
+  }
+
   const data = await articlesPromise;
 
   return c.json(data || [], HSCode.OK);
@@ -192,6 +208,9 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     uuid: articles.uuid,
     volume_uuid: articles.volume_uuid,
     volume_name: volume.name,
+    volume_number: volume.volume_number,
+    no: volume.no,
+    volume_published_date: volume.published_date,
     title: articles.title,
     abstract: articles.abstract,
     reference: articles.reference,
@@ -206,6 +225,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     updated_at: articles.updated_at,
     remarks: articles.remarks,
     index: articles.index,
+    redirect_query: sql`'v' || COALESCE(${volume.volume_number}::text, '') || '_n' || COALESCE(${volume.no}::text, '') || '_' || COALESCE(to_char(${volume.published_date}, 'YYYY'), '') || '_' || COALESCE(${articles.index}::text, '')`,
     authors: sql`(SELECT COALESCE(json_agg(json_build_object(
                   'uuid', aa.uuid,
                   'articles_uuid', aa.articles_uuid,

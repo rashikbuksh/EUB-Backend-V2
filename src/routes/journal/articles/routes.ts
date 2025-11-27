@@ -14,6 +14,12 @@ export const list = createRoute({
   path: '/journal/articles',
   method: 'get',
   tags,
+  request: {
+    query: z.object({
+      volume_uuid: z.string().optional(),
+      redirect_query: z.string().optional(),
+    }),
+  },
   responses: {
     [HSCode.OK]: jsonContent(
       z.array(selectSchema),
