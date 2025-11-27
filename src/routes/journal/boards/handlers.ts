@@ -5,8 +5,8 @@ import { alias } from 'drizzle-orm/pg-core';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
-import { department, designation, users } from '@/routes/hr/schema';
-import { teachers } from '@/routes/portfolio/schema';
+import { designation, users } from '@/routes/hr/schema';
+import { department_teachers, department as portfolioDepartment, teachers } from '@/routes/portfolio/schema';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 
 import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
@@ -70,8 +70,8 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     teacher_phone: teachers.teacher_phone,
     teacher_email: teachers.teacher_email,
     teacher_image: teacherUser.image,
-    teacher_department: teacherUser.department_uuid,
-    teacher_department_name: department.name,
+    teacher_department: portfolioDepartment.uuid,
+    teacher_department_name: portfolioDepartment.name,
     teacher_designation: teacherUser.designation_uuid,
     teacher_designation_name: designation.name,
     is_chief: boards.is_chief,
@@ -90,7 +90,8 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     .leftJoin(updatedByUser, eq(updatedByUser.uuid, boards.updated_by))
     .leftJoin(teachers, eq(teachers.uuid, boards.teachers_uuid))
     .leftJoin(teacherUser, eq(teacherUser.uuid, teachers.teacher_uuid))
-    .leftJoin(department, eq(department.uuid, teacherUser.department_uuid))
+    .leftJoin(department_teachers, eq(department_teachers.teachers_uuid, teachers.uuid))
+    .leftJoin(portfolioDepartment, eq(portfolioDepartment.uuid, department_teachers.department_uuid))
     .leftJoin(designation, eq(designation.uuid, teacherUser.designation_uuid))
     .orderBy(desc(boards.created_at));
 
@@ -109,8 +110,8 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     teacher_phone: teachers.teacher_phone,
     teacher_email: teachers.teacher_email,
     teacher_image: teacherUser.image,
-    teacher_department: teacherUser.department_uuid,
-    teacher_department_name: department.name,
+    teacher_department: portfolioDepartment.uuid,
+    teacher_department_name: portfolioDepartment.name,
     teacher_designation: teacherUser.designation_uuid,
     teacher_designation_name: designation.name,
     is_chief: boards.is_chief,
@@ -129,7 +130,8 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     .leftJoin(updatedByUser, eq(updatedByUser.uuid, boards.updated_by))
     .leftJoin(teachers, eq(teachers.uuid, boards.teachers_uuid))
     .leftJoin(teacherUser, eq(teacherUser.uuid, teachers.teacher_uuid))
-    .leftJoin(department, eq(department.uuid, teacherUser.department_uuid))
+    .leftJoin(department_teachers, eq(department_teachers.teachers_uuid, teachers.uuid))
+    .leftJoin(portfolioDepartment, eq(portfolioDepartment.uuid, department_teachers.department_uuid))
     .leftJoin(designation, eq(designation.uuid, teacherUser.designation_uuid))
     .where(eq(boards.uuid, uuid));
 
