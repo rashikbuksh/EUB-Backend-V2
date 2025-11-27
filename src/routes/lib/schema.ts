@@ -98,7 +98,7 @@ export const sem_crs_thr_entry = lib.table('sem_crs_thr_entry', {
     .on(table.semester_uuid, table.course_section_uuid, table.teachers_uuid),
 ]);
 
-export const room_type = lib.enum('room_type', ['general', 'lab', 'online']);
+export const room_type = lib.enum('room_type', ['general', 'lab', 'online', 'multipurpose']);
 
 export const room = lib.table('room', {
   uuid: uuid_primary,
@@ -140,6 +140,29 @@ export const room_allocation = lib.table('room_allocation', {
     DEFAULT_OPERATION,
   ),
   created_at: DateTime('created_at').notNull(),
+  updated_at: DateTime('updated_at'),
+  remarks: text('remarks'),
+});
+
+export const calender = lib.table('calender', {
+  uuid: uuid_primary,
+  room_uuid: defaultUUID('room_uuid')
+    .references(() => room.uuid, DEFAULT_OPERATION)
+    .notNull(),
+  date: DateTime('date').notNull(),
+  from: DateTime('from').notNull(),
+  to: DateTime('to').notNull(),
+  arrange_by: text('arrange_by').notNull(),
+  purpose: text('purpose').notNull(),
+  created_by: defaultUUID('created_by').references(
+    () => users.uuid,
+    DEFAULT_OPERATION,
+  ),
+  created_at: DateTime('created_at').notNull(),
+  updated_by: defaultUUID('updated_by').references(
+    () => users.uuid,
+    DEFAULT_OPERATION,
+  ),
   updated_at: DateTime('updated_at'),
   remarks: text('remarks'),
 });
@@ -207,6 +230,17 @@ export const room_allocation_relations = relations(room_allocation, ({ one }) =>
   }),
   created_by: one(users, {
     fields: [room_allocation.created_by],
+    references: [users.uuid],
+  }),
+}));
+
+export const calender_relations = relations(calender, ({ one }) => ({
+  room: one(room, {
+    fields: [calender.room_uuid],
+    references: [room.uuid],
+  }),
+  created_by: one(users, {
+    fields: [calender.created_by],
     references: [users.uuid],
   }),
 }));
