@@ -75,6 +75,24 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     updated_by_name: updatedByUser.name,
     updated_at: volume.updated_at,
     remarks: volume.remarks,
+    articles: sql`(SELECT COALESCE(json_agg(json_build_object(
+                  'uuid', a.uuid,
+                  'volume_uuid', a.volume_uuid,
+                  'title', a.title,
+                  'abstract', a.abstract,
+                  'reference', a.reference,
+                  'conclusion', a.conclusion,
+                  'file', a.file,
+                  'published_date', a.published_date,
+                  'created_by', a.created_by,
+                  'created_at', a.created_at,
+                   'updated_by', a.updated_by,
+                   'updated_at', a.updated_at,
+                   'remarks', a.remarks
+                )), '[]'::json)
+                FROM journal.articles a
+             WHERE a.volume_uuid = ${volume.uuid}
+         )`,
   })
     .from(volume)
     .leftJoin(users, eq(users.uuid, volume.created_by))
