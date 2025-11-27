@@ -40,6 +40,7 @@ export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
     created_at: formData.created_at,
     updated_at: formData.updated_at,
     remarks: formData.remarks,
+    index: formData.index,
   };
 
   const [data] = await db.insert(articles).values(value).returning({
@@ -127,6 +128,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
       updated_by_name: updatedByUser.name,
       updated_at: articles.updated_at,
       remarks: articles.remarks,
+      index: articles.index,
       authors: sql`(SELECT COALESCE(json_agg(json_build_object(
                   'uuid', aa.uuid,
                   'articles_uuid', aa.articles_uuid,
@@ -203,6 +205,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     updated_by_name: updatedByUser.name,
     updated_at: articles.updated_at,
     remarks: articles.remarks,
+    index: articles.index,
     authors: sql`(SELECT COALESCE(json_agg(json_build_object(
                   'uuid', aa.uuid,
                   'articles_uuid', aa.articles_uuid,

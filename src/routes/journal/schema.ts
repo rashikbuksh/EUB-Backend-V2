@@ -99,6 +99,7 @@ export const articles = journal.table('articles', {
   ),
   updated_at: DateTime('updated_at').default(sql`null`),
   remarks: text('remarks').default(sql`null`),
+  index: integer('index').notNull(),
 });
 
 export const keywords = journal.table('keywords', {
