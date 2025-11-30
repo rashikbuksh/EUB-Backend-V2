@@ -244,6 +244,8 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     updated_at: articles.updated_at,
     remarks: articles.remarks,
     index: articles.index,
+    authors_uuid: articles.authors_uuid,
+    keywords_uuid: articles.keywords_uuid,
     redirect_query: sql`'v' || COALESCE(${volume.volume_number}::text, '') || '_n' || COALESCE(${volume.no}::text, '') || '_' || COALESCE(to_char(${volume.published_date}, 'YYYY'), '') || '_' || COALESCE(${articles.index}::text, '')`,
     authors: sql`ARRAY(
       SELECT 
