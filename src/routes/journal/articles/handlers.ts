@@ -18,7 +18,9 @@ import { articles, authors, keywords, volume } from '../schema';
 const updatedByUser = alias(users, 'updated_by_user');
 
 export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
-  const formData = await c.req.valid('json');
+  const formData = await c.req.parseBody();
+
+  console.log(c.req);
 
   console.log('Form Data: ', formData);
 
