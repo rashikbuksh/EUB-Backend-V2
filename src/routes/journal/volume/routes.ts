@@ -16,7 +16,9 @@ export const list = createRoute({
   tags,
   responses: {
     [HSCode.OK]: jsonContent(
-      z.array(selectSchema),
+      z.array(selectSchema.extend({
+        articles: z.array(z.string()).optional(),
+      })),
       'The list of volume',
     ),
   },
@@ -53,7 +55,9 @@ export const getOne = createRoute({
   tags,
   responses: {
     [HSCode.OK]: jsonContent(
-      selectSchema,
+      selectSchema.extend({
+        articles: z.array(z.string()).optional(),
+      }),
       'The requested volume',
     ),
     [HSCode.NOT_FOUND]: jsonContent(
