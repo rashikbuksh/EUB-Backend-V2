@@ -43,15 +43,15 @@ export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
     abstract: defaultIfEmpty(formData.abstract, ''),
     reference: defaultIfEmpty(formData.reference, ''),
     conclusion: defaultIfEmpty(formData.conclusion, ''),
-    file: defaultIfEmpty(formData.file, filePath),
+    file: defaultIfEmpty(filePath, filePath),
     published_date: defaultIfEmpty(formData.published_date, null),
     created_by: defaultIfEmpty(formData.created_by, null),
     created_at: defaultIfEmpty(formData.created_at, null),
     updated_at: defaultIfEmpty(formData.updated_at, null),
     remarks: defaultIfEmpty(formData.remarks, ''),
     index: defaultIfEmpty(formData.index, null),
-    keywords_uuid: defaultIfEmpty(formData.keywords_uuid, []),
-    authors_uuid: defaultIfEmpty(formData.authors_uuid, []),
+    keywords_uuid: formData.keywords_uuid,
+    authors_uuid: formData.authors_uuid,
   };
 
   const [data] = await db.insert(articles).values(value).returning({
@@ -153,6 +153,8 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
       updated_at: articles.updated_at,
       remarks: articles.remarks,
       index: articles.index,
+      authors_uuid: articles.authors_uuid,
+      keywords_uuid: articles.keywords_uuid,
       redirect_query: sql`'v' || COALESCE(${volume.volume_number}::text, '') || '_n' || COALESCE(${volume.no}::text, '') || '_' || COALESCE(to_char(${volume.published_date}, 'YYYY'), '') || '_' || COALESCE(${articles.index}::text, '')`,
       authors: sql`ARRAY(
         SELECT 
