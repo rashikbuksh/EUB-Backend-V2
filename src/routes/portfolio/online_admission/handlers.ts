@@ -62,8 +62,6 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
 
   const { date } = c.req.valid('query');
 
-  console.log('date', date);
-
   const resultPromise = db.select({
     id: online_admission.id,
     uuid: online_admission.uuid,
