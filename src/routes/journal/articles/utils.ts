@@ -21,6 +21,8 @@ export const insertSchema = createInsertSchema(
       message: 'updated_at must be in the format "YYYY-MM-DD HH:MM:SS"',
     }),
     remarks: schema => schema.remarks.optional(),
+    keywords_uuid: schema => schema.keywords_uuid.array(),
+    authors_uuid: schema => schema.authors_uuid.array(),
   },
 ).required({
   uuid: true,
@@ -33,6 +35,8 @@ export const insertSchema = createInsertSchema(
   created_by: true,
   created_at: true,
   index: true,
+  keywords_uuid: true,
+  authors_uuid: true,
 }).partial({
   updated_by: true,
   updated_at: true,

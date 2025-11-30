@@ -12,7 +12,7 @@ import { deleteFile, insertFile } from '@/utils/upload_file';
 
 import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
 
-import { articles, volume } from '../schema';
+import { articles, authors, keywords, volume } from '../schema';
 
 const updatedByUser = alias(users, 'updated_by_user');
 
@@ -41,6 +41,8 @@ export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
     updated_at: formData.updated_at,
     remarks: formData.remarks,
     index: formData.index,
+    keywords_uuid: formData.keywords_uuid,
+    authors_uuid: formData.authors_uuid,
   };
 
   const [data] = await db.insert(articles).values(value).returning({
@@ -135,36 +137,34 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
       remarks: articles.remarks,
       index: articles.index,
       redirect_query: sql`'v' || COALESCE(${volume.volume_number}::text, '') || '_n' || COALESCE(${volume.no}::text, '') || '_' || COALESCE(to_char(${volume.published_date}, 'YYYY'), '') || '_' || COALESCE(${articles.index}::text, '')`,
-      authors: sql`(SELECT COALESCE(json_agg(json_build_object(
-                  'uuid', aa.uuid,
-                  'articles_uuid', aa.articles_uuid,
-                  'authors_uuid', aa.authors_uuid,
-                  'authors_name', a.name,
-                  'created_by', aa.created_by,
-                  'created_at', aa.created_at,  
-                  'updated_by', aa.updated_by,
-                  'updated_at', aa.updated_at,
-                  'remarks', aa.remarks
-                )), '[]'::json)
-                FROM journal.article_authors aa
-                LEFT JOIN journal.authors a ON aa.authors_uuid = a.uuid
-                WHERE aa.articles_uuid = ${articles.uuid}
-          )`,
-      keywords: sql`(SELECT COALESCE(json_agg(json_build_object(
-                  'uuid', ak.uuid,
-                  'articles_uuid', ak.articles_uuid,
-                  'keywords_uuid', ak.keywords_uuid,
-                  'keywords_name', k.name,
-                  'created_by', ak.created_by,
-                  'created_at', ak.created_at,  
-                  'updated_by', ak.updated_by,
-                  'updated_at', ak.updated_at,
-                  'remarks', ak.remarks
-                )), '[]'::json)
-                FROM journal.article_keywords ak  
-                LEFT JOIN journal.keywords k ON ak.keywords_uuid = k.uuid
-                WHERE ak.articles_uuid = ${articles.uuid}
-          )`,
+      authors: sql`ARRAY(
+        SELECT 
+          jsonb_build_object(
+            'uuid', a.uuid, 
+            'name', a.name, 
+            'created_by', a.created_by, 
+            'created_at', a.created_at, 
+            'updated_by', a.updated_by, 
+            'updated_at', a.updated_at, 
+            'remarks', a.remarks
+          ) 
+          FROM unnest(${articles.authors_uuid}) AS au 
+          JOIN ${authors} AS a ON au = a.uuid
+      )`,
+      keywords: sql`ARRAY(
+        SELECT 
+          jsonb_build_object(
+            'uuid', k.uuid, 
+            'keyword', k.name,
+            'created_by', k.created_by,
+            'created_at', k.created_at,
+            'updated_by', k.updated_by,
+            'updated_at', k.updated_at,
+            'remarks', k.remarks
+          )
+          FROM unnest(${articles.keywords_uuid}) AS ku 
+          JOIN ${keywords} AS k ON ku = k.uuid
+      )`,
       images: sql`(SELECT COALESCE(json_agg(json_build_object(
                   'uuid', ai.uuid,
                   'index', ai.index,
@@ -226,36 +226,34 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     remarks: articles.remarks,
     index: articles.index,
     redirect_query: sql`'v' || COALESCE(${volume.volume_number}::text, '') || '_n' || COALESCE(${volume.no}::text, '') || '_' || COALESCE(to_char(${volume.published_date}, 'YYYY'), '') || '_' || COALESCE(${articles.index}::text, '')`,
-    authors: sql`(SELECT COALESCE(json_agg(json_build_object(
-                  'uuid', aa.uuid,
-                  'articles_uuid', aa.articles_uuid,
-                  'authors_uuid', aa.authors_uuid,
-                  'authors_name', a.name,
-                  'created_by', aa.created_by,
-                  'created_at', aa.created_at,  
-                  'updated_by', aa.updated_by,
-                  'updated_at', aa.updated_at,
-                  'remarks', aa.remarks
-                )), '[]'::json)
-                FROM journal.article_authors aa
-                LEFT JOIN journal.authors a ON aa.authors_uuid = a.uuid
-                WHERE aa.articles_uuid = ${articles.uuid}
-          )`,
-    keywords: sql`(SELECT COALESCE(json_agg(json_build_object(
-                  'uuid', ak.uuid,
-                  'articles_uuid', ak.articles_uuid,
-                  'keywords_uuid', ak.keywords_uuid,
-                  'keywords_name', k.name,
-                  'created_by', ak.created_by,
-                  'created_at', ak.created_at,  
-                  'updated_by', ak.updated_by,
-                  'updated_at', ak.updated_at,
-                  'remarks', ak.remarks
-                )), '[]'::json)
-                FROM journal.article_keywords ak  
-                LEFT JOIN journal.keywords k ON ak.keywords_uuid = k.uuid
-                WHERE ak.articles_uuid = ${articles.uuid}
-          )`,
+    authors: sql`ARRAY(
+      SELECT 
+        jsonb_build_object(
+          'uuid', a.uuid, 
+          'name', a.name, 
+          'created_by', a.created_by, 
+          'created_at', a.created_at, 
+          'updated_by', a.updated_by, 
+          'updated_at', a.updated_at, 
+          'remarks', a.remarks
+        ) 
+        FROM unnest(${articles.authors_uuid}) AS au 
+        JOIN ${authors} AS a ON au = a.uuid
+    )`,
+    keywords: sql`ARRAY(
+        SELECT 
+          jsonb_build_object(
+            'uuid', k.uuid, 
+            'keyword', k.name,
+            'created_by', k.created_by,
+            'created_at', k.created_at,
+            'updated_by', k.updated_by,
+            'updated_at', k.updated_at,
+            'remarks', k.remarks
+          )
+          FROM unnest(${articles.keywords_uuid}) AS ku 
+          JOIN ${keywords} AS k ON ku = k.uuid
+      )`,
     images: sql`(SELECT COALESCE(json_agg(json_build_object(
                   'uuid', ai.uuid,
                   'index', ai.index,

@@ -76,32 +76,6 @@ export const scope = journal.table('scope', {
   remarks: text('remarks').default(sql`null`),
 });
 
-export const articles = journal.table('articles', {
-  uuid: uuid_primary,
-  volume_uuid: defaultUUID('volume_uuid').references(
-    () => volume.uuid,
-    DEFAULT_OPERATION,
-  ),
-  title: text('title').notNull(),
-  abstract: text('abstract').notNull(),
-  reference: text('reference').notNull(),
-  conclusion: text('conclusion').notNull(),
-  file: text('file').default(sql`null`),
-  published_date: DateTime('published_date').notNull(),
-  created_by: defaultUUID('created_by').references(
-    () => users.uuid,
-    DEFAULT_OPERATION,
-  ),
-  created_at: DateTime('created_at').notNull(),
-  updated_by: defaultUUID('updated_by').references(
-    () => users.uuid,
-    DEFAULT_OPERATION,
-  ),
-  updated_at: DateTime('updated_at').default(sql`null`),
-  remarks: text('remarks').default(sql`null`),
-  index: integer('index').notNull(),
-});
-
 export const keywords = journal.table('keywords', {
   uuid: uuid_primary,
   name: text('name').notNull(),
@@ -134,16 +108,18 @@ export const authors = journal.table('authors', {
   remarks: text('remarks').default(sql`null`),
 });
 
-export const article_keywords = journal.table('article_keywords', {
+export const articles = journal.table('articles', {
   uuid: uuid_primary,
-  articles_uuid: defaultUUID('articles_uuid').references(
-    () => articles.uuid,
+  volume_uuid: defaultUUID('volume_uuid').references(
+    () => volume.uuid,
     DEFAULT_OPERATION,
   ),
-  keywords_uuid: defaultUUID('keywords_uuid').references(
-    () => keywords.uuid,
-    DEFAULT_OPERATION,
-  ),
+  title: text('title').notNull(),
+  abstract: text('abstract').notNull(),
+  reference: text('reference').notNull(),
+  conclusion: text('conclusion').notNull(),
+  file: text('file').default(sql`null`),
+  published_date: DateTime('published_date').notNull(),
   created_by: defaultUUID('created_by').references(
     () => users.uuid,
     DEFAULT_OPERATION,
@@ -155,30 +131,53 @@ export const article_keywords = journal.table('article_keywords', {
   ),
   updated_at: DateTime('updated_at').default(sql`null`),
   remarks: text('remarks').default(sql`null`),
+  index: integer('index').notNull(),
+  keywords_uuid: text('keywords_uuid').array().notNull(),
+  authors_uuid: text('authors_uuid').array().notNull(),
 });
 
-export const article_authors = journal.table('article_authors', {
-  uuid: uuid_primary,
-  articles_uuid: defaultUUID('articles_uuid').references(
-    () => articles.uuid,
-    DEFAULT_OPERATION,
-  ),
-  authors_uuid: defaultUUID('authors_uuid').references(
-    () => authors.uuid,
-    DEFAULT_OPERATION,
-  ),
-  created_by: defaultUUID('created_by').references(
-    () => users.uuid,
-    DEFAULT_OPERATION,
-  ),
-  created_at: DateTime('created_at').notNull(),
-  updated_by: defaultUUID('updated_by').references(
-    () => users.uuid,
-    DEFAULT_OPERATION,
-  ),
-  updated_at: DateTime('updated_at').default(sql`null`),
-  remarks: text('remarks').default(sql`null`),
-});
+// export const article_keywords = journal.table('article_keywords', {
+//   uuid: uuid_primary,
+//   articles_uuid: defaultUUID('articles_uuid').references(
+//     () => articles.uuid,
+//     DEFAULT_OPERATION,
+//   ),
+//   keywords_uuid: json('keywords').notNull(),
+//   created_by: defaultUUID('created_by').references(
+//     () => users.uuid,
+//     DEFAULT_OPERATION,
+//   ),
+//   created_at: DateTime('created_at').notNull(),
+//   updated_by: defaultUUID('updated_by').references(
+//     () => users.uuid,
+//     DEFAULT_OPERATION,
+//   ),
+//   updated_at: DateTime('updated_at').default(sql`null`),
+//   remarks: text('remarks').default(sql`null`),
+// });
+
+// export const article_authors = journal.table('article_authors', {
+//   uuid: uuid_primary,
+//   articles_uuid: defaultUUID('articles_uuid').references(
+//     () => articles.uuid,
+//     DEFAULT_OPERATION,
+//   ),
+//   authors_uuid: defaultUUID('authors_uuid').references(
+//     () => authors.uuid,
+//     DEFAULT_OPERATION,
+//   ),
+//   created_by: defaultUUID('created_by').references(
+//     () => users.uuid,
+//     DEFAULT_OPERATION,
+//   ),
+//   created_at: DateTime('created_at').notNull(),
+//   updated_by: defaultUUID('updated_by').references(
+//     () => users.uuid,
+//     DEFAULT_OPERATION,
+//   ),
+//   updated_at: DateTime('updated_at').default(sql`null`),
+//   remarks: text('remarks').default(sql`null`),
+// });
 
 export const article_images = journal.table('article_images', {
   uuid: uuid_primary,
