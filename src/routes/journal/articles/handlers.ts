@@ -2,10 +2,11 @@ import type { AppRouteHandler } from '@/lib/types';
 
 import { and, desc, eq, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
+import { nanoid } from 'nanoid';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
-import { handleImagePatch } from '@/lib/variables';
+import { defaultIfEmpty, handleImagePatch } from '@/lib/variables';
 import { users } from '@/routes/hr/schema';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 import { deleteFile, insertFile } from '@/utils/upload_file';
@@ -36,21 +37,21 @@ export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
   }
 
   const value = {
-    uuid: formData.uuid,
-    volume_uuid: formData.volume_uuid,
-    title: formData.title,
-    abstract: formData.abstract,
-    reference: formData.reference,
-    conclusion: formData.conclusion,
-    file: filePath,
-    published_date: formData.published_date,
-    created_by: formData.created_by,
-    created_at: formData.created_at,
-    updated_at: formData.updated_at,
-    remarks: formData.remarks,
-    index: formData.index,
-    keywords_uuid: formData.keywords_uuid,
-    authors_uuid: formData.authors_uuid,
+    uuid: defaultIfEmpty(formData.uuid, nanoid()),
+    volume_uuid: defaultIfEmpty(formData.volume_uuid, null),
+    title: defaultIfEmpty(formData.title, ''),
+    abstract: defaultIfEmpty(formData.abstract, ''),
+    reference: defaultIfEmpty(formData.reference, ''),
+    conclusion: defaultIfEmpty(formData.conclusion, ''),
+    file: defaultIfEmpty(formData.file, filePath),
+    published_date: defaultIfEmpty(formData.published_date, null),
+    created_by: defaultIfEmpty(formData.created_by, null),
+    created_at: defaultIfEmpty(formData.created_at, null),
+    updated_at: defaultIfEmpty(formData.updated_at, null),
+    remarks: defaultIfEmpty(formData.remarks, ''),
+    index: defaultIfEmpty(formData.index, null),
+    keywords_uuid: defaultIfEmpty(formData.keywords_uuid, []),
+    authors_uuid: defaultIfEmpty(formData.authors_uuid, []),
   };
 
   const [data] = await db.insert(articles).values(value).returning({
