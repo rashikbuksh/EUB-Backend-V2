@@ -1,6 +1,6 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { eq, sql } from 'drizzle-orm';
+import { and, eq, sql } from 'drizzle-orm';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
@@ -61,6 +61,8 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   // const data = await db.query.online_admission.findMany();
 
   const { date } = c.req.valid('query');
+
+  console.log('date', date);
 
   const resultPromise = db.select({
     id: online_admission.id,
@@ -134,7 +136,11 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   const filters = [];
 
   if (date) {
-    filters.push(eq(sql`DATE(${online_admission.created_at})`, date));
+    filters.push(eq(sql`${online_admission.created_at}::date`, sql`${date}::date`));
+  }
+
+  if (filters.length > 0) {
+    resultPromise.where(and(...filters));
   }
 
   const data = await resultPromise;
