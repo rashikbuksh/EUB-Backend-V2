@@ -22,7 +22,13 @@ export const list = createRoute({
   },
   responses: {
     [HSCode.OK]: jsonContent(
-      z.array(selectSchema),
+      z.array(
+        selectSchema.extend({
+          authors: z.array(z.string()).optional(),
+          keywords: z.array(z.string()).optional(),
+          images: z.array(z.string()).optional(),
+        }),
+      ),
       'The list of product variants',
     ),
   },
@@ -64,7 +70,11 @@ export const getOne = createRoute({
   tags,
   responses: {
     [HSCode.OK]: jsonContent(
-      selectSchema,
+      selectSchema.extend({
+        authors: z.array(z.string()).optional(),
+        keywords: z.array(z.string()).optional(),
+        images: z.array(z.string()).optional(),
+      }),
       'The requested product variant',
     ),
     [HSCode.NOT_FOUND]: jsonContent(
