@@ -20,10 +20,6 @@ const updatedByUser = alias(users, 'updated_by_user');
 export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
   const formData = await c.req.parseBody();
 
-  console.log(c.req);
-
-  console.log('Form Data: ', formData);
-
   const file = formData.file;
 
   let filePath = null;
@@ -57,8 +53,6 @@ export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
     keywords_uuid: formData.keywords_uuid,
     authors_uuid: formData.authors_uuid,
   };
-
-  console.log('Insert Value: ', value);
 
   const [data] = await db.insert(articles).values(value).returning({
     name: articles.uuid,
