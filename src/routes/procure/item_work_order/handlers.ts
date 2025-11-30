@@ -178,11 +178,11 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     remarks: item_work_order.remarks,
     bill_uuid: item_work_order.bill_uuid,
     bill_id: sql`CONCAT('BI', TO_CHAR(${bill.created_at}::timestamp, 'YY'), '-',  TO_CHAR(${bill.created_at}::timestamp, 'MM'), '-',  TO_CHAR(${bill.id}, 'FM0000'))`,
-    total_amount: sql`COALESCE((
-      SELECT SUM(item_work_order_entry.provided_quantity::float8 * item_work_order_entry.unit_price::float8)
+    total_amount: sql`COALESCE(TO_CHAR(ROUND((
+      SELECT SUM(item_work_order_entry.provided_quantity::numeric * item_work_order_entry.unit_price::numeric)
       FROM procure.item_work_order_entry
       WHERE item_work_order_entry.item_work_order_uuid = ${item_work_order.uuid}
-    ), 0)`,
+    )::numeric, 2), 'FM9999999990.00'), '0.00')`,
     estimated_date: item_work_order.estimated_date,
     subject: item_work_order.subject,
     vendor_address: vendor.address,
