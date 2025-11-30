@@ -2,10 +2,10 @@ import type { AppRouteHandler } from '@/lib/types';
 
 import { and, desc, eq, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
-import { nanoid } from 'nanoid';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
+import nanoid from '@/lib/nanoid';
 import { defaultIfEmpty, handleImagePatch } from '@/lib/variables';
 import { users } from '@/routes/hr/schema';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
