@@ -60,6 +60,8 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   // const data = await db.query.online_admission.findMany();
 
+  const { date } = c.req.valid('query');
+
   const resultPromise = db.select({
     id: online_admission.id,
     uuid: online_admission.uuid,
@@ -128,6 +130,12 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     .from(online_admission)
     .leftJoin(program, eq(online_admission.program_uuid, program.uuid))
     .leftJoin(hrSchema.users, eq(online_admission.created_by, hrSchema.users.uuid));
+
+  const filters = [];
+
+  if (date) {
+    filters.push(eq(sql`DATE(${online_admission.created_at})`, date));
+  }
 
   const data = await resultPromise;
 
