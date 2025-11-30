@@ -27,6 +27,14 @@ export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
     filePath = await insertFile(file, 'public/articles');
   }
 
+  if (formData.keywords_uuid) {
+    formData.keywords_uuid = formData.keywords_uuid.split(',');
+  }
+
+  if (formData.authors_uuid) {
+    formData.authors_uuid = formData.authors_uuid.split(',');
+  }
+
   const value = {
     uuid: formData.uuid,
     volume_uuid: formData.volume_uuid,
@@ -69,6 +77,14 @@ export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
 
   if (Object.keys(formData).length === 0)
     return ObjectNotFound(c);
+
+  if (formData.keywords_uuid) {
+    formData.keywords_uuid = formData.keywords_uuid.split(',');
+  }
+
+  if (formData.authors_uuid) {
+    formData.authors_uuid = formData.authors_uuid.split(',');
+  }
 
   const [data] = await db.update(articles)
     .set(formData)

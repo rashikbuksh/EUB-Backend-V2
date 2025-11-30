@@ -1,4 +1,5 @@
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
+import z from 'zod';
 
 import { dateTimePattern } from '@/utils';
 
@@ -21,8 +22,8 @@ export const insertSchema = createInsertSchema(
       message: 'updated_at must be in the format "YYYY-MM-DD HH:MM:SS"',
     }),
     remarks: schema => schema.remarks.optional(),
-    keywords_uuid: schema => schema.keywords_uuid.array(),
-    authors_uuid: schema => schema.authors_uuid.array(),
+    keywords_uuid: z.string().describe('Comma separated UUIDs of keywords'),
+    authors_uuid: z.string().describe('Comma separated UUIDs of authors'),
   },
 ).required({
   uuid: true,
