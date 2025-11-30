@@ -14,11 +14,11 @@ export const list = createRoute({
   path: '/procure/req-ticket',
   method: 'get',
   tags,
-  // request: {
-  //   query: z.object({
-  //     category: z.string().optional(),
-  //   }),
-  // },
+  request: {
+    query: z.object({
+      store_type: z.string().optional(),
+    }),
+  },
   responses: {
     [HSCode.OK]: jsonContent(
       z.array(selectSchema),

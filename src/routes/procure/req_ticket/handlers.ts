@@ -1,6 +1,6 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { eq, sql } from 'drizzle-orm';
+import { and, eq, inArray, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import * as HSCode from 'stoker/http-status-codes';
 
@@ -60,7 +60,7 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 };
 
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
-  // const { sub_category } = c.req.valid('query');
+  const { store_type } = c.req.valid('query');
 
   const resultPromise = db.select({
     uuid: req_ticket.uuid,
@@ -93,6 +93,22 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     .from(req_ticket)
     .leftJoin(hrSchema.users, eq(req_ticket.created_by, hrSchema.users.uuid))
     .leftJoin(updated_user, eq(req_ticket.updated_by, updated_user.uuid));
+
+  const filters = [];
+
+  if (store_type) {
+    const store_type_array = store_type.split(',');
+    if (store_type_array.length > 1) {
+      filters.push(inArray(req_ticket.department, store_type_array));
+    }
+    else {
+      filters.push(eq(req_ticket.department, store_type));
+    }
+  }
+
+  if (filters.length > 0) {
+    resultPromise.where(and(...filters));
+  }
 
   const data = await resultPromise;
 
