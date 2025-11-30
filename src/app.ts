@@ -15,11 +15,6 @@ const app = createApp();
 
 configureOpenAPI(app);
 
-app.use('*', async (c, next) => {
-  console.log(`${c.req.method} ${c.req.url} - ${c.req.parseBody()}`);
-  await next();
-});
-
 // Apply 50 MB limit to all routes
 app.use('*', bodyLimit({
   maxSize: 50 * 1024 * 1024, // 50 MB
