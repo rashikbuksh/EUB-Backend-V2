@@ -1,6 +1,6 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { desc, eq } from 'drizzle-orm';
+import { and, desc, eq, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import * as HSCode from 'stoker/http-status-codes';
 
@@ -19,11 +19,25 @@ const teacherUser = alias(users, 'teacher_user');
 export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
   const value = c.req.valid('json');
 
+  // Check if a chief already exists for this type
+  let warning = null;
+  if (value.is_chief) {
+    const existingChief = await db.select({ uuid: boards.uuid })
+      .from(boards)
+      .where(and(eq(boards.type, value.type), eq(boards.is_chief, true)))
+      .limit(1);
+
+    if (existingChief.length > 0) {
+      warning = `A chief already exists for ${value.type}`;
+    }
+  }
+
   const [data] = await db.insert(boards).values(value).returning({
     name: boards.uuid,
   });
 
-  return c.json(createToast('create', data.name ?? ''), HSCode.OK);
+  const message = warning ? `${data.name ?? ''} - ${warning}` : data.name ?? '';
+  return c.json(createToast('create', message), HSCode.OK);
 };
 
 export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
@@ -32,6 +46,32 @@ export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
 
   if (Object.keys(updates).length === 0)
     return ObjectNotFound(c);
+
+  // Check if a chief already exists for this type when updating is_chief to true
+  let warning = null;
+  if (updates.is_chief) {
+    // Get the current board's type
+    const [currentBoard] = await db.select({ type: boards.type })
+      .from(boards)
+      .where(eq(boards.uuid, uuid))
+      .limit(1);
+
+    if (currentBoard) {
+      const existingChief = await db.select({ uuid: boards.uuid })
+        .from(boards)
+        .where(and(
+          eq(boards.type, currentBoard.type),
+          eq(boards.is_chief, true),
+          // Exclude the current board being updated
+          sql`${boards.uuid} != ${uuid}`,
+        ))
+        .limit(1);
+
+      if (existingChief.length > 0) {
+        warning = `A chief already exists for ${currentBoard.type}`;
+      }
+    }
+  }
 
   const [data] = await db.update(boards)
     .set(updates)
@@ -43,7 +83,8 @@ export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
   if (!data)
     return DataNotFound(c);
 
-  return c.json(createToast('update', data.name ?? ''), HSCode.OK);
+  const message = warning ? `${data.name ?? ''} - ${warning}` : data.name ?? '';
+  return c.json(createToast('update', message), HSCode.OK);
 };
 
 export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
