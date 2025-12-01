@@ -13,6 +13,11 @@ const tags = ['journal.boards'];
 export const list = createRoute({
   path: '/journal/boards',
   method: 'get',
+  request: {
+    query: z.object({
+      type: z.string().optional(),
+    }),
+  },
   tags,
   responses: {
     [HSCode.OK]: jsonContent(
