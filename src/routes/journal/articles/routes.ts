@@ -151,8 +151,40 @@ export const remove = createRoute({
   },
 });
 
+export const getOneByRedirectQuery = createRoute({
+  path: '/journal/articles/redirect/{redirect_query}',
+  method: 'get',
+  request: {
+    params: z.object({
+      redirect_query: z.string(),
+    }),
+  },
+  tags,
+  responses: {
+    [HSCode.OK]: jsonContent(
+      selectSchema.extend({
+        authors: z.array(z.string()).optional(),
+        keywords: z.array(z.string()).optional(),
+        images: z.array(z.string()).optional(),
+      }),
+      'The requested product variant',
+    ),
+    [HSCode.NOT_FOUND]: jsonContent(
+      notFoundSchema,
+      'product variant not found',
+    ),
+    [HSCode.UNPROCESSABLE_ENTITY]: jsonContent(
+      createErrorSchema(z.object({
+        redirect_query: z.string(),
+      })),
+      'Invalid redirect query error',
+    ),
+  },
+});
+
 export type ListRoute = typeof list;
 export type CreateRoute = typeof create;
 export type GetOneRoute = typeof getOne;
 export type PatchRoute = typeof patch;
 export type RemoveRoute = typeof remove;
+export type GetOneByRedirectQueryRoute = typeof getOneByRedirectQuery;
