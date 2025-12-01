@@ -1,6 +1,6 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { eq } from 'drizzle-orm';
+import { asc, eq } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import * as HSCode from 'stoker/http-status-codes';
 
@@ -75,7 +75,8 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   })
     .from(scope)
     .leftJoin(users, eq(users.uuid, scope.created_by))
-    .leftJoin(updatedByUser, eq(updatedByUser.uuid, scope.updated_by));
+    .leftJoin(updatedByUser, eq(updatedByUser.uuid, scope.updated_by))
+    .orderBy(asc(scope.index));
 
   const data = await resultPromise;
 
