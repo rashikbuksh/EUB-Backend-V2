@@ -38,7 +38,7 @@ export function isPublicRoute(url: string, method: string) {
     { url: '/v1/fde/respond-student', method: 'POST' },
     { url: '/v1/fde/evaluation', method: 'POST' },
     { url: '/v1/lib/sem-crs-thr-entry/', method: 'GET' },
-    { url: '/v1/journal/articles', method: 'GET' },
+    { url: '/v1/journal', method: 'GET' },
     { url: '/v1/journal/articles/:uuid', method: 'GET' },
     { url: '/v1/journal/volume', method: 'GET' },
     { url: '/v1/journal/volume/:uuid', method: 'GET' },
