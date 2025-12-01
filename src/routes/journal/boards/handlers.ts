@@ -28,7 +28,8 @@ export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
       .limit(1);
 
     if (existingChief.length > 0) {
-      warning = `A chief already exists for ${value.type}`;
+      value.is_chief = false;
+      warning = `A chief already exists for ${value.type}, is_chief set to false`;
     }
   }
 
@@ -68,7 +69,8 @@ export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
         .limit(1);
 
       if (existingChief.length > 0) {
-        warning = `A chief already exists for ${currentBoard.type}`;
+        updates.is_chief = false;
+        warning = `A chief already exists for ${currentBoard.type}, is_chief set to false`;
       }
     }
   }
