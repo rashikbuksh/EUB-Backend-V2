@@ -6,7 +6,7 @@ import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
 import nanoid from '@/lib/nanoid';
-import { defaultIfEmpty, handleImagePatch } from '@/lib/variables';
+import { constructSelectAllQuery, defaultIfEmpty, handleImagePatch } from '@/lib/variables';
 import { users } from '@/routes/hr/schema';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 import { deleteFile, insertFile } from '@/utils/upload_file';
@@ -129,7 +129,7 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 };
 
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
-  const { redirect_query } = c.req.valid('query');
+  const { redirect_query, is_pagination, field_name, field_value } = c.req.valid('query');
 
   const articlesPromise = db
     .select({
@@ -215,9 +215,49 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     articlesPromise.where(and(...filters));
   }
 
-  const data = await articlesPromise;
+  const page = Number(c.req.query.page) || 1;
+  const limit = Number(c.req.query.limit) || 10;
 
-  return c.json(data || [], HSCode.OK);
+  const baseQuery
+    = is_pagination === 'true'
+      ? constructSelectAllQuery(
+          articlesPromise,
+          c.req.valid('query'),
+          'created_at',
+          [users.name.name, volume.name.name, volume.volume_number.name, volume.no.name],
+          field_name,
+          field_value,
+        )
+      : articlesPromise;
+
+  const data = await baseQuery;
+
+  const pagination
+    = is_pagination === 'true'
+      ? {
+          total_record: data.length,
+          current_page: Number(page),
+          total_page: Math.ceil(
+            data.length / limit,
+          ),
+          next_page:
+                  page + 1
+                  > Math.ceil(data.length / limit)
+                    ? null
+                    : page + 1,
+          prev_page: page - 1 <= 0 ? null : page - 1,
+        }
+      : null;
+
+  const response
+    = is_pagination === 'true'
+      ? {
+          data,
+          pagination,
+        }
+      : data;
+
+  return c.json(response, HSCode.OK);
 };
 
 export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {

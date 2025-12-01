@@ -18,6 +18,14 @@ export const list = createRoute({
     query: z.object({
       volume_uuid: z.string().optional(),
       redirect_query: z.string().optional(),
+      is_pagination: z.string().optional(),
+      field_name: z.string().optional(),
+      field_value: z.string().optional(),
+      q: z.string().optional(),
+      page: z.string().optional(),
+      limit: z.string().optional(),
+      sort: z.string().optional(),
+      orderby: z.string().optional(),
     }),
   },
   responses: {

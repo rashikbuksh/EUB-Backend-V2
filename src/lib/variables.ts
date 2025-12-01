@@ -61,6 +61,8 @@ export function constructSelectAllQuery(
     'programs',
     'type',
     'is_global',
+    'volume_published_date',
+    'published_date',
   ];
 
   // Get search fields from the main table
