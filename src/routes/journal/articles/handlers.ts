@@ -129,7 +129,7 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 };
 
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
-  const { redirect_query, is_pagination, field_name, field_value } = c.req.valid('query');
+  const { redirect_query, is_pagination, field_name, field_value, volume_uuid } = c.req.valid('query');
 
   const articlesPromise = db
     .select({
@@ -209,6 +209,10 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
 
   if (redirect_query) {
     filters.push(eq(sql`'v' || COALESCE(${volume.volume_number}::text, '') || '_n' || COALESCE(${volume.no}::text, '') || '_' || COALESCE(to_char(${volume.published_date}, 'YYYY'), '') || '_' || COALESCE(${articles.index}::text, '')`, redirect_query));
+  }
+
+  if (volume_uuid) {
+    filters.push(eq(articles.volume_uuid, volume_uuid));
   }
 
   if (filters.length > 0) {
