@@ -9,6 +9,8 @@ const router = createRouter()
   .openapi(routes.getOne, handlers.getOne)
   .openapi(routes.patch, handlers.patch)
   .openapi(routes.remove, handlers.remove)
-  .openapi(routes.getOneByRedirectQuery, handlers.getOneByRedirectQuery);
+  .openapi(routes.getOneByRedirectQuery, handlers.getOneByRedirectQuery)
+  .openapi(routes.getByAuthorId, handlers.getByAuthorId)
+  .openapi(routes.getByKeywordId, handlers.getByKeywordId);
 
 export default router;

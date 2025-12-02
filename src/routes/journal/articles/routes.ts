@@ -26,8 +26,6 @@ export const list = createRoute({
       limit: z.string().optional(),
       sort: z.string().optional(),
       orderby: z.string().optional(),
-      author_id: z.string().optional(),
-      keyword_id: z.string().optional(),
       volume_id: z.string().optional(),
     }),
   },
@@ -185,9 +183,73 @@ export const getOneByRedirectQuery = createRoute({
   },
 });
 
+export const getByAuthorId = createRoute({
+  path: '/journal/articles/author/{author_id}',
+  method: 'get',
+  request: {
+    params: z.object({
+      author_id: z.string(),
+    }),
+  },
+  tags,
+  responses: {
+    [HSCode.OK]: jsonContent(
+      selectSchema.extend({
+        authors: z.array(z.string()).optional(),
+        keywords: z.array(z.string()).optional(),
+        images: z.array(z.string()).optional(),
+      }),
+      'The requested product variant',
+    ),
+    [HSCode.NOT_FOUND]: jsonContent(
+      notFoundSchema,
+      'product variant not found',
+    ),
+    [HSCode.UNPROCESSABLE_ENTITY]: jsonContent(
+      createErrorSchema(z.object({
+        author_id: z.string(),
+      })),
+      'Invalid author id error',
+    ),
+  },
+});
+
+export const getByKeywordId = createRoute({
+  path: '/journal/articles/keyword/{keyword_id}',
+  method: 'get',
+  request: {
+    params: z.object({
+      keyword_id: z.string(),
+    }),
+  },
+  tags,
+  responses: {
+    [HSCode.OK]: jsonContent(
+      selectSchema.extend({
+        authors: z.array(z.string()).optional(),
+        keywords: z.array(z.string()).optional(),
+        images: z.array(z.string()).optional(),
+      }),
+      'The requested product variant',
+    ),
+    [HSCode.NOT_FOUND]: jsonContent(
+      notFoundSchema,
+      'product variant not found',
+    ),
+    [HSCode.UNPROCESSABLE_ENTITY]: jsonContent(
+      createErrorSchema(z.object({
+        keyword_id: z.string(),
+      })),
+      'Invalid keyword id error',
+    ),
+  },
+});
+
 export type ListRoute = typeof list;
 export type CreateRoute = typeof create;
 export type GetOneRoute = typeof getOne;
 export type PatchRoute = typeof patch;
 export type RemoveRoute = typeof remove;
 export type GetOneByRedirectQueryRoute = typeof getOneByRedirectQuery;
+export type GetByAuthorIdRoute = typeof getByAuthorId;
+export type GetByKeywordIdRoute = typeof getByKeywordId;

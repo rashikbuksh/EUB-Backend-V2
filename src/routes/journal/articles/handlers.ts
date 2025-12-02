@@ -11,7 +11,7 @@ import { users } from '@/routes/hr/schema';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 import { deleteFile, insertFile } from '@/utils/upload_file';
 
-import type { CreateRoute, GetOneByRedirectQueryRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
+import type { CreateRoute, GetByAuthorIdRoute, GetByKeywordIdRoute, GetOneByRedirectQueryRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
 
 import { articles, authors, keywords, volume } from '../schema';
 
@@ -129,7 +129,7 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 };
 
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
-  const { author_id, keyword_id, volume_id, redirect_query, is_pagination, field_name, field_value, volume_uuid } = c.req.valid('query');
+  const { volume_id, redirect_query, is_pagination, field_name, field_value, volume_uuid } = c.req.valid('query');
 
   const articlesPromise = db
     .select({
@@ -171,7 +171,6 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
           ) 
           FROM unnest(${articles.authors_uuid}) AS au 
           JOIN ${authors} AS a ON au = a.uuid
-          ${author_id ? sql`WHERE REPLACE(LOWER(a.name::text), ' ', '-') = ${author_id}` : sql``}
       )`,
       keywords: sql`ARRAY(
         SELECT 
@@ -187,7 +186,6 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
           )
           FROM unnest(${articles.keywords_uuid}) AS ku 
           JOIN ${keywords} AS k ON ku = k.uuid
-          ${keyword_id ? sql`WHERE REPLACE(LOWER(k.name::text), ' ', '-') = ${keyword_id}` : sql``}
       )`,
       images: sql`(SELECT COALESCE(json_agg(json_build_object(
                   'uuid', ai.uuid,
@@ -445,4 +443,190 @@ export const getOneByRedirectQuery: AppRouteHandler<GetOneByRedirectQueryRoute> 
   const [data] = await resultPromise;
 
   return c.json(data || {}, HSCode.OK);
+};
+
+export const getByAuthorId: AppRouteHandler<GetByAuthorIdRoute> = async (c: any) => {
+  const { author_id } = c.req.valid('param');
+
+  const articlesPromise = db
+    .select({
+      uuid: articles.uuid,
+      volume_uuid: articles.volume_uuid,
+      volume_name: volume.name,
+      volume_number: volume.volume_number,
+      no: volume.no,
+      volume_published_date: volume.published_date,
+      volume_id: sql`REPLACE(LOWER(${volume.name}), ' ', '-') || '-' || COALESCE(${volume.volume_number}::text, '') || '-number-' || COALESCE(${volume.no}::text, '') || '-' || LOWER(to_char(${volume.published_date}, 'FMMonth')) || '-' || COALESCE(to_char(${volume.published_date}, 'YYYY'), '')`.as('volume_id'),
+      title: articles.title,
+      abstract: articles.abstract,
+      reference: articles.reference,
+      conclusion: articles.conclusion,
+      file: articles.file,
+      published_date: articles.published_date,
+      created_by: articles.created_by,
+      created_by_name: users.name,
+      created_at: articles.created_at,
+      updated_by: articles.updated_by,
+      updated_by_name: updatedByUser.name,
+      updated_at: articles.updated_at,
+      remarks: articles.remarks,
+      index: articles.index,
+      authors_uuid: articles.authors_uuid,
+      keywords_uuid: articles.keywords_uuid,
+      redirect_query: sql`'v' || COALESCE(${volume.volume_number}::text, '') || '_n' || COALESCE(${volume.no}::text, '') || '_' || COALESCE(to_char(${volume.published_date}, 'YYYY'), '') || '_' || COALESCE(${articles.index}::text, '')`,
+      authors: sql`ARRAY(
+        SELECT 
+          jsonb_build_object(
+            'uuid', a.uuid, 
+            'name', a.name, 
+            'created_by', a.created_by, 
+            'created_at', a.created_at, 
+            'updated_by', a.updated_by, 
+            'updated_at', a.updated_at, 
+            'remarks', a.remarks,
+            'author_id', REPLACE(LOWER(a.name::text), ' ', '-')
+          ) 
+          FROM unnest(${articles.authors_uuid}) AS au 
+          JOIN ${authors} AS a ON au = a.uuid
+      )`,
+      keywords: sql`ARRAY(
+        SELECT 
+          jsonb_build_object(
+            'uuid', k.uuid, 
+            'keyword', k.name,
+            'created_by', k.created_by,
+            'created_at', k.created_at,
+            'updated_by', k.updated_by,
+            'updated_at', k.updated_at,
+            'remarks', k.remarks,
+            'keyword_id', REPLACE(LOWER(k.name::text), ' ', '-')
+          )
+          FROM unnest(${articles.keywords_uuid}) AS ku 
+          JOIN ${keywords} AS k ON ku = k.uuid
+      )`,
+      images: sql`(SELECT COALESCE(json_agg(json_build_object(
+                  'uuid', ai.uuid,
+                  'index', ai.index,
+                  'articles_uuid', ai.articles_uuid,
+                  'image', ai.image,
+                  'created_by', ai.created_by,
+                  'created_at', ai.created_at,
+                  'updated_by', ai.updated_by,
+                  'updated_at', ai.updated_at,
+                  'remarks', ai.remarks
+                )), '[]'::json) 
+                FROM journal.article_images ai
+                WHERE ai.articles_uuid = ${articles.uuid}
+          )`,
+    })
+    .from(articles)
+    .leftJoin(volume, eq(articles.volume_uuid, volume.uuid))
+    .leftJoin(users, eq(articles.created_by, users.uuid))
+    .leftJoin(updatedByUser, eq(articles.updated_by, updatedByUser.uuid))
+    .where(sql`${author_id} = ANY(
+        ARRAY(
+          SELECT REPLACE(LOWER(a.name::text), ' ', '-')
+          FROM unnest(${articles.authors_uuid}) AS au 
+          JOIN ${authors} AS a ON au = a.uuid
+        )
+      )`,
+    )
+    .orderBy(desc(articles.created_at));
+
+  const data = await articlesPromise;
+
+  return c.json(data || [], HSCode.OK);
+};
+
+export const getByKeywordId: AppRouteHandler<GetByKeywordIdRoute> = async (c: any) => {
+  const { keyword_id } = c.req.valid('param');
+
+  const articlesPromise = db
+    .select({
+      uuid: articles.uuid,
+      volume_uuid: articles.volume_uuid,
+      volume_name: volume.name,
+      volume_number: volume.volume_number,
+      no: volume.no,
+      volume_published_date: volume.published_date,
+      volume_id: sql`REPLACE(LOWER(${volume.name}), ' ', '-') || '-' || COALESCE(${volume.volume_number}::text, '') || '-number-' || COALESCE(${volume.no}::text, '') || '-' || LOWER(to_char(${volume.published_date}, 'FMMonth')) || '-' || COALESCE(to_char(${volume.published_date}, 'YYYY'), '')`.as('volume_id'),
+      title: articles.title,
+      abstract: articles.abstract,
+      reference: articles.reference,
+      conclusion: articles.conclusion,
+      file: articles.file,
+      published_date: articles.published_date,
+      created_by: articles.created_by,
+      created_by_name: users.name,
+      created_at: articles.created_at,
+      updated_by: articles.updated_by,
+      updated_by_name: updatedByUser.name,
+      updated_at: articles.updated_at,
+      remarks: articles.remarks,
+      index: articles.index,
+      authors_uuid: articles.authors_uuid,
+      keywords_uuid: articles.keywords_uuid,
+      redirect_query: sql`'v' || COALESCE(${volume.volume_number}::text, '') || '_n' || COALESCE(${volume.no}::text, '') || '_' || COALESCE(to_char(${volume.published_date}, 'YYYY'), '') || '_' || COALESCE(${articles.index}::text, '')`,
+      authors: sql`ARRAY(
+        SELECT 
+          jsonb_build_object(
+            'uuid', a.uuid, 
+            'name', a.name, 
+            'created_by', a.created_by, 
+            'created_at', a.created_at, 
+            'updated_by', a.updated_by, 
+            'updated_at', a.updated_at, 
+            'remarks', a.remarks,
+            'author_id', REPLACE(LOWER(a.name::text), ' ', '-')
+          ) 
+          FROM unnest(${articles.authors_uuid}) AS au 
+          JOIN ${authors} AS a ON au = a.uuid
+      )`,
+      keywords: sql`ARRAY(
+        SELECT 
+          jsonb_build_object(
+            'uuid', k.uuid, 
+            'keyword', k.name,
+            'created_by', k.created_by,
+            'created_at', k.created_at,
+            'updated_by', k.updated_by,
+            'updated_at', k.updated_at,
+            'remarks', k.remarks,
+            'keyword_id', REPLACE(LOWER(k.name::text), ' ', '-')
+          )
+          FROM unnest(${articles.keywords_uuid}) AS ku 
+          JOIN ${keywords} AS k ON ku = k.uuid
+      )`,
+      images: sql`(SELECT COALESCE(json_agg(json_build_object(
+                  'uuid', ai.uuid,
+                  'index', ai.index,
+                  'articles_uuid', ai.articles_uuid,
+                  'image', ai.image,
+                  'created_by', ai.created_by,
+                  'created_at', ai.created_at,
+                  'updated_by', ai.updated_by,
+                  'updated_at', ai.updated_at,
+                  'remarks', ai.remarks
+                )), '[]'::json) 
+                FROM journal.article_images ai
+                WHERE ai.articles_uuid = ${articles.uuid}
+          )`,
+    })
+    .from(articles)
+    .leftJoin(volume, eq(articles.volume_uuid, volume.uuid))
+    .leftJoin(users, eq(articles.created_by, users.uuid))
+    .leftJoin(updatedByUser, eq(articles.updated_by, updatedByUser.uuid))
+    .where(sql`${keyword_id} = ANY(
+        ARRAY(
+          SELECT REPLACE(LOWER(k.name::text), ' ', '-')
+          FROM unnest(${articles.keywords_uuid}) AS ku 
+          JOIN ${keywords} AS k ON ku = k.uuid
+        )
+      )`,
+    )
+    .orderBy(desc(articles.created_at));
+
+  const data = await articlesPromise;
+
+  return c.json(data || [], HSCode.OK);
 };
