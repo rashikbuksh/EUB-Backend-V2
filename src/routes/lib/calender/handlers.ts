@@ -64,6 +64,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   const resultPromise = db.select({
     uuid: calender.uuid,
     room_uuid: calender.room_uuid,
+    room_name: room.name,
     date: calender.date,
     from: calender.from,
     to: calender.to,
@@ -104,6 +105,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
   const resultPromise = db.select({
     uuid: calender.uuid,
     room_uuid: calender.room_uuid,
+    room_name: room.name,
     date: calender.date,
     from: calender.from,
     to: calender.to,
