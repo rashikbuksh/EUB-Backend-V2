@@ -387,19 +387,20 @@ export const getOneByRedirectQuery: AppRouteHandler<GetOneByRedirectQueryRoute> 
     keywords_uuid: articles.keywords_uuid,
     redirect_query: sql`'v' || COALESCE(${volume.volume_number}::text, '') || '_n' || COALESCE(${volume.no}::text, '') || '_' || COALESCE(to_char(${volume.published_date}, 'YYYY'), '') || '_' || COALESCE(${articles.index}::text, '')`,
     authors: sql`ARRAY(
-      SELECT 
-        jsonb_build_object(
-          'uuid', a.uuid, 
-          'name', a.name, 
-          'created_by', a.created_by, 
-          'created_at', a.created_at, 
-          'updated_by', a.updated_by, 
-          'updated_at', a.updated_at, 
-          'remarks', a.remarks
-        ) 
-        FROM unnest(${articles.authors_uuid}) AS au 
-        JOIN ${authors} AS a ON au = a.uuid
-    )`,
+        SELECT 
+          jsonb_build_object(
+            'uuid', a.uuid, 
+            'name', a.name, 
+            'created_by', a.created_by, 
+            'created_at', a.created_at, 
+            'updated_by', a.updated_by, 
+            'updated_at', a.updated_at, 
+            'remarks', a.remarks,
+            'author_id', REPLACE(LOWER(a.name::text), ' ', '-')
+          ) 
+          FROM unnest(${articles.authors_uuid}) AS au 
+          JOIN ${authors} AS a ON au = a.uuid
+      )`,
     keywords: sql`ARRAY(
         SELECT 
           jsonb_build_object(
@@ -409,7 +410,8 @@ export const getOneByRedirectQuery: AppRouteHandler<GetOneByRedirectQueryRoute> 
             'created_at', k.created_at,
             'updated_by', k.updated_by,
             'updated_at', k.updated_at,
-            'remarks', k.remarks
+            'remarks', k.remarks,
+            'keyword_id', REPLACE(LOWER(k.name::text), ' ', '-')
           )
           FROM unnest(${articles.keywords_uuid}) AS ku 
           JOIN ${keywords} AS k ON ku = k.uuid
