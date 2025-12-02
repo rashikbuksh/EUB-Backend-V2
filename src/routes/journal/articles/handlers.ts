@@ -1,6 +1,6 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { and, desc, eq, ilike, sql } from 'drizzle-orm';
+import { and, desc, eq, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import * as HSCode from 'stoker/http-status-codes';
 
@@ -234,7 +234,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   // for searching article title
   if (article_value) {
     articlesPromise.where(
-      ilike(sql`LOWER(${articles.title})`, `%LOWER(${article_value})%`),
+      sql`LOWER(${articles.title}) LIKE '%' || LOWER(${article_value}) || '%'`,
     );
   }
 
