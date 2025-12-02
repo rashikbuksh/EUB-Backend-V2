@@ -1,6 +1,6 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import * as HSCode from 'stoker/http-status-codes';
 
@@ -71,6 +71,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     updated_by_name: updatedByUser.name,
     updated_at: keywords.updated_at,
     remarks: keywords.remarks,
+    keyword_id: sql`REPLACE(LOWER(${keywords.name}::text), ' ', '-')`.as('keyword_id'),
   })
     .from(keywords)
     .leftJoin(users, eq(users.uuid, keywords.created_by))

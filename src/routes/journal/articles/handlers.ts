@@ -129,7 +129,7 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 };
 
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
-  const { redirect_query, is_pagination, field_name, field_value, volume_uuid } = c.req.valid('query');
+  const { author_id, keyword_id, volume_id, redirect_query, is_pagination, field_name, field_value, volume_uuid } = c.req.valid('query');
 
   const articlesPromise = db
     .select({
@@ -139,6 +139,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
       volume_number: volume.volume_number,
       no: volume.no,
       volume_published_date: volume.published_date,
+      volume_id: sql`LOWER(${volume.name}) || COALESCE(${volume.volume_number}::text, '') || '-number' || COALESCE(${volume.no}::text, '') || '-' || LOWER(to_char(${volume.published_date}, 'FMMonth')) || COALESCE(to_char(${volume.published_date}, 'YYYY'), '')`.as('volume_id'),
       title: articles.title,
       abstract: articles.abstract,
       reference: articles.reference,
@@ -165,10 +166,12 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
             'created_at', a.created_at, 
             'updated_by', a.updated_by, 
             'updated_at', a.updated_at, 
-            'remarks', a.remarks
+            'remarks', a.remarks,
+            'author_id', REPLACE(LOWER(a.name::text), ' ', '-')
           ) 
           FROM unnest(${articles.authors_uuid}) AS au 
           JOIN ${authors} AS a ON au = a.uuid
+          ${author_id ? sql`WHERE REPLACE(LOWER(a.name::text), ' ', '-') = ${author_id}` : sql``}
       )`,
       keywords: sql`ARRAY(
         SELECT 
@@ -179,10 +182,12 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
             'created_at', k.created_at,
             'updated_by', k.updated_by,
             'updated_at', k.updated_at,
-            'remarks', k.remarks
+            'remarks', k.remarks,
+            'keyword_id', REPLACE(LOWER(k.name::text), ' ', '-')
           )
           FROM unnest(${articles.keywords_uuid}) AS ku 
           JOIN ${keywords} AS k ON ku = k.uuid
+          ${keyword_id ? sql`WHERE REPLACE(LOWER(k.name::text), ' ', '-') = ${keyword_id}` : sql``}
       )`,
       images: sql`(SELECT COALESCE(json_agg(json_build_object(
                   'uuid', ai.uuid,
@@ -217,6 +222,15 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
 
   if (filters.length > 0) {
     articlesPromise.where(and(...filters));
+  }
+
+  if (volume_id) {
+    articlesPromise.where(
+      eq(
+        sql`LOWER(${volume.name}) || COALESCE(${volume.volume_number}::text, '') || '-number' || COALESCE(${volume.no}::text, '') || '-' || LOWER(to_char(${volume.published_date}, 'FMMonth')) || COALESCE(to_char(${volume.published_date}, 'YYYY'), '')`,
+        volume_id,
+      ),
+    );
   }
 
   const page = Number(c.req.query.page) || 1;
@@ -274,6 +288,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     volume_number: volume.volume_number,
     no: volume.no,
     volume_published_date: volume.published_date,
+    volume_id: sql`LOWER(${volume.name}) || COALESCE(${volume.volume_number}::text, '') || '-number' || COALESCE(${volume.no}::text, '') || '-' || LOWER(to_char(${volume.published_date}, 'FMMonth')) || COALESCE(to_char(${volume.published_date}, 'YYYY'), '')`.as('volume_id'),
     title: articles.title,
     abstract: articles.abstract,
     reference: articles.reference,
@@ -355,6 +370,7 @@ export const getOneByRedirectQuery: AppRouteHandler<GetOneByRedirectQueryRoute> 
     volume_number: volume.volume_number,
     no: volume.no,
     volume_published_date: volume.published_date,
+    volume_id: sql`LOWER(${volume.name}) || COALESCE(${volume.volume_number}::text, '') || '-number' || COALESCE(${volume.no}::text, '') || '-' || LOWER(to_char(${volume.published_date}, 'FMMonth')) || COALESCE(to_char(${volume.published_date}, 'YYYY'), '')`.as('volume_id'),
     title: articles.title,
     abstract: articles.abstract,
     reference: articles.reference,
