@@ -95,6 +95,7 @@ export const keywords = journal.table('keywords', {
 export const authors = journal.table('authors', {
   uuid: uuid_primary,
   name: text('name').notNull(),
+  email: text('email').default(sql`null`),
   created_by: defaultUUID('created_by').references(
     () => users.uuid,
     DEFAULT_OPERATION,

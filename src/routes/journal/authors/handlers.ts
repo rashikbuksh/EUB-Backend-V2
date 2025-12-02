@@ -64,6 +64,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   const resultPromise = db.select({
     uuid: authors.uuid,
     name: authors.name,
+    email: authors.email,
     created_by: authors.created_by,
     created_by_name: users.name,
     created_at: authors.created_at,
@@ -88,6 +89,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
   const [data] = await db.select({
     uuid: authors.uuid,
     name: authors.name,
+    email: authors.email,
     created_by: authors.created_by,
     created_by_name: users.name,
     created_at: authors.created_at,

@@ -11,6 +11,7 @@ export const insertSchema = createInsertSchema(
   authors,
   {
     uuid: schema => schema.uuid.length(21),
+    email: schema => schema.email.email().optional(),
     created_by: schema => schema.created_by.length(21),
     created_at: schema => schema.created_at.regex(dateTimePattern, {
       message: 'created_at must be in the format "YYYY-MM-DD HH:MM:SS"',
@@ -26,7 +27,7 @@ export const insertSchema = createInsertSchema(
   created_by: true,
   created_at: true,
 }).partial({
-  created_by: true,
+  email: true,
   updated_by: true,
   updated_at: true,
   remarks: true,
