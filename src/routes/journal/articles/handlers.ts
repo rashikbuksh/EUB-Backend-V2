@@ -233,7 +233,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
 
   if (article_value) {
     articlesPromise.where(
-      ilike(articles.title, `%${article_value}%`),
+      ilike(sql`LOWER(${articles.title})`, `%${article_value}%`),
     );
   }
 
