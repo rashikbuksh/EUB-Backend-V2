@@ -231,6 +231,16 @@ export const getByKeywordId = createRoute({
     params: z.object({
       keyword_id: z.string(),
     }),
+    query: z.object({
+      is_pagination: z.string().optional(),
+      field_name: z.string().optional(),
+      field_value: z.string().optional(),
+      q: z.string().optional(),
+      page: z.string().optional(),
+      limit: z.string().optional(),
+      sort: z.string().optional(),
+      orderby: z.string().optional(),
+    }),
   },
   tags,
   responses: {
