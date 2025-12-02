@@ -448,6 +448,8 @@ export const getOneByRedirectQuery: AppRouteHandler<GetOneByRedirectQueryRoute> 
 export const getByAuthorId: AppRouteHandler<GetByAuthorIdRoute> = async (c: any) => {
   const { author_id } = c.req.valid('param');
 
+  const { field_name, field_value, is_pagination } = c.req.valid('query');
+
   const articlesPromise = db
     .select({
       uuid: articles.uuid,
@@ -533,13 +535,55 @@ export const getByAuthorId: AppRouteHandler<GetByAuthorIdRoute> = async (c: any)
     )
     .orderBy(desc(articles.created_at));
 
-  const data = await articlesPromise;
+  const page = Number(c.req.query.page) || 1;
+  const limit = Number(c.req.query.limit) || 10;
 
-  return c.json(data || [], HSCode.OK);
+  const baseQuery
+    = is_pagination === 'true'
+      ? constructSelectAllQuery(
+          articlesPromise,
+          c.req.valid('query'),
+          'created_at',
+          [users.name.name, volume.name.name, volume.volume_number.name, volume.no.name],
+          field_name,
+          field_value,
+        )
+      : articlesPromise;
+
+  const data = await baseQuery;
+
+  const pagination
+    = is_pagination === 'true'
+      ? {
+          total_record: data.length,
+          current_page: Number(page),
+          total_page: Math.ceil(
+            data.length / limit,
+          ),
+          next_page:
+                  page + 1
+                  > Math.ceil(data.length / limit)
+                    ? null
+                    : page + 1,
+          prev_page: page - 1 <= 0 ? null : page - 1,
+        }
+      : null;
+
+  const response
+    = is_pagination === 'true'
+      ? {
+          data,
+          pagination,
+        }
+      : data;
+
+  return c.json(response, HSCode.OK);
 };
 
 export const getByKeywordId: AppRouteHandler<GetByKeywordIdRoute> = async (c: any) => {
   const { keyword_id } = c.req.valid('param');
+
+  const { field_name, field_value, is_pagination } = c.req.valid('query');
 
   const articlesPromise = db
     .select({
@@ -626,7 +670,47 @@ export const getByKeywordId: AppRouteHandler<GetByKeywordIdRoute> = async (c: an
     )
     .orderBy(desc(articles.created_at));
 
-  const data = await articlesPromise;
+  const page = Number(c.req.query.page) || 1;
+  const limit = Number(c.req.query.limit) || 10;
 
-  return c.json(data || [], HSCode.OK);
+  const baseQuery
+    = is_pagination === 'true'
+      ? constructSelectAllQuery(
+          articlesPromise,
+          c.req.valid('query'),
+          'created_at',
+          [users.name.name, volume.name.name, volume.volume_number.name, volume.no.name],
+          field_name,
+          field_value,
+        )
+      : articlesPromise;
+
+  const data = await baseQuery;
+
+  const pagination
+    = is_pagination === 'true'
+      ? {
+          total_record: data.length,
+          current_page: Number(page),
+          total_page: Math.ceil(
+            data.length / limit,
+          ),
+          next_page:
+                  page + 1
+                  > Math.ceil(data.length / limit)
+                    ? null
+                    : page + 1,
+          prev_page: page - 1 <= 0 ? null : page - 1,
+        }
+      : null;
+
+  const response
+    = is_pagination === 'true'
+      ? {
+          data,
+          pagination,
+        }
+      : data;
+
+  return c.json(response, HSCode.OK);
 };
