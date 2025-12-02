@@ -231,6 +231,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     );
   }
 
+  // for searching article title
   if (article_value) {
     articlesPromise.where(
       ilike(sql`LOWER(${articles.title})`, `%${article_value}%`),
