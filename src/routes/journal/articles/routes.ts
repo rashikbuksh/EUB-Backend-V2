@@ -26,6 +26,9 @@ export const list = createRoute({
       limit: z.string().optional(),
       sort: z.string().optional(),
       orderby: z.string().optional(),
+      author_id: z.string().optional(),
+      keyword_id: z.string().optional(),
+      volume_id: z.string().optional(),
     }),
   },
   responses: {
