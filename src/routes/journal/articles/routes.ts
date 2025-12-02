@@ -27,6 +27,7 @@ export const list = createRoute({
       sort: z.string().optional(),
       orderby: z.string().optional(),
       volume_id: z.string().optional(),
+      article_value: z.string().optional(),
     }),
   },
   responses: {
