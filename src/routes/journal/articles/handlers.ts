@@ -139,7 +139,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
       volume_number: volume.volume_number,
       no: volume.no,
       volume_published_date: volume.published_date,
-      volume_id: sql`LOWER(${volume.name}) || '-' || COALESCE(${volume.volume_number}::text, '') || '-number-' || COALESCE(${volume.no}::text, '') || '-' || LOWER(to_char(${volume.published_date}, 'FMMonth')) || '-' || COALESCE(to_char(${volume.published_date}, 'YYYY'), '')`.as('volume_id'),
+      volume_id: sql`REPLACE(LOWER(${volume.name}), ' ', '-') || '-' || COALESCE(${volume.volume_number}::text, '') || '-number-' || COALESCE(${volume.no}::text, '') || '-' || LOWER(to_char(${volume.published_date}, 'FMMonth')) || '-' || COALESCE(to_char(${volume.published_date}, 'YYYY'), '')`.as('volume_id'),
       title: articles.title,
       abstract: articles.abstract,
       reference: articles.reference,
@@ -227,7 +227,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   if (volume_id) {
     articlesPromise.where(
       eq(
-        sql`LOWER(${volume.name}) || '-' || COALESCE(${volume.volume_number}::text, '') || '-number-' || COALESCE(${volume.no}::text, '') || '-' || LOWER(to_char(${volume.published_date}, 'FMMonth')) || '-' || COALESCE(to_char(${volume.published_date}, 'YYYY'), '')`,
+        sql`REPLACE(LOWER(${volume.name}), ' ', '-') || '-' || COALESCE(${volume.volume_number}::text, '') || '-number-' || COALESCE(${volume.no}::text, '') || '-' || LOWER(to_char(${volume.published_date}, 'FMMonth')) || '-' || COALESCE(to_char(${volume.published_date}, 'YYYY'), '')`,
         volume_id,
       ),
     );
@@ -288,7 +288,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     volume_number: volume.volume_number,
     no: volume.no,
     volume_published_date: volume.published_date,
-    volume_id: sql`LOWER(${volume.name}) || '-' || COALESCE(${volume.volume_number}::text, '') || '-number-' || COALESCE(${volume.no}::text, '') || '-' || LOWER(to_char(${volume.published_date}, 'FMMonth')) || '-' || COALESCE(to_char(${volume.published_date}, 'YYYY'), '')`.as('volume_id'),
+    volume_id: sql`REPLACE(LOWER(${volume.name}), ' ', '-') || '-' || COALESCE(${volume.volume_number}::text, '') || '-number-' || COALESCE(${volume.no}::text, '') || '-' || LOWER(to_char(${volume.published_date}, 'FMMonth')) || '-' || COALESCE(to_char(${volume.published_date}, 'YYYY'), '')`.as('volume_id'),
     title: articles.title,
     abstract: articles.abstract,
     reference: articles.reference,
@@ -370,7 +370,7 @@ export const getOneByRedirectQuery: AppRouteHandler<GetOneByRedirectQueryRoute> 
     volume_number: volume.volume_number,
     no: volume.no,
     volume_published_date: volume.published_date,
-    volume_id: sql`LOWER(${volume.name}) || '-' || COALESCE(${volume.volume_number}::text, '') || '-number-' || COALESCE(${volume.no}::text, '') || '-' || LOWER(to_char(${volume.published_date}, 'FMMonth')) || '-' || COALESCE(to_char(${volume.published_date}, 'YYYY'), '')`.as('volume_id'),
+    volume_id: sql`REPLACE(LOWER(${volume.name}), ' ', '-') || '-' || COALESCE(${volume.volume_number}::text, '') || '-number-' || COALESCE(${volume.no}::text, '') || '-' || LOWER(to_char(${volume.published_date}, 'FMMonth')) || '-' || COALESCE(to_char(${volume.published_date}, 'YYYY'), '')`.as('volume_id'),
     title: articles.title,
     abstract: articles.abstract,
     reference: articles.reference,
