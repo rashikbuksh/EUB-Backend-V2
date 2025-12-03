@@ -1,6 +1,7 @@
 import fde from './fde';
 import hr from './hr';
 import inquire from './inquire';
+import iqac from './iqac';
 import journal from './journal';
 import lib from './lib';
 import other from './other';
@@ -18,6 +19,7 @@ const routes = [
   ...lib,
   ...fde,
   ...journal,
+  ...iqac,
 ] as const;
 
 export default routes;

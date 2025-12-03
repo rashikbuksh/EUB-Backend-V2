@@ -1,6 +1,7 @@
 import * as fde from './fde/schema';
 import * as hr from './hr/schema';
 import * as inquire from './inquire/schema';
+import * as iqac from './iqac/schema';
 import * as journal from './journal/schema';
 import * as lib from './lib/schema';
 import * as portfolio from './portfolio/schema';
@@ -14,6 +15,7 @@ const schema = {
   ...lib,
   ...fde,
   ...journal,
+  ...iqac,
 };
 
 export type Schema = typeof schema;
