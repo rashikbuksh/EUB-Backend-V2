@@ -42,6 +42,8 @@ export function isPublicRoute(url: string, method: string) {
     { url: '/v1/journal/articles/:uuid', method: 'GET' },
     { url: '/v1/journal/volume', method: 'GET' },
     { url: '/v1/journal/volume/:uuid', method: 'GET' },
+    { url: '/v1/iqac/info', method: 'GET' },
+    { url: '/v1/iqac/info/:uuid', method: 'GET' },
   ];
 
   return publicUrls.some(route => url.startsWith(route.url) && route.method === method);
