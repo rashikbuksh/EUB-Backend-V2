@@ -1,6 +1,6 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { desc, eq, inArray, sql } from 'drizzle-orm';
+import { and, desc, eq, inArray, sql } from 'drizzle-orm';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
@@ -138,11 +138,12 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     remarks: news.remarks,
     carousel: sql`ARRAY(SELECT json_build_object('value', uuid, 'label', documents) FROM portfolio.news_entry WHERE news_uuid = portfolio.news.uuid)`,
     is_global: news.is_global,
+    type: news.type,
   })
     .from(news)
     .leftJoin(department, eq(news.department_uuid, department.uuid));
 
-  const resultPromiseForCount = await resultPromise;
+  // const resultPromiseForCount = await resultPromise;
 
   if (latest === 'true')
     resultPromise.orderBy(sql`DATE(${news.published_date}) DESC`).limit(10);
@@ -189,10 +190,10 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   const pagination = is_pagination === 'false'
     ? null
     : {
-        total_record: resultPromiseForCount.length,
+        total_record: data.length,
         current_page: Number(page),
-        total_page: Math.ceil(resultPromiseForCount.length / limit),
-        next_page: page + 1 > Math.ceil(resultPromiseForCount.length / limit) ? null : page + 1,
+        total_page: Math.ceil(data.length / limit),
+        next_page: page + 1 > Math.ceil(data.length / limit) ? null : page + 1,
         prev_page: page - 1 <= 0 ? null : page - 1,
       };
 
@@ -231,6 +232,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     remarks: news.remarks,
     carousel: sql`ARRAY(SELECT json_build_object('value', uuid, 'label', documents) FROM portfolio.news_entry WHERE news_uuid = portfolio.news.uuid)`,
     is_global: news.is_global,
+    type: news.type,
   })
     .from(news)
     .leftJoin(department, eq(news.department_uuid, department.uuid))
@@ -262,6 +264,7 @@ export async function getNewsAndNewsEntryDetailsByNewsUuid(c: any) {
     remarks: news.remarks,
     entry: sql`ARRAY(SELECT json_build_object('uuid', uuid, 'documents', documents,'created_at', created_at, 'updated_at',updated_at) FROM portfolio.news_entry WHERE news_uuid = portfolio.news.uuid)`,
     is_global: news.is_global,
+    type: news.type,
   })
     .from(news)
     .leftJoin(department, eq(news.department_uuid, department.uuid))
@@ -284,7 +287,7 @@ export async function getNewsAndNewsEntryDetailsByNewsUuid(c: any) {
 }
 
 export const getLatestNews: AppRouteHandler<GetLatestNewsRoute> = async (c: any) => {
-  const { department_name } = c.req.valid('query');
+  const { department_name, type } = c.req.valid('query');
 
   const resultPromise = db.select({
     id: news.id,
@@ -300,10 +303,14 @@ export const getLatestNews: AppRouteHandler<GetLatestNewsRoute> = async (c: any)
     published_date: news.published_date,
     remarks: news.remarks,
     is_global: news.is_global,
+    type: news.type,
   })
     .from(news)
     .leftJoin(department, eq(news.department_uuid, department.uuid))
-    .where((department_name ? eq(department.name, department_name) : sql`1=1`))
+    .where(and(
+      (department_name ? eq(department.name, department_name) : sql`1=1`),
+      (type ? eq(news.type, type) : eq(news.type, 'general')
+      )))
     .orderBy(desc(news.created_at))
     .limit(10);
 
@@ -316,7 +323,7 @@ export const getLatestNews: AppRouteHandler<GetLatestNewsRoute> = async (c: any)
 };
 
 export const getGalleryNews: AppRouteHandler<GetGalleryNewsRoute> = async (c: any) => {
-  const { department_name } = c.req.valid('query');
+  const { department_name, type } = c.req.valid('query');
 
   const resultPromise = db.select({
     id: news.id,
@@ -331,11 +338,12 @@ export const getGalleryNews: AppRouteHandler<GetGalleryNewsRoute> = async (c: an
     published_date: news.published_date,
     remarks: news.remarks,
     is_global: news.is_global,
+    type: news.type,
     news_entry: sql`ARRAY(SELECT json_build_object('uuid', uuid, 'documents', documents,'created_at', created_at, 'updated_at',updated_at) FROM portfolio.news_entry WHERE news_uuid = portfolio.news.uuid)`,
   })
     .from(news)
     .leftJoin(department, eq(news.department_uuid, department.uuid))
-    .where((department_name ? eq(department.name, department_name) : sql`1=1`))
+    .where(and((department_name ? eq(department.name, department_name) : sql`1=1`), (type ? eq(news.type, type) : eq(news.type, 'general'))))
     .orderBy(desc(news.created_at));
 
   const data = await resultPromise;

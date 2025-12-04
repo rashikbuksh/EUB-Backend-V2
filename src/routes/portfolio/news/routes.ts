@@ -168,6 +168,7 @@ export const getLatestNews = createRoute({
   request: {
     query: z.object({
       department_name: z.string().optional(),
+      type: z.string().optional(),
     }),
   },
   responses: {
@@ -185,6 +186,7 @@ export const getGalleryNews = createRoute({
   request: {
     query: z.object({
       department_name: z.string().optional(),
+      type: z.string().optional(),
     }),
   },
   // selectSchema
