@@ -34,6 +34,7 @@ export const list = createRoute({
       is_global: z.string().optional(),
       field_name: z.string().optional(),
       field_value: z.string().optional(),
+      type: z.string().optional(),
     }),
   },
 });

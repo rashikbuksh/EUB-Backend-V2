@@ -567,6 +567,11 @@ export const office_entry = portfolio.table('office_entry', {
 //* News
 export const news_id = portfolio.sequence('news_id', DEFAULT_SEQUENCE);
 
+export const portfolio_news_type = portfolio.enum('news_type', [
+  'general',
+  'iqac',
+]);
+
 export const news = portfolio.table('news', {
   id: integer('id').default(sql`nextval('portfolio.news_id')`),
   uuid: uuid_primary,
@@ -582,6 +587,7 @@ export const news = portfolio.table('news', {
   created_by: defaultUUID('created_by').references(() => users.uuid, DEFAULT_OPERATION),
   remarks: text('remarks'),
   is_global: boolean('is_global').default(false),
+  type: portfolio_news_type('type').default('general'),
 });
 
 //* News Entry
