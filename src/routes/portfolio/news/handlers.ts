@@ -35,6 +35,7 @@ export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
     cover_image: defaultIfEmpty(coverImagePath, null),
     published_date: defaultIfEmpty(formData.published_date, null),
     is_global: defaultIfEmpty(formData.is_global, null),
+    type: defaultIfEmpty(formData.type, 'general'),
   };
 
   const [data] = await db.insert(news).values(value).returning({
