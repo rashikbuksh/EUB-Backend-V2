@@ -169,6 +169,9 @@ export const calender = lib.table('calender', {
 
 export const off_day = lib.table('off_day', {
   uuid: uuid_primary,
+  room_uuid: defaultUUID('room_uuid')
+    .references(() => room.uuid, DEFAULT_OPERATION)
+    .notNull(),
   from_date: DateTime('from_date').notNull(),
   to_date: DateTime('to_date').notNull(),
   description: text('description'),

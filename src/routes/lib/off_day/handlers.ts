@@ -10,7 +10,7 @@ import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 
 import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
 
-import { off_day } from '../schema';
+import { off_day, room } from '../schema';
 
 const updatedByUser = alias(users, 'updated_by_user');
 
@@ -64,6 +64,8 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
 
   const resultPromise = db.select({
     uuid: off_day.uuid,
+    room_uuid: off_day.room_uuid,
+    room_name: room.name,
     from_date: off_day.from_date,
     to_date: off_day.to_date,
     description: off_day.description,
@@ -89,6 +91,8 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
 
   const resultPromise = db.select({
     uuid: off_day.uuid,
+    room_uuid: off_day.room_uuid,
+    room_name: room.name,
     from_date: off_day.from_date,
     to_date: off_day.to_date,
     description: off_day.description,

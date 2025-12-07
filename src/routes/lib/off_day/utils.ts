@@ -11,6 +11,7 @@ export const insertSchema = createInsertSchema(
   off_day,
   {
     uuid: schema => schema.uuid.length(21),
+    room_uuid: schema => schema.room_uuid.length(21),
     from_date: schema => schema.from_date.regex(dateTimePattern, {
       message: 'from_date must be in the format "YYYY-MM-DD HH:MM:SS"',
     }),
@@ -29,6 +30,7 @@ export const insertSchema = createInsertSchema(
   },
 ).required({
   uuid: true,
+  room_uuid: true,
   from_date: true,
   to_date: true,
   created_at: true,
