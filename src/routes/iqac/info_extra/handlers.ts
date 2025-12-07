@@ -68,15 +68,15 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   const { type } = c.req.valid('query');
 
   const resultPromise = db.select({
-    uuid: sql`DISTINCT ${info_extra.uuid}`,
+    uuid: info_extra.uuid,
     id: info_extra.id,
     teachers_uuid: info_extra.teachers_uuid,
     teacher_name: teacherUser.name,
     teacher_phone: teachers.teacher_phone,
     teacher_email: teachers.teacher_email,
     teacher_image: teacherUser.image,
-    teacher_department: portfolioDepartment.uuid,
-    teacher_department_name: portfolioDepartment.name,
+    teacher_department: sql<string>`string_agg(DISTINCT ${portfolioDepartment.uuid}::text, ', ')`,
+    teacher_department_name: sql<string>`string_agg(DISTINCT ${portfolioDepartment.name}, ', ')`,
     teacher_designation: teacherUser.designation_uuid,
     teacher_designation_name: designation.name,
     description: info_extra.description,
@@ -95,6 +95,24 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     .leftJoin(portfolioDepartment, eq(portfolioDepartment.uuid, department_teachers.department_uuid))
     .leftJoin(designation, eq(designation.uuid, teacherUser.designation_uuid))
     .where(type ? eq(info_extra.type, type) : undefined)
+    .groupBy(
+      info_extra.uuid,
+      info_extra.id,
+      info_extra.teachers_uuid,
+      teacherUser.name,
+      teachers.teacher_phone,
+      teachers.teacher_email,
+      teacherUser.image,
+      teacherUser.designation_uuid,
+      designation.name,
+      info_extra.description,
+      info_extra.type,
+      info_extra.created_by,
+      users.name,
+      info_extra.created_at,
+      info_extra.updated_at,
+      info_extra.remarks,
+    )
     .orderBy(desc(info_extra.created_at));
 
   const data = await resultPromise;
@@ -106,15 +124,15 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
 
   const [data] = await db.select({
-    uuid: sql`DISTINCT ${info_extra.uuid}`,
+    uuid: info_extra.uuid,
     id: info_extra.id,
     teachers_uuid: info_extra.teachers_uuid,
     teacher_name: teacherUser.name,
     teacher_phone: teachers.teacher_phone,
     teacher_email: teachers.teacher_email,
     teacher_image: teacherUser.image,
-    teacher_department: portfolioDepartment.uuid,
-    teacher_department_name: portfolioDepartment.name,
+    teacher_department: sql<string>`string_agg(DISTINCT ${portfolioDepartment.uuid}::text, ', ')`,
+    teacher_department_name: sql<string>`string_agg(DISTINCT ${portfolioDepartment.name}, ', ')`,
     teacher_designation: teacherUser.designation_uuid,
     teacher_designation_name: designation.name,
     description: info_extra.description,
@@ -132,7 +150,25 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     .leftJoin(department_teachers, eq(department_teachers.teachers_uuid, teachers.uuid))
     .leftJoin(portfolioDepartment, eq(portfolioDepartment.uuid, department_teachers.department_uuid))
     .leftJoin(designation, eq(designation.uuid, teacherUser.designation_uuid))
-    .where(eq(info_extra.uuid, uuid));
+    .where(eq(info_extra.uuid, uuid))
+    .groupBy(
+      info_extra.uuid,
+      info_extra.id,
+      info_extra.teachers_uuid,
+      teacherUser.name,
+      teachers.teacher_phone,
+      teachers.teacher_email,
+      teacherUser.image,
+      teacherUser.designation_uuid,
+      designation.name,
+      info_extra.description,
+      info_extra.type,
+      info_extra.created_by,
+      users.name,
+      info_extra.created_at,
+      info_extra.updated_at,
+      info_extra.remarks,
+    );
 
   if (!data)
     return DataNotFound(c);
