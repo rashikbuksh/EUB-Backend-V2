@@ -98,7 +98,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   }
 
   if (type) {
-    filters.push(eq(room.type, type));
+    filters.push(eq(sql`${room.type}::text`, type));
   }
 
   if (filters.length > 0) {
