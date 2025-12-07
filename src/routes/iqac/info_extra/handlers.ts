@@ -68,8 +68,8 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   const { type } = c.req.valid('query');
 
   const resultPromise = db.select({
-    id: info_extra.id,
     uuid: sql`DISTINCT ${info_extra.uuid}`,
+    id: info_extra.id,
     teachers_uuid: info_extra.teachers_uuid,
     teacher_name: teacherUser.name,
     teacher_phone: teachers.teacher_phone,
@@ -106,8 +106,8 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
 
   const [data] = await db.select({
-    id: info_extra.id,
     uuid: sql`DISTINCT ${info_extra.uuid}`,
+    id: info_extra.id,
     teachers_uuid: info_extra.teachers_uuid,
     teacher_name: teacherUser.name,
     teacher_phone: teachers.teacher_phone,
