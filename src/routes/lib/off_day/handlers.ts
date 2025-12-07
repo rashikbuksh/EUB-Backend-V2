@@ -1,6 +1,6 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import * as HSCode from 'stoker/http-status-codes';
 
@@ -62,7 +62,7 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   // const data = await db.query.off_day.findMany();
 
-  const { room_uuid } = c.req.valid('query');
+  const { room_uuid, date } = c.req.valid('query');
 
   const resultPromise = db.select({
     uuid: off_day.uuid,
@@ -86,6 +86,12 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
 
   if (room_uuid) {
     resultPromise.where(eq(off_day.room_uuid, room_uuid));
+  }
+
+  if (date) {
+    resultPromise.where(
+      sql`${date}::TIMESTAMP BETWEEN ${off_day.from_date} AND ${off_day.to_date}`,
+    );
   }
 
   const data = await resultPromise;
