@@ -93,7 +93,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
 
   if (date) {
     filters.push(
-      sql`${date}::TIMESTAMP BETWEEN ${off_day.from_date} AND ${off_day.to_date}`,
+      sql`${date} BETWEEN ${off_day.from_date} AND ${off_day.to_date}`,
     );
   }
 
