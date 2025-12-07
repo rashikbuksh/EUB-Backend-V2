@@ -1,6 +1,6 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { eq, sql } from 'drizzle-orm';
+import { and, eq, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import * as HSCode from 'stoker/http-status-codes';
 
@@ -84,14 +84,20 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     .leftJoin(users, eq(users.uuid, off_day.created_by))
     .leftJoin(updatedByUser, eq(updatedByUser.uuid, off_day.updated_by));
 
+  const filters = [];
+
   if (room_uuid) {
-    resultPromise.where(eq(off_day.room_uuid, room_uuid));
+    filters.push(eq(off_day.room_uuid, room_uuid));
   }
 
   if (date) {
-    resultPromise.where(
+    filters.push(
       sql`${date}::TIMESTAMP BETWEEN ${off_day.from_date} AND ${off_day.to_date}`,
     );
+  }
+
+  if (filters.length > 0) {
+    resultPromise.where(and(...filters));
   }
 
   const data = await resultPromise;
