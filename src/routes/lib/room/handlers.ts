@@ -1,6 +1,6 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { and, eq } from 'drizzle-orm';
+import { and, eq, sql } from 'drizzle-orm';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
@@ -9,7 +9,7 @@ import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 
 import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
 
-import { room, room_allocation, sem_crs_thr_entry } from '../schema';
+import { off_day, room, room_allocation, sem_crs_thr_entry } from '../schema';
 
 export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
   const value = c.req.valid('json');
@@ -59,7 +59,7 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   // const data = await db.query.room.findMany();
 
-  const { semester_uuid, type } = c.req.valid('query');
+  const { semester_uuid, type, date } = c.req.valid('query');
 
   const resultPromise = db.selectDistinct({
     uuid: room.uuid,
@@ -79,6 +79,16 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     .leftJoin(sem_crs_thr_entry, eq(sem_crs_thr_entry.uuid, room_allocation.sem_crs_thr_entry_uuid));
 
   const filters = [];
+
+  if (date) {
+    filters.push(
+      sql`${room.uuid} NOT IN (
+        SELECT ${off_day.room_uuid}
+        FROM ${off_day}
+        WHERE ${date}::DATE BETWEEN ${off_day.from_date}::DATE AND ${off_day.to_date}::DATE
+      )`,
+    );
+  }
 
   if (type) {
     filters.push(eq(room.type, type));

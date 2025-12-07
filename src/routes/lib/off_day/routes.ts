@@ -16,9 +16,7 @@ export const list = createRoute({
   tags,
   request: {
     query: z.object({
-      date: z.string().optional(),
       room_uuid: z.string().optional(),
-      type: z.string().optional(),
     }),
   },
   responses: {

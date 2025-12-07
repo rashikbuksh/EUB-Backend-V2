@@ -19,6 +19,7 @@ export const list = createRoute({
       is_room_allocation: z.string().optional(),
       semester_uuid: z.string().optional(),
       type: z.string().optional(),
+      date: z.string().optional(),
     }),
   },
   responses: {
