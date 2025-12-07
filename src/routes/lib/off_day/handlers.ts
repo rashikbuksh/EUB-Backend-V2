@@ -8,7 +8,7 @@ import db from '@/db';
 import { users } from '@/routes/hr/schema';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 
-import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
+import type { CreateRoute, GetOneRoute, ListRoute, OffDayListByRoomUuidRoute, PatchRoute, RemoveRoute } from './routes';
 
 import { off_day, room } from '../schema';
 
@@ -117,4 +117,24 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
   //   return DataNotFound(c);
 
   return c.json(data[0] || {}, HSCode.OK);
+};
+
+export const offDayListByRoomUuid: AppRouteHandler<OffDayListByRoomUuidRoute> = async (c: any) => {
+  // const data = await db.query.off_day.findMany();
+  const { room_uuid } = c.req.valid('param');
+  const resultPromise = db.select({
+    uuid: off_day.uuid,
+    room_uuid: off_day.room_uuid,
+    room_name: room.name,
+    from_date: off_day.from_date,
+    to_date: off_day.to_date,
+    description: off_day.description,
+  })
+    .from(off_day)
+    .leftJoin(room, eq(room.uuid, off_day.room_uuid))
+    .where(eq(off_day.room_uuid, room_uuid));
+
+  const data = await resultPromise;
+
+  return c.json(data || [], HSCode.OK);
 };
