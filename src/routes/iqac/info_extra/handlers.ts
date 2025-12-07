@@ -1,6 +1,6 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { and, desc, eq, sql } from 'drizzle-orm';
+import { desc, eq, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import * as HSCode from 'stoker/http-status-codes';
 
@@ -69,7 +69,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
 
   const resultPromise = db.select({
     id: info_extra.id,
-    uuid: info_extra.uuid,
+    uuid: sql`DISTINCT ${info_extra.uuid}`,
     teachers_uuid: info_extra.teachers_uuid,
     teacher_name: teacherUser.name,
     teacher_phone: teachers.teacher_phone,
@@ -107,7 +107,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
 
   const [data] = await db.select({
     id: info_extra.id,
-    uuid: info_extra.uuid,
+    uuid: sql`DISTINCT ${info_extra.uuid}`,
     teachers_uuid: info_extra.teachers_uuid,
     teacher_name: teacherUser.name,
     teacher_phone: teachers.teacher_phone,
