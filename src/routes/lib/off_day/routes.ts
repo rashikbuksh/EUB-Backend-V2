@@ -123,26 +123,8 @@ export const remove = createRoute({
   },
 });
 
-export const offDayListByRoomUuid = createRoute({
-  path: '/lib/off-day/room/{room_uuid}',
-  method: 'get',
-  request: {
-    params: z.object({
-      room_uuid: z.string(),
-    }),
-  },
-  tags,
-  responses: {
-    [HSCode.OK]: jsonContent(
-      z.array(selectSchema),
-      'The list of off_day by room uuid',
-    ),
-  },
-});
-
 export type ListRoute = typeof list;
 export type CreateRoute = typeof create;
 export type GetOneRoute = typeof getOne;
 export type PatchRoute = typeof patch;
 export type RemoveRoute = typeof remove;
-export type OffDayListByRoomUuidRoute = typeof offDayListByRoomUuid;
