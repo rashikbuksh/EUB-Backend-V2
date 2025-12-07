@@ -62,12 +62,13 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   // const data = await db.query.off_day.findMany();
 
-  const { room_uuid, date } = c.req.valid('query');
+  const { room_uuid, date, type } = c.req.valid('query');
 
   const resultPromise = db.select({
     uuid: off_day.uuid,
     room_uuid: off_day.room_uuid,
     room_name: room.name,
+    room_type: room.type,
     from_date: off_day.from_date,
     to_date: off_day.to_date,
     description: off_day.description,
@@ -94,6 +95,10 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     filters.push(
       sql`${date}::TIMESTAMP BETWEEN ${off_day.from_date} AND ${off_day.to_date}`,
     );
+  }
+
+  if (type) {
+    filters.push(eq(room.type, type));
   }
 
   if (filters.length > 0) {
