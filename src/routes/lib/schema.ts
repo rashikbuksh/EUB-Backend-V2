@@ -167,6 +167,24 @@ export const calender = lib.table('calender', {
   remarks: text('remarks'),
 });
 
+export const off_day = lib.table('off_day', {
+  uuid: uuid_primary,
+  from_date: DateTime('from_date').notNull(),
+  to_date: DateTime('to_date').notNull(),
+  description: text('description'),
+  created_by: defaultUUID('created_by').references(
+    () => users.uuid,
+    DEFAULT_OPERATION,
+  ),
+  updated_by: defaultUUID('updated_by').references(
+    () => users.uuid,
+    DEFAULT_OPERATION,
+  ),
+  created_at: DateTime('created_at').notNull(),
+  updated_at: DateTime('updated_at'),
+  remarks: text('remarks'),
+});
+
 //* relations
 export const semester_relations = relations(semester, ({ one }) => ({
   created_by: one(users, {
