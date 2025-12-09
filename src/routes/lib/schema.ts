@@ -172,8 +172,8 @@ export const off_day = lib.table('off_day', {
   room_uuid: defaultUUID('room_uuid')
     .references(() => room.uuid, DEFAULT_OPERATION)
     .notNull(),
-  from_date: DateTime('from_date').notNull(),
-  to_date: DateTime('to_date').notNull(),
+  from_date: DateTime('from_date').notNull().unique(),
+  to_date: DateTime('to_date').default(sql`null`),
   description: text('description'),
   created_by: defaultUUID('created_by').references(
     () => users.uuid,

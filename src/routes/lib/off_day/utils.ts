@@ -32,10 +32,10 @@ export const insertSchema = createInsertSchema(
   uuid: true,
   room_uuid: true,
   from_date: true,
-  to_date: true,
   created_at: true,
   created_by: true,
 }).partial({
+  to_date: true,
   description: true,
   updated_by: true,
   updated_at: true,
