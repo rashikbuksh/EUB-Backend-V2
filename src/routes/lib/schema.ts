@@ -186,6 +186,7 @@ export const off_day = lib.table('off_day', {
   created_at: DateTime('created_at').notNull(),
   updated_at: DateTime('updated_at'),
   remarks: text('remarks'),
+  is_all_rooms: boolean('is_all_rooms').notNull().default(false),
 }, t => [
   unique().on(t.room_uuid, t.from_date),
 ]);

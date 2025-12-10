@@ -40,6 +40,7 @@ export const insertSchema = createInsertSchema(
   updated_by: true,
   updated_at: true,
   remarks: true,
+  is_all_rooms: true,
 });
 
 export const patchSchema = insertSchema.partial();
