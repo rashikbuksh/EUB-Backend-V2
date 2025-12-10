@@ -9,11 +9,11 @@ export const valueLabel = createRoute({
   path: '/other/lib/room/value/label',
   method: 'get',
   tags,
-  // request: {
-  //   query: z.object({
-  //     page: z.string().optional(),
-  //   }),
-  // },
+  request: {
+    query: z.object({
+      type: z.string().optional(),
+    }),
+  },
   responses: {
     [HSCode.OK]: jsonContent(
       z.object({
