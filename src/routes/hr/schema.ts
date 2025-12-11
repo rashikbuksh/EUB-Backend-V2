@@ -45,7 +45,7 @@ export const auth_user = hr.table('auth_user', {
   uuid: uuid_primary,
   user_uuid: defaultUUID('user_uuid').notNull().references(() => users.uuid, DEFAULT_OPERATION),
   pass: text('pass').notNull(),
-  can_access: text('can_access'),
+  can_access: text('can_access').default('{"profile":["read"]}'),
   status: boolean('status').default(false),
   created_at: DateTime('created_at').notNull(),
   updated_at: DateTime('updated_at'),
